@@ -200,7 +200,6 @@ export class PlayerService extends BaseService {
     const updateGame = BaseService.gameDb.updateGame(game)
     const broadcast = this.broadcastGame(socket, game)
 
-    console.log("updateGame", updateGame)
     await Promise.all([updateGame, broadcast])
   }
 
