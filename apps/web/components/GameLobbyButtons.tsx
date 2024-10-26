@@ -11,10 +11,8 @@ import {
   SkyjoToJson,
 } from "@skyjo/core"
 import { Constants as ErrorConstants } from "@skyjo/error"
-import {
-  ErrorJoinMessage,
-  ErrorReconnectMessage,
-} from "@skyjo/shared/types/socket"
+import { ErrorJoinMessage } from "@skyjo/shared/types/events/lobby"
+import { ErrorReconnectMessage } from "@skyjo/shared/types/events/player"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 

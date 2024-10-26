@@ -3,7 +3,6 @@ import { BaseService } from "@/services/base.service.js"
 import { LobbyService } from "@/services/lobby.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import {
-  type ChangeSettings,
   Constants as CoreConstants,
   type CreatePlayer,
   type GameStatus,
@@ -13,6 +12,10 @@ import {
   SkyjoSettings,
 } from "@skyjo/core"
 import { Constants as ErrorConstants } from "@skyjo/error"
+import type {
+  GameSettings,
+  UpdateGameSettings,
+} from "@skyjo/shared/validations/updateGameSettings"
 import { TEST_SOCKET_ID, TEST_UNKNOWN_GAME_ID } from "@tests/constants-test.js"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -345,23 +348,12 @@ describe("LobbyService", () => {
     })
   })
 
-  describe("onSettingsChange", () => {
+  describe("onUpdateSingleSettings", () => {
     it("should throw if no game is found", async () => {
       socket.data.gameCode = TEST_UNKNOWN_GAME_ID
 
-      const newSettings: ChangeSettings = {
-        private: false,
-        allowSkyjoForColumn: true,
-        allowSkyjoForRow: true,
-        initialTurnedCount: 2,
-        cardPerRow: 6,
-        cardPerColumn: 8,
-        scoreToEndGame: 100,
-        multiplierForFirstPlayer: 2,
-      }
-
       await expect(
-        service.onSettingsChange(socket, newSettings),
+        service.onUpdateSingleSettings(socket, "private", false),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
@@ -385,18 +377,8 @@ describe("LobbyService", () => {
       game.addPlayer(player)
       socket.data = { gameCode: game.code, playerId: player.id }
 
-      const newSettings: ChangeSettings = {
-        private: false,
-        allowSkyjoForColumn: true,
-        allowSkyjoForRow: true,
-        initialTurnedCount: 2,
-        cardPerRow: 6,
-        cardPerColumn: 8,
-        scoreToEndGame: 100,
-        multiplierForFirstPlayer: 2,
-      }
       await expect(
-        service.onSettingsChange(socket, newSettings),
+        service.onUpdateSingleSettings(socket, "allowSkyjoForColumn", true),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).not.toHaveBeenCalled()
@@ -412,7 +394,81 @@ describe("LobbyService", () => {
       BaseService["games"].push(game)
       socket.data = { gameCode: game.code, playerId: player.id }
 
-      const newSettings: ChangeSettings = {
+      await service.onUpdateSingleSettings(socket, "allowSkyjoForColumn", true)
+
+      expect(game.settings).toBeInstanceOf(SkyjoSettings)
+      expect(game.settings.allowSkyjoForColumn).toBeTruthy()
+    })
+  })
+
+  describe("onSettingsChange", () => {
+    it("should throw if no game is found", async () => {
+      socket.data.gameCode = TEST_UNKNOWN_GAME_ID
+
+      const newSettings: GameSettings = {
+        private: false,
+        allowSkyjoForColumn: true,
+        allowSkyjoForRow: true,
+        initialTurnedCount: 2,
+        cardPerRow: 6,
+        cardPerColumn: 8,
+        scoreToEndGame: 100,
+        multiplierForFirstPlayer: 2,
+      }
+
+      await expect(
+        service.onUpdateSettings(socket, newSettings),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
+
+      expect(socket.emit).not.toHaveBeenCalled()
+    })
+
+    it("should throw if user is not admin", async () => {
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+
+      const game = new Skyjo(opponent.id, new SkyjoSettings(false))
+      BaseService["games"].push(game)
+
+      game.addPlayer(opponent)
+
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      game.addPlayer(player)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      const newSettings: GameSettings = {
+        private: false,
+        allowSkyjoForColumn: true,
+        allowSkyjoForRow: true,
+        initialTurnedCount: 2,
+        cardPerRow: 6,
+        cardPerColumn: 8,
+        scoreToEndGame: 100,
+        multiplierForFirstPlayer: 2,
+      }
+      await expect(
+        service.onUpdateSettings(socket, newSettings),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
+
+      expect(socket.emit).not.toHaveBeenCalled()
+    })
+
+    it("should change the game settings", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(false))
+      game.addPlayer(player)
+      BaseService["games"].push(game)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      const newSettings: GameSettings = {
         private: true,
         allowSkyjoForColumn: true,
         allowSkyjoForRow: true,
@@ -422,7 +478,7 @@ describe("LobbyService", () => {
         scoreToEndGame: 100,
         multiplierForFirstPlayer: 2,
       }
-      await service.onSettingsChange(socket, newSettings)
+      await service.onUpdateSettings(socket, newSettings)
 
       expect(game.settings).toBeInstanceOf(SkyjoSettings)
       expect(game.settings.toJson()).toStrictEqual({

@@ -18,15 +18,13 @@ import {
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import { cn } from "@/lib/utils"
 import { useRouter } from "@/navigation"
-import { ChangeSettings, Constants as CoreConstants } from "@skyjo/core"
+import { Constants as CoreConstants } from "@skyjo/core"
+import { GameSettings } from "@skyjo/shared/validations/updateGameSettings"
 import { m } from "framer-motion"
 import { HomeIcon, LockIcon, UnlockIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useLocalStorage } from "react-use"
-
-type ChangeSettingsKey = keyof ChangeSettings
-type ChangeSettingsValue = ChangeSettings[ChangeSettingsKey]
 
 type LobbyProps = {
   gameCode: string
@@ -41,7 +39,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
   } = useSkyjo()
   const router = useRouter()
   const [gameSettingsLocalStorage, setGameSettingsLocalStorage] =
-    useLocalStorage<ChangeSettings>("gameSettings")
+    useLocalStorage<GameSettings>("gameSettings")
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -65,7 +63,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
       if (gameSettingsLocalStorage.private !== settings.private)
         newSettings.private = settings.private
 
-      actions.changeSettings(newSettings)
+      actions.updateSettings(newSettings)
     }
   }, [])
 
@@ -75,13 +73,6 @@ const Lobby = ({ gameCode }: LobbyProps) => {
       router.replace(`/game/${code}`)
     }
   }, [status])
-
-  const changeSettings = (
-    key: ChangeSettingsKey,
-    value: ChangeSettingsValue,
-  ) => {
-    actions.changeSettings({ ...settings, [key]: value })
-  }
 
   const beforeStartGame = () => {
     if (isLoading) return
@@ -121,7 +112,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                           "h-6 w-6 text-black dark:text-dark-font",
                           isAdmin ? "cursor-pointer" : "cursor-not-allowed",
                         )}
-                        onClick={() => changeSettings("private", false)}
+                        onClick={() =>
+                          actions.updateSingleSettings("private", false)
+                        }
                       />
                     ) : (
                       <UnlockIcon
@@ -129,7 +122,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                           "h-6 w-6 text-black dark:text-dark-font",
                           !isAdmin && "cursor-default",
                         )}
-                        onClick={() => changeSettings("private", true)}
+                        onClick={() =>
+                          actions.updateSingleSettings("private", true)
+                        }
                       />
                     )}
                   </TooltipTrigger>
@@ -151,7 +146,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   id="skyjo-for-column"
                   checked={settings.allowSkyjoForColumn}
                   onCheckedChange={(checked) =>
-                    changeSettings("allowSkyjoForColumn", checked)
+                    actions.updateSingleSettings("allowSkyjoForColumn", checked)
                   }
                   disabled={!isAdmin}
                   title={t("settings.allow-skyjo-for-column")}
@@ -165,7 +160,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   id="skyjo-for-row"
                   checked={settings.allowSkyjoForRow}
                   onCheckedChange={(checked) =>
-                    changeSettings("allowSkyjoForRow", checked)
+                    actions.updateSingleSettings("allowSkyjoForRow", checked)
                   }
                   disabled={!isAdmin}
                   title={t("settings.allow-skyjo-for-row")}
@@ -182,7 +177,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   name="nb-columns"
                   max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN}
                   selected={settings.cardPerColumn}
-                  onChange={(value) => changeSettings("cardPerColumn", value)}
+                  onChange={(value) =>
+                    actions.updateSingleSettings("cardPerColumn", value)
+                  }
                   title={t("settings.nb-columns.title")}
                   disabled={!isAdmin}
                   disabledRadioNumber={settings.cardPerRow === 1 ? [1] : []}
@@ -194,7 +191,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   name="nb-rows"
                   max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW}
                   selected={settings.cardPerRow}
-                  onChange={(value) => changeSettings("cardPerRow", value)}
+                  onChange={(value) =>
+                    actions.updateSingleSettings("cardPerRow", value)
+                  }
                   title={t("settings.nb-rows.title")}
                   disabled={!isAdmin}
                 />
@@ -212,7 +211,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     max={maxInitialTurnedCount}
                     defaultValue={[settings.initialTurnedCount]}
                     onValueCommit={(value) =>
-                      changeSettings("initialTurnedCount", +value)
+                      actions.updateSingleSettings("initialTurnedCount", +value)
                     }
                     title={t("settings.initial-turned-count.title", {
                       number: settings.initialTurnedCount,
@@ -226,7 +225,10 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     max={maxInitialTurnedCount}
                     value={settings.initialTurnedCount}
                     onChange={(e) =>
-                      changeSettings("initialTurnedCount", +e.target.value)
+                      actions.updateSingleSettings(
+                        "initialTurnedCount",
+                        +e.target.value,
+                      )
                     }
                     title={t("settings.initial-turned-count.title", {
                       number: settings.initialTurnedCount,
@@ -249,7 +251,10 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     max={10}
                     defaultValue={[settings.multiplierForFirstPlayer]}
                     onValueCommit={(value) =>
-                      changeSettings("multiplierForFirstPlayer", +value)
+                      actions.updateSingleSettings(
+                        "multiplierForFirstPlayer",
+                        +value,
+                      )
                     }
                     title={t("settings.multiplier-for-first-player.title", {
                       number: settings.multiplierForFirstPlayer,
@@ -263,7 +268,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     max={10}
                     value={settings.multiplierForFirstPlayer}
                     onChange={(e) =>
-                      changeSettings(
+                      actions.updateSingleSettings(
                         "multiplierForFirstPlayer",
                         +e.target.value,
                       )
@@ -289,7 +294,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     max={1000}
                     defaultValue={[settings.scoreToEndGame]}
                     onValueCommit={(value) =>
-                      changeSettings("scoreToEndGame", +value)
+                      actions.updateSingleSettings("scoreToEndGame", +value)
                     }
                     title={t("settings.score-to-end-game.title", {
                       number: settings.scoreToEndGame,
@@ -303,7 +308,10 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     max={1000}
                     value={settings.scoreToEndGame}
                     onChange={(e) =>
-                      changeSettings("scoreToEndGame", +e.target.value)
+                      actions.updateSingleSettings(
+                        "scoreToEndGame",
+                        +e.target.value,
+                      )
                     }
                     title={t("settings.score-to-end-game.title", {
                       number: settings.scoreToEndGame,

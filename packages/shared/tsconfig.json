@@ -3,6 +3,9 @@
   "include": ["validations", "types", "constants.ts"],
   "compilerOptions": {
     "rootDir": "./",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "@/*": ["./*"]
+    }
   }
 }

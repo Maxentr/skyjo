@@ -7,12 +7,12 @@ import { getCurrentUser, getOpponents } from "@/lib/skyjo"
 import { useRouter } from "@/navigation"
 import { Opponents } from "@/types/opponents"
 import {
-  ChangeSettings,
   Constants as CoreConstants,
   PlayPickCard,
   SkyjoPlayerToJson,
   SkyjoToJson,
 } from "@skyjo/core"
+import { UpdateGameSettings } from "@skyjo/shared/validations/updateGameSettings"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import {
@@ -32,7 +32,11 @@ type SkyjoContext = {
   player: SkyjoPlayerToJson
   opponents: Opponents
   actions: {
-    changeSettings: (settings: ChangeSettings) => void
+    updateSingleSettings: <T extends keyof UpdateGameSettings>(
+      key: T,
+      value: UpdateGameSettings[T],
+    ) => void
+    updateSettings: (settings: UpdateGameSettings) => void
     resetSettings: () => void
     startGame: () => void
     playRevealCard: (column: number, row: number) => void
@@ -117,28 +121,55 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   //#endregion
 
   //#region actions
-  const changeSettings = (settings: ChangeSettings) => {
+  const updateSingleSettings = <T extends keyof UpdateGameSettings>(
+    key: T,
+    value: UpdateGameSettings[T],
+  ) => {
     if (!player?.isAdmin) return
 
-    if (
-      settings.cardPerColumn * settings.cardPerRow <=
-      settings.initialTurnedCount
-    ) {
-      settings.initialTurnedCount =
-        settings.cardPerColumn * settings.cardPerRow - 1
+    switch (key) {
+      case "private":
+        socket!.emit(`game:settings:private`, value as boolean)
+        break
+      case "allowSkyjoForColumn":
+        socket!.emit(`game:settings:allow-skyjo-for-column`, value as boolean)
+        break
+      case "allowSkyjoForRow":
+        socket!.emit(`game:settings:allow-skyjo-for-row`, value as boolean)
+        break
+      case "initialTurnedCount":
+        socket!.emit(`game:settings:initial-turned-count`, value as number)
+        break
+      case "cardPerColumn":
+        socket!.emit(`game:settings:card-per-column`, value as number)
+        break
+      case "cardPerRow":
+        socket!.emit(`game:settings:card-per-row`, value as number)
+        break
+      case "scoreToEndGame":
+        socket!.emit(`game:settings:score-to-end-game`, value as number)
+        break
+      case "multiplierForFirstPlayer":
+        socket!.emit(
+          `game:settings:multiplier-for-first-player`,
+          value as number,
+        )
+        break
+      default:
+        throw new Error(`Unknown settings: ${key}`)
     }
+  }
 
-    if (settings.cardPerColumn === 1 && settings.cardPerRow === 1) {
-      settings.cardPerColumn = 2
-    }
+  const updateSettings = (settings: UpdateGameSettings) => {
+    if (!player?.isAdmin) return
 
-    socket!.emit("settings", settings)
+    socket!.emit("game:settings", settings)
   }
 
   const resetSettings = () => {
     if (!player?.isAdmin) return
 
-    socket!.emit("settings", {
+    socket!.emit("game:settings", {
       private: game?.settings.private ?? false,
     })
   }
@@ -191,7 +222,8 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
 
   const actions = {
     sendMessage,
-    changeSettings,
+    updateSingleSettings,
+    updateSettings,
     resetSettings,
     startGame,
     playRevealCard,

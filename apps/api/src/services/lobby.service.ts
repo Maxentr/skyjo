@@ -1,7 +1,6 @@
 import { BaseService } from "@/services/base.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import {
-  type ChangeSettings,
   Constants as CoreConstants,
   type CreatePlayer,
   Skyjo,
@@ -10,6 +9,7 @@ import {
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Logger } from "@skyjo/logger"
+import type { GameSettings } from "@skyjo/shared/validations/updateGameSettings"
 
 export class LobbyService extends BaseService {
   private readonly MAX_GAME_INACTIVE_TIME = 300000 // 5 minutes
@@ -55,11 +55,15 @@ export class LobbyService extends BaseService {
     }
   }
 
-  async onSettingsChange(socket: SkyjoSocket, settings: ChangeSettings) {
+  async onUpdateSingleSettings<T extends keyof SkyjoSettings>(
+    socket: SkyjoSocket,
+    key: T,
+    value: SkyjoSettings[T],
+  ) {
     const game = await this.getGame(socket.data.gameCode)
     if (!game.isAdmin(socket.data.playerId)) {
       throw new CError(
-        `Player try to change game settings but is not the admin.`,
+        `Player try to change game settings ${key} but is not the admin.`,
         {
           code: ErrorConstants.ERROR.NOT_ALLOWED,
           level: "warn",
@@ -73,7 +77,40 @@ export class LobbyService extends BaseService {
       )
     }
 
-    game.settings.changeSettings(settings)
+    game.settings[key] = value
+    game.settings.preventInvalidSettings()
+
+    game.updatedAt = new Date()
+
+    const updateSettings = BaseService.gameDb.updateSettings(
+      game.id,
+      game.settings,
+    )
+    const broadcast = this.broadcastGame(socket, game)
+
+    await Promise.all([updateSettings, broadcast])
+  }
+
+  async onUpdateSettings(socket: SkyjoSocket, settings: GameSettings) {
+    const game = await this.getGame(socket.data.gameCode)
+    if (!game.isAdmin(socket.data.playerId)) {
+      throw new CError(
+        `Player try to change all game settings but is not the admin.`,
+        {
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
+          level: "warn",
+          meta: {
+            game,
+            socket,
+            gameCode: game.code,
+            playerId: socket.data.playerId,
+          },
+        },
+      )
+    }
+
+    game.settings.updateSettings(settings)
+
     game.updatedAt = new Date()
 
     const updateSettings = BaseService.gameDb.updateSettings(

@@ -10,7 +10,6 @@ export * from "./types/skyjoCard.js"
 export * from "./types/skyjoPlayer.js"
 export * from "./types/skyjoSettings.js"
 
-export * from "./validations/changeSettings.js"
 export * from "./validations/joinGame.js"
 export * from "./validations/play.js"
 export * from "./validations/player.js"

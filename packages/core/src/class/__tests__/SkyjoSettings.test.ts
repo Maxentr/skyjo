@@ -77,7 +77,8 @@ describe("SkyjoSettings", () => {
       multiplierForFirstPlayer: dbGame.multiplierForFirstPlayer,
     })
   })
-  it("should change settings", () => {
+
+  it("should update settings", () => {
     const newSettings = {
       private: true,
       allowSkyjoForColumn: true,
@@ -89,7 +90,7 @@ describe("SkyjoSettings", () => {
       multiplierForFirstPlayer: 2,
     }
 
-    settings.changeSettings(newSettings)
+    settings.updateSettings(newSettings)
 
     expect(settings.allowSkyjoForColumn).toBeTruthy()
     expect(settings.allowSkyjoForRow).toBeTruthy()
@@ -98,6 +99,34 @@ describe("SkyjoSettings", () => {
     expect(settings.cardPerColumn).toBe(8)
     expect(settings.scoreToEndGame).toBe(100)
     expect(settings.multiplierForFirstPlayer).toBe(2)
+  })
+
+  describe("preventInvalidSettings", () => {
+    it("should prevent invalid settings when initialTurnedCount is greater the number of cards on the board", () => {
+      settings.cardPerColumn = 4
+      settings.cardPerRow = 3
+      settings.initialTurnedCount = 14
+      settings.preventInvalidSettings()
+
+      expect(settings.initialTurnedCount).toBe(11)
+    })
+
+    it("should prevent invalid settings when initialTurnedCount is equal to the number of cards on the board", () => {
+      settings.cardPerColumn = 4
+      settings.cardPerRow = 3
+      settings.initialTurnedCount = 12
+      settings.preventInvalidSettings()
+
+      expect(settings.initialTurnedCount).toBe(11)
+    })
+
+    it("should prevent invalid settings when cardPerColumn and cardPerRow are both 1", () => {
+      settings.cardPerColumn = 1
+      settings.cardPerRow = 1
+      settings.preventInvalidSettings()
+
+      expect(settings.cardPerColumn).toBe(2)
+    })
   })
 
   it("should return json", () => {
