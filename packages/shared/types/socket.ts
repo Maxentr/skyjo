@@ -6,7 +6,6 @@ import type {
   PlayReplaceCard,
   PlayRevealCard,
   PlayTurnCard,
-  SkyjoPlayerToJson,
   SkyjoToJson,
 } from "@skyjo/core"
 import type { KickVoteToJson } from "@skyjo/core"
@@ -55,7 +54,6 @@ export type ServerToClientEvents = {
   message: (message: UserChatMessage) => void
   "message:system": (message: SystemChatMessage) => void
   "message:server": (message: ServerChatMessage) => void
-  winner: (game: SkyjoToJson, winner: SkyjoPlayerToJson) => void
   "leave:success": () => void
   "kick:vote": (data: KickVoteToJson) => void
   "kick:vote-success": (data: KickVoteToJson) => void
