@@ -26,6 +26,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@skyjo/ts-config": "workspace:*",
     "@types/pg": "^8.11.10",
     "@types/node": "^20.16.11",
     "drizzle-kit": "^0.23.2",

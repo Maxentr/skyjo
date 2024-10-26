@@ -24,6 +24,7 @@
     "@skyjo/error": "workspace:*"
   },
   "devDependencies": {
+    "@skyjo/ts-config": "workspace:*",
     "typescript": "^5.6.3"
   }
 }

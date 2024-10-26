@@ -1,24 +1,4 @@
 {
-  "include": ["src"],
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "ESNext",
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "moduleDetection": "force",
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-    "strict": true,
-    "noImplicitOverride": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "NodeNext",
-    "baseUrl": "./",
-    "outDir": "./dist",
-    "declaration": true,
-    "composite": true,
-    "sourceMap": true,
-    "declarationMap": true,
-    "lib": ["ESNext"]
-  }
+  "extends": "@skyjo/ts-config/base-package.json",
+  "include": ["src"]
 }

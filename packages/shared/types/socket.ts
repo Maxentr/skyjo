@@ -11,13 +11,13 @@ import type {
 } from "@skyjo/core"
 import type { KickVoteToJson } from "@skyjo/core"
 import type { Error as ThrownError } from "@skyjo/error"
-import type { SendChatMessage } from "validations/chatMessage.js"
-import type { InitiateKickVote, VoteToKick } from "validations/kick.js"
 import type {
   ServerChatMessage,
   SystemChatMessage,
   UserChatMessage,
 } from "../types/chat.js"
+import type { SendChatMessage } from "../validations/chatMessage.js"
+import type { InitiateKickVote, VoteToKick } from "../validations/kick.js"
 import type { LastGame } from "../validations/reconnect.js"
 
 export type ClientToServerEvents = {
