@@ -15,12 +15,11 @@ import { useSkyjo } from "@/contexts/SkyjoContext"
 import { getConnectedPlayers } from "@/lib/skyjo"
 import { cn, getRedirectionUrl } from "@/lib/utils"
 import { useRouter } from "@/navigation"
+import { Constants as CoreConstants, SkyjoPlayerToJson } from "@skyjo/core"
 import { AnimatePresence, m } from "framer-motion"
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
-import { CONNECTION_STATUS, GAME_STATUS } from "shared/constants"
-import { SkyjoPlayerToJson } from "shared/types/skyjoPlayer"
 
 const ResultsPage = () => {
   const { player, game, actions } = useSkyjo()
@@ -29,11 +28,17 @@ const ResultsPage = () => {
   const [visibleRows, setVisibleRows] = useState<SkyjoPlayerToJson[]>([])
 
   const sortedConnectedPlayers = game.players
-    .filter((player) => player.connectionStatus === CONNECTION_STATUS.CONNECTED)
+    .filter(
+      (player) =>
+        player.connectionStatus === CoreConstants.CONNECTION_STATUS.CONNECTED,
+    )
     .sort((a, b) => b.score - a.score)
 
   const sortedDisconnectedPlayers = game.players
-    .filter((player) => player.connectionStatus !== CONNECTION_STATUS.CONNECTED)
+    .filter(
+      (player) =>
+        player.connectionStatus !== CoreConstants.CONNECTION_STATUS.CONNECTED,
+    )
     .sort((a, b) => b.score - a.score)
 
   const allRowsVisible = visibleRows.length >= sortedConnectedPlayers.length
@@ -59,7 +64,7 @@ const ResultsPage = () => {
   }, [visibleRows.length])
 
   useEffect(() => {
-    if (game.status === GAME_STATUS.STOPPED) return
+    if (game.status === CoreConstants.GAME_STATUS.STOPPED) return
 
     router.replace(getRedirectionUrl(game.code, game.status))
   }, [game.status])
@@ -103,14 +108,16 @@ const ResultsPage = () => {
                   className="border-b"
                 >
                   <TableCell className="w-8">
-                    {player.connectionStatus === CONNECTION_STATUS.CONNECTED
+                    {player.connectionStatus ===
+                    CoreConstants.CONNECTION_STATUS.CONNECTED
                       ? allRowsVisible && index + 1
                       : "-"}
                   </TableCell>
                   <TableCell
                     className={cn(
                       "w-52 py-2 flex flex-row gap-2 items-center",
-                      player.connectionStatus === CONNECTION_STATUS.CONNECTED
+                      player.connectionStatus ===
+                        CoreConstants.CONNECTION_STATUS.CONNECTED
                         ? "grayscale-0"
                         : "grayscale",
                     )}

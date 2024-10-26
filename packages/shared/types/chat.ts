@@ -2,7 +2,7 @@ import type {
   ServerMessageType,
   SystemMessageType,
   UserMessageType,
-} from "../constants.js"
+} from "@skyjo/core"
 
 export type UserChatMessage = {
   id: string

@@ -15,9 +15,9 @@ import { useSkyjo } from "@/contexts/SkyjoContext"
 import { isCurrentUserTurn } from "@/lib/skyjo"
 import { getRedirectionUrl } from "@/lib/utils"
 import { useRouter } from "@/navigation"
+import { Constants as CoreConstants } from "@skyjo/core"
 import { useEffect } from "react"
 import { useLocalStorage } from "react-use"
-import { GAME_STATUS, ROUND_STATUS } from "shared/constants"
 
 const GamePage = () => {
   const { game, player, opponents } = useSkyjo()
@@ -27,8 +27,8 @@ const GamePage = () => {
 
   const isPlayerTurn = isCurrentUserTurn(game, player)
   const roundInProgress =
-    game.roundStatus === ROUND_STATUS.PLAYING ||
-    game.roundStatus === ROUND_STATUS.LAST_LAP
+    game.roundStatus === CoreConstants.ROUND_STATUS.PLAYING ||
+    game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP
 
   const isFirstPlayerGame = firstGame ?? true
 
@@ -41,7 +41,7 @@ const GamePage = () => {
   }, [isRulesOpen])
 
   useEffect(() => {
-    if (game.status === GAME_STATUS.STOPPED) return
+    if (game.status === CoreConstants.GAME_STATUS.STOPPED) return
 
     setTimeout(() => {
       router.replace(getRedirectionUrl(game.code, game.status))

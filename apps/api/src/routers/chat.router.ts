@@ -3,7 +3,7 @@ import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
 import {
   type SendChatMessage,
   sendChatMessage,
-} from "shared/validations/chatMessage"
+} from "@skyjo/shared/validations/chatMessage"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
 const instance = new ChatService()

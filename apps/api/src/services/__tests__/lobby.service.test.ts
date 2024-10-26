@@ -1,22 +1,19 @@
-import { Skyjo } from "@/class/Skyjo.js"
-import { SkyjoPlayer } from "@/class/SkyjoPlayer.js"
-import { SkyjoSettings } from "@/class/SkyjoSettings.js"
 import { mockBaseService, mockSocket } from "@/services/__tests__/_mock.js"
 import { BaseService } from "@/services/base.service.js"
 import { LobbyService } from "@/services/lobby.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { TEST_SOCKET_ID, TEST_UNKNOWN_GAME_ID } from "@tests/constants-test.js"
 import {
-  AVATARS,
-  ERROR,
-  GAME_STATUS,
+  type ChangeSettings,
+  Constants as CoreConstants,
+  type CreatePlayer,
   type GameStatus,
-  ROUND_STATUS,
   type RoundStatus,
-  SERVER_MESSAGE_TYPE,
-} from "shared/constants"
-import type { ChangeSettings } from "shared/validations/changeSettings"
-import type { CreatePlayer } from "shared/validations/player"
+  Skyjo,
+  SkyjoPlayer,
+  SkyjoSettings,
+} from "@skyjo/core"
+import { Constants as ErrorConstants } from "@skyjo/error"
+import { TEST_SOCKET_ID, TEST_UNKNOWN_GAME_ID } from "@tests/constants-test.js"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 describe("LobbyService", () => {
@@ -38,7 +35,7 @@ describe("LobbyService", () => {
     it("should create a new private game", async () => {
       const player: CreatePlayer = {
         username: "player1",
-        avatar: AVATARS.BEE,
+        avatar: CoreConstants.AVATARS.BEE,
       }
 
       await service.onCreate(socket, player)
@@ -58,7 +55,7 @@ describe("LobbyService", () => {
     it("should create a new public game", async () => {
       const player: CreatePlayer = {
         username: "player1",
-        avatar: AVATARS.BEE,
+        avatar: CoreConstants.AVATARS.BEE,
       }
 
       await service.onCreate(socket, player, false)
@@ -81,23 +78,23 @@ describe("LobbyService", () => {
       socket.data.gameCode = TEST_UNKNOWN_GAME_ID
       const player: CreatePlayer = {
         username: "player1",
-        avatar: AVATARS.BEE,
+        avatar: CoreConstants.AVATARS.BEE,
       }
 
       await expect(
         service.onJoin(socket, TEST_UNKNOWN_GAME_ID, player),
-      ).toThrowCErrorWithCode(ERROR.GAME_NOT_FOUND)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
     it("should throw if it's full", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const opponent2 = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.ELEPHANT },
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
 
@@ -110,23 +107,23 @@ describe("LobbyService", () => {
 
       const player: CreatePlayer = {
         username: "player2",
-        avatar: AVATARS.BEE,
+        avatar: CoreConstants.AVATARS.BEE,
       }
 
       await expect(
         service.onJoin(socket, game.code, player),
-      ).toThrowCErrorWithCode(ERROR.GAME_IS_FULL)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_IS_FULL)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
     it("sould throw if game already started", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const opponent2 = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.ELEPHANT },
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
 
@@ -140,19 +137,19 @@ describe("LobbyService", () => {
 
       const player: CreatePlayer = {
         username: "player2",
-        avatar: AVATARS.BEE,
+        avatar: CoreConstants.AVATARS.BEE,
       }
 
       await expect(
         service.onJoin(socket, game.code, player),
-      ).toThrowCErrorWithCode(ERROR.GAME_ALREADY_STARTED)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_ALREADY_STARTED)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
     it("should join the game", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
 
@@ -163,7 +160,7 @@ describe("LobbyService", () => {
 
       const player: CreatePlayer = {
         username: "player2",
-        avatar: AVATARS.BEE,
+        avatar: CoreConstants.AVATARS.BEE,
       }
 
       await service.onJoin(socket, game.code, player)
@@ -179,7 +176,7 @@ describe("LobbyService", () => {
         2,
         "message:server",
         expect.objectContaining({
-          type: SERVER_MESSAGE_TYPE.PLAYER_JOINED,
+          type: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_JOINED,
           username: player.username,
         }),
       )
@@ -191,7 +188,7 @@ describe("LobbyService", () => {
     // it("should create a new game if ", async () => {
     //   const player: CreatePlayer = {
     //     username: "player1",
-    //     avatar: AVATARS.BEE,
+    //     avatar: CoreConstants.AVATARS.BEE,
     //   }
 
     //   // Create a public game that might be joined
@@ -201,7 +198,7 @@ describe("LobbyService", () => {
     //   )
     //   existingGame.addPlayer(
     //     new SkyjoPlayer(
-    //       { username: "existingPlayer", avatar: AVATARS.ELEPHANT },
+    //       { username: "existingPlayer", avatar: CoreConstants.AVATARS.ELEPHANT },
     //       "existingSocketId",
     //     ),
     //   )
@@ -239,7 +236,7 @@ describe("LobbyService", () => {
     //     2,
     //     "message:server",
     //     expect.objectContaining({
-    //       type: SERVER_MESSAGE_TYPE.PLAYER_JOINED,
+    //       type: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_JOINED,
     //       username: "player1",
     //     }),
     //   )
@@ -253,7 +250,7 @@ describe("LobbyService", () => {
     it("should create a new game if no eligible games exist", async () => {
       const player: CreatePlayer = {
         username: "player1",
-        avatar: AVATARS.BEE,
+        avatar: CoreConstants.AVATARS.BEE,
       }
 
       await service.onFind(socket, player)
@@ -273,7 +270,7 @@ describe("LobbyService", () => {
         2,
         "message:server",
         expect.objectContaining({
-          type: SERVER_MESSAGE_TYPE.PLAYER_JOINED,
+          type: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_JOINED,
           username: "player1",
         }),
       )
@@ -286,7 +283,7 @@ describe("LobbyService", () => {
 
     it("should join a game if there is at least one eligible game and new game chance is not hit", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -295,7 +292,7 @@ describe("LobbyService", () => {
 
       const player: CreatePlayer = {
         username: "player1",
-        avatar: AVATARS.BEE,
+        avatar: CoreConstants.AVATARS.BEE,
       }
 
       // Math.min is used to calculate the new game chance
@@ -316,7 +313,7 @@ describe("LobbyService", () => {
 
     it("should create a new game even if there is at least one eligible game because new game chance is hit", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const otherGame = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -325,7 +322,7 @@ describe("LobbyService", () => {
 
       const player: CreatePlayer = {
         username: "player1",
-        avatar: AVATARS.BEE,
+        avatar: CoreConstants.AVATARS.BEE,
       }
 
       // Math.min is used to calculate the new game chance
@@ -365,14 +362,14 @@ describe("LobbyService", () => {
 
       await expect(
         service.onSettingsChange(socket, newSettings),
-      ).toThrowCErrorWithCode(ERROR.GAME_NOT_FOUND)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
     it("should throw if user is not admin", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
 
@@ -382,7 +379,7 @@ describe("LobbyService", () => {
       game.addPlayer(opponent)
 
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -400,14 +397,14 @@ describe("LobbyService", () => {
       }
       await expect(
         service.onSettingsChange(socket, newSettings),
-      ).toThrowCErrorWithCode(ERROR.NOT_ALLOWED)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
     it("should change the game settings", async () => {
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
@@ -440,7 +437,7 @@ describe("LobbyService", () => {
       socket.data.gameCode = TEST_UNKNOWN_GAME_ID
 
       await expect(service.onGameStart(socket)).toThrowCErrorWithCode(
-        ERROR.GAME_NOT_FOUND,
+        ErrorConstants.ERROR.GAME_NOT_FOUND,
       )
 
       expect(socket.emit).not.toHaveBeenCalled()
@@ -448,7 +445,7 @@ describe("LobbyService", () => {
 
     it("should throw if player is not admin", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -457,7 +454,7 @@ describe("LobbyService", () => {
       BaseService["games"].push(game)
 
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -465,7 +462,7 @@ describe("LobbyService", () => {
       socket.data.playerId = player.id
 
       await expect(service.onGameStart(socket)).toThrowCErrorWithCode(
-        ERROR.NOT_ALLOWED,
+        ErrorConstants.ERROR.NOT_ALLOWED,
       )
 
       expect(socket.emit).not.toHaveBeenCalled()
@@ -473,7 +470,7 @@ describe("LobbyService", () => {
 
     it("should start the game", async () => {
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
@@ -483,16 +480,16 @@ describe("LobbyService", () => {
       socket.data.playerId = player.id
 
       const opponent = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.ELEPHANT },
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       game.addPlayer(opponent)
 
       await service.onGameStart(socket)
 
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
       expect(game.roundStatus).toBe<RoundStatus>(
-        ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
       )
     })
   })

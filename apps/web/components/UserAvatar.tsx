@@ -8,6 +8,7 @@ import { useChat } from "@/contexts/ChatContext"
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import { useVoteKick } from "@/contexts/VoteKickContext"
 import { cn } from "@/lib/utils"
+import { SkyjoPlayerToJson } from "@skyjo/core"
 import { VariantProps, cva } from "class-variance-authority"
 import {
   MessageSquareIcon,
@@ -16,7 +17,6 @@ import {
 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
-import { SkyjoPlayerToJson } from "shared/types/skyjoPlayer"
 
 const containerVariants = cva("flex flex-col items-center", {
   variants: {

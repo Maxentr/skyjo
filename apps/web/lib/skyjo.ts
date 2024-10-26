@@ -1,7 +1,9 @@
 import { Opponents } from "@/types/opponents"
-import { CONNECTION_STATUS, GAME_STATUS, ROUND_STATUS } from "shared/constants"
-import { SkyjoToJson } from "shared/types/skyjo"
-import { SkyjoPlayerToJson } from "shared/types/skyjoPlayer"
+import {
+  Constants as CoreConstants,
+  SkyjoPlayerToJson,
+  SkyjoToJson,
+} from "@skyjo/core"
 
 export const getCurrentUser = (
   players: SkyjoToJson["players"] | undefined,
@@ -22,7 +24,8 @@ export const getConnectedPlayers = (
   }
 
   return players.filter(
-    (player) => player.connectionStatus !== CONNECTION_STATUS.DISCONNECTED,
+    (player) =>
+      player.connectionStatus !== CoreConstants.CONNECTION_STATUS.DISCONNECTED,
   )
 }
 
@@ -68,14 +71,15 @@ export const isCurrentUserTurn = (
 ) => {
   if (!player || !game) return false
   if (
-    game.roundStatus === ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS &&
-    game.status === GAME_STATUS.PLAYING
+    game.roundStatus ===
+      CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS &&
+    game.status === CoreConstants.GAME_STATUS.PLAYING
   )
     return true
 
   if (
-    game.status !== GAME_STATUS.PLAYING ||
-    game.roundStatus === ROUND_STATUS.OVER
+    game.status !== CoreConstants.GAME_STATUS.PLAYING ||
+    game.roundStatus === CoreConstants.ROUND_STATUS.OVER
   )
     return false
 
@@ -95,8 +99,9 @@ export const hasRevealedCardCount = (
 
 export const canTurnInitialCard = (game: SkyjoToJson) => {
   return (
-    game.status === GAME_STATUS.PLAYING &&
-    game.roundStatus === ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
+    game.status === CoreConstants.GAME_STATUS.PLAYING &&
+    game.roundStatus ===
+      CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
   )
 }
 

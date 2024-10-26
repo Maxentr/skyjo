@@ -5,13 +5,13 @@ import { kickRouter } from "@/routers/kick.router.js"
 import { lobbyRouter } from "@/routers/lobby.router.js"
 import { playerRouter } from "@/routers/player.router.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { Logger } from "@/utils/Logger.js"
 import { ENV } from "@env"
 import type { ServerType } from "@hono/node-server"
+import { Logger } from "@skyjo/logger"
 import type {
   ClientToServerEvents,
   ServerToClientEvents,
-} from "shared/types/socket"
+} from "@skyjo/shared/types/socket"
 import { Server } from "socket.io"
 import customParser from "socket.io-msgpack-parser"
 
@@ -20,7 +20,7 @@ export const initializeSocketServer = (server: ServerType) => {
     server as HttpServer,
     {
       parser: customParser,
-      transports: ["polling", "websocket", "webtransport"],
+      transports: ["polling", "websocket"],
       cors: {
         origin: ENV.ORIGINS,
       },

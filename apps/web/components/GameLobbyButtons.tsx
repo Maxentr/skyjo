@@ -5,12 +5,18 @@ import { useToast } from "@/components/ui/use-toast"
 import { useSocket } from "@/contexts/SocketContext"
 import { useUser } from "@/contexts/UserContext"
 import { useRouter } from "@/navigation"
+import {
+  Constants as CoreConstants,
+  CreatePlayer,
+  SkyjoToJson,
+} from "@skyjo/core"
+import { Constants as ErrorConstants } from "@skyjo/error"
+import {
+  ErrorJoinMessage,
+  ErrorReconnectMessage,
+} from "@skyjo/shared/types/socket"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { ERROR, GAME_STATUS } from "shared/constants"
-import { SkyjoToJson } from "shared/types/skyjo"
-import { ErrorJoinMessage, ErrorReconnectMessage } from "shared/types/socket"
-import { CreatePlayer } from "shared/validations/player"
 
 export type GameLobbyButtonAction =
   | "join"
@@ -68,9 +74,11 @@ const GameLobbyButtons = ({
       setLoading(false)
 
       const descriptionObject: Record<ErrorJoinMessage, string> = {
-        [ERROR.GAME_NOT_FOUND]: t("game-not-found.description"),
-        [ERROR.GAME_ALREADY_STARTED]: t("game-already-started.description"),
-        [ERROR.GAME_IS_FULL]: t("game-is-full.description"),
+        [ErrorConstants.ERROR.GAME_NOT_FOUND]: t("game-not-found.description"),
+        [ErrorConstants.ERROR.GAME_ALREADY_STARTED]: t(
+          "game-already-started.description",
+        ),
+        [ErrorConstants.ERROR.GAME_IS_FULL]: t("game-is-full.description"),
       }
 
       router.replace(`/`)
@@ -93,7 +101,7 @@ const GameLobbyButtons = ({
         }),
       )
 
-      if (game.status === GAME_STATUS.LOBBY)
+      if (game.status === CoreConstants.GAME_STATUS.LOBBY)
         router.replace(`/game/${game.code}/lobby`)
       else router.replace(`/game/${game.code}`)
     })
@@ -109,7 +117,9 @@ const GameLobbyButtons = ({
       setLoading(false)
 
       const descriptionObject: Record<ErrorReconnectMessage, string> = {
-        [ERROR.CANNOT_RECONNECT]: t("cannot-reconnect.description"),
+        [ErrorConstants.ERROR.CANNOT_RECONNECT]: t(
+          "cannot-reconnect.description",
+        ),
       }
 
       toast({

@@ -1,6 +1,13 @@
 "use client"
 
 import { useToast } from "@/components/ui/use-toast"
+import { Constants as CoreConstants } from "@skyjo/core"
+import { Constants as SharedConstants } from "@skyjo/shared/constants"
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "@skyjo/shared/types/socket"
+import { LastGame } from "@skyjo/shared/validations/reconnect"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import { useTranslations } from "next-intl"
@@ -12,12 +19,6 @@ import {
   useMemo,
   useState,
 } from "react"
-import {
-  CONNECTION_LOST_TIMEOUT_IN_MS,
-  CONNECTION_STATUS,
-} from "shared/constants"
-import { ClientToServerEvents, ServerToClientEvents } from "shared/types/socket"
-import { LastGame } from "shared/validations/reconnect"
 import { Socket, io } from "socket.io-client"
 import customParser from "socket.io-msgpack-parser"
 
@@ -70,7 +71,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
     const lastGame = JSON.parse(lastGameString) as LastGame
 
     const maxDateToReconnect = dayjs()
-      .add(CONNECTION_LOST_TIMEOUT_IN_MS, "milliseconds")
+      .add(SharedConstants.CONNECTION_LOST_TIMEOUT_IN_MS, "milliseconds")
       .format()
 
     localStorage.setItem(
@@ -136,7 +137,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
 
     console.log("Socket disconnected", reason, details)
     toast({
-      description: t(CONNECTION_STATUS.CONNECTION_LOST),
+      description: t(CoreConstants.CONNECTION_STATUS.CONNECTION_LOST),
       variant: "destructive",
       duration: 5000,
     })

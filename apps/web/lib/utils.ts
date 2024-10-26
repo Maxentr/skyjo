@@ -1,6 +1,6 @@
 import { DEFAULT_LOCALE } from "@/navigation"
+import { Constants as CoreConstants, GameStatus } from "@skyjo/core"
 import { type ClassValue, clsx } from "clsx"
-import { GAME_STATUS, GameStatus } from "shared/constants"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -23,10 +23,10 @@ export const getCurrentUrl = (route: string, locale?: string) => {
 
 export const getRedirectionUrl = (code: string, status: GameStatus) => {
   const redirectionUrls = {
-    [GAME_STATUS.LOBBY]: `/game/${code}/lobby`,
-    [GAME_STATUS.PLAYING]: `/game/${code}`,
-    [GAME_STATUS.STOPPED]: `/game/${code}/results`,
-    [GAME_STATUS.FINISHED]: `/game/${code}/results`,
+    [CoreConstants.GAME_STATUS.LOBBY]: `/game/${code}/lobby`,
+    [CoreConstants.GAME_STATUS.PLAYING]: `/game/${code}`,
+    [CoreConstants.GAME_STATUS.STOPPED]: `/game/${code}/results`,
+    [CoreConstants.GAME_STATUS.FINISHED]: `/game/${code}/results`,
   } as const
 
   return redirectionUrls[status]

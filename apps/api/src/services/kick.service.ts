@@ -1,9 +1,6 @@
-import { KickVote } from "@/class/KickVote.js"
-import type { Skyjo } from "@/class/Skyjo.js"
-import { Constants } from "@/constants.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { CError } from "@/utils/CError.js"
-import { CONNECTION_STATUS, ERROR, GAME_STATUS } from "shared/constants"
+import { Constants as CoreConstants, KickVote, type Skyjo } from "@skyjo/core"
+import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { BaseService } from "./base.service.js"
 
 export class KickService extends BaseService {
@@ -22,7 +19,7 @@ export class KickService extends BaseService {
       throw new CError(
         `Player try to vote to kick but is not found. This can happen if the player left the game before the vote ended.`,
         {
-          code: ERROR.PLAYER_NOT_FOUND,
+          code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
           level: "warn",
           meta: {
             game,
@@ -39,7 +36,7 @@ export class KickService extends BaseService {
       throw new CError(
         `No kick vote is in progress. This can happen if the vote has expired or if the game is not in the correct state.`,
         {
-          code: ERROR.NO_KICK_VOTE_IN_PROGRESS,
+          code: ErrorConstants.ERROR.NO_KICK_VOTE_IN_PROGRESS,
           level: "warn",
           meta: {
             game,
@@ -54,7 +51,7 @@ export class KickService extends BaseService {
 
     if (kickVote.hasPlayerVoted(player.id)) {
       throw new CError(`Player has already voted.`, {
-        code: ERROR.PLAYER_ALREADY_VOTED,
+        code: ErrorConstants.ERROR.PLAYER_ALREADY_VOTED,
         level: "warn",
         meta: {
           game,
@@ -82,7 +79,7 @@ export class KickService extends BaseService {
       throw new CError(
         `Player try to initiate a kick vote but is not found. This can happen if the player left the game before the vote started.`,
         {
-          code: ERROR.PLAYER_NOT_FOUND,
+          code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
           level: "warn",
           meta: {
             game,
@@ -99,7 +96,7 @@ export class KickService extends BaseService {
       throw new CError(
         `Player try to initiate a kick vote but targeted player is not found. This can happen if the player left the game before the vote started.`,
         {
-          code: ERROR.PLAYER_NOT_FOUND,
+          code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
           level: "warn",
           meta: {
             game,
@@ -117,7 +114,7 @@ export class KickService extends BaseService {
       throw new CError(
         `Cannot initiate a kick vote, a kick vote is already in progress for this game.`,
         {
-          code: ERROR.KICK_VOTE_IN_PROGRESS,
+          code: ErrorConstants.ERROR.KICK_VOTE_IN_PROGRESS,
           level: "warn",
           meta: {
             game,
@@ -141,7 +138,7 @@ export class KickService extends BaseService {
     // Add timeout for vote expiration
     kickVote.timeout = setTimeout(async () => {
       await this.checkKickVoteStatus(socket, game, kickVote)
-    }, Constants.KICK_VOTE_EXPIRATION_TIME)
+    }, CoreConstants.KICK_VOTE_EXPIRATION_TIME)
   }
 
   private async checkKickVoteStatus(
@@ -183,7 +180,7 @@ export class KickService extends BaseService {
       throw new CError(
         `Player try to be kicked but is not found in game. This can happen if the player left the game before the vote ended.`,
         {
-          code: ERROR.PLAYER_NOT_FOUND,
+          code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
           level: "warn",
           meta: {
             game,
@@ -196,15 +193,15 @@ export class KickService extends BaseService {
       )
     }
 
-    playerToKick.connectionStatus = CONNECTION_STATUS.DISCONNECTED
+    playerToKick.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
     await BaseService.playerDb.updatePlayer(playerToKick)
 
     if (game.isAdmin(playerToKick.id)) await this.changeAdmin(game)
 
     if (
-      game.status === GAME_STATUS.LOBBY ||
-      game.status === GAME_STATUS.FINISHED ||
-      game.status === GAME_STATUS.STOPPED
+      game.status === CoreConstants.GAME_STATUS.LOBBY ||
+      game.status === CoreConstants.GAME_STATUS.FINISHED ||
+      game.status === CoreConstants.GAME_STATUS.STOPPED
     ) {
       game.removePlayer(playerToKick.id)
       await BaseService.playerDb.removePlayer(game.id, playerToKick.id)

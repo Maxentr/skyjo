@@ -5,7 +5,7 @@ import {
   type VoteToKick,
   initiateKickVote,
   voteToKick,
-} from "shared/validations/kick"
+} from "@skyjo/shared/validations/kick"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
 const instance = new KickService()

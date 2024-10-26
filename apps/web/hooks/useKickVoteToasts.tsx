@@ -1,8 +1,8 @@
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 import { useSkyjo } from "@/contexts/SkyjoContext"
+import { KickVoteToJson, Vote } from "@skyjo/core"
 import { useTranslations } from "next-intl"
-import { KickVoteToJson, Vote } from "shared/types/kickVote"
 
 export const useKickVoteToasts = () => {
   const { toast } = useToast()

@@ -1,14 +1,10 @@
-import { SkyjoPlayer } from "@/class/SkyjoPlayer.js"
-import { CError } from "@/utils/CError.js"
+import { Constants as CoreConstants, SkyjoPlayer } from "@skyjo/core"
+import { CError } from "@skyjo/error"
 import { db } from "database/provider"
 import { playerTable } from "database/schema"
 
+import { Constants as SharedConstants } from "@skyjo/shared/constants"
 import { and, eq, inArray } from "drizzle-orm"
-import {
-  CONNECTION_LOST_TIMEOUT_IN_MS,
-  CONNECTION_STATUS,
-  LEAVE_TIMEOUT_IN_MS,
-} from "shared/constants"
 
 export class PlayerDb {
   async createPlayer(gameId: string, socketId: string, player: SkyjoPlayer) {
@@ -76,9 +72,9 @@ export class PlayerDb {
       where: and(
         eq(playerTable.id, playerId),
         inArray(playerTable.connectionStatus, [
-          CONNECTION_STATUS.CONNECTION_LOST,
-          CONNECTION_STATUS.LEAVE,
-          CONNECTION_STATUS.CONNECTED,
+          CoreConstants.CONNECTION_STATUS.CONNECTION_LOST,
+          CoreConstants.CONNECTION_STATUS.LEAVE,
+          CoreConstants.CONNECTION_STATUS.CONNECTED,
         ]),
       ),
     })
@@ -88,15 +84,16 @@ export class PlayerDb {
     // This happend when the server has been restarted or has crashed
     if (
       !player.disconnectionDate &&
-      player.connectionStatus === CONNECTION_STATUS.CONNECTED
+      player.connectionStatus === CoreConstants.CONNECTION_STATUS.CONNECTED
     )
       return true
     else if (!player.disconnectionDate) return false
 
     const timeToAdd =
-      player.connectionStatus === CONNECTION_STATUS.CONNECTION_LOST
-        ? CONNECTION_LOST_TIMEOUT_IN_MS
-        : LEAVE_TIMEOUT_IN_MS
+      player.connectionStatus ===
+      CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
+        ? SharedConstants.CONNECTION_LOST_TIMEOUT_IN_MS
+        : SharedConstants.LEAVE_TIMEOUT_IN_MS
 
     const maxReconnectionDate = new Date(
       player.disconnectionDate.getTime() + timeToAdd,
@@ -117,7 +114,7 @@ export class PlayerDb {
       .update(playerTable)
       .set({
         disconnectionDate: null,
-        connectionStatus: CONNECTION_STATUS.CONNECTED,
+        connectionStatus: CoreConstants.CONNECTION_STATUS.CONNECTED,
       })
       .where(eq(playerTable.id, player.id))
   }

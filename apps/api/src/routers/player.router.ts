@@ -1,10 +1,9 @@
 import { PlayerService } from "@/services/player.service.js"
-import { CError } from "@/utils/CError.js"
-import { Logger } from "@/utils/Logger.js"
 import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
-import { ERROR } from "shared/constants"
-import type { ErrorReconnectMessage } from "shared/types/socket"
-import { type LastGame, reconnect } from "shared/validations/reconnect"
+import { CError, Constants as ErrorConstants } from "@skyjo/error"
+import { Logger } from "@skyjo/logger"
+import type { ErrorReconnectMessage } from "@skyjo/shared/types/socket"
+import { type LastGame, reconnect } from "@skyjo/shared/validations/reconnect"
 import type { DisconnectReason } from "socket.io"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
@@ -41,7 +40,10 @@ const playerRouter = (socket: SkyjoSocket) => {
         reconnect.parse(reconnectData)
         await instance.onReconnect(socket, reconnectData)
       } catch (error) {
-        if (error instanceof CError && error.code === ERROR.CANNOT_RECONNECT) {
+        if (
+          error instanceof CError &&
+          error.code === ErrorConstants.ERROR.CANNOT_RECONNECT
+        ) {
           socket.emit(
             "error:reconnect",
             error.code satisfies ErrorReconnectMessage,

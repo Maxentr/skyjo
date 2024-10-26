@@ -1,18 +1,13 @@
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { CError } from "@/utils/CError.js"
 import {
-  ERROR,
-  GAME_STATUS,
-  ROUND_STATUS,
-  TURN_STATUS,
+  Constants as CoreConstants,
+  type PlayPickCard,
+  type PlayReplaceCard,
+  type PlayRevealCard,
+  type PlayTurnCard,
   type TurnStatus,
-} from "shared/constants"
-import type {
-  PlayPickCard,
-  PlayReplaceCard,
-  PlayRevealCard,
-  PlayTurnCard,
-} from "shared/validations/play"
+} from "@skyjo/core"
+import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { BaseService } from "./base.service.js"
 
 export class GameService extends BaseService {
@@ -31,7 +26,7 @@ export class GameService extends BaseService {
     const player = game.getPlayerById(socket.data.playerId)
     if (!player) {
       throw new CError(`Player try to reveal a card but is not found.`, {
-        code: ERROR.PLAYER_NOT_FOUND,
+        code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
         meta: {
           game,
           socket,
@@ -43,14 +38,15 @@ export class GameService extends BaseService {
     }
 
     if (
-      game.status !== GAME_STATUS.PLAYING ||
-      game.roundStatus !== ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
+      game.status !== CoreConstants.GAME_STATUS.PLAYING ||
+      game.roundStatus !==
+        CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
     ) {
       await this.sendGame(socket, game)
       throw new CError(
         `Player try to reveal a card but the game is not in the correct state. Sent game to the player to fix the issue.`,
         {
-          code: ERROR.NOT_ALLOWED,
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
           level: "warn",
           meta: {
             game,
@@ -77,7 +73,7 @@ export class GameService extends BaseService {
 
   async onPickCard(socket: SkyjoSocket, { pile }: PlayPickCard) {
     const { game } = await this.checkPlayAuthorization(socket, [
-      TURN_STATUS.CHOOSE_A_PILE,
+      CoreConstants.TURN_STATUS.CHOOSE_A_PILE,
     ])
 
     if (pile === "draw") game.drawCard()
@@ -91,8 +87,8 @@ export class GameService extends BaseService {
 
   async onReplaceCard(socket: SkyjoSocket, { column, row }: PlayReplaceCard) {
     const { game } = await this.checkPlayAuthorization(socket, [
-      TURN_STATUS.REPLACE_A_CARD,
-      TURN_STATUS.THROW_OR_REPLACE,
+      CoreConstants.TURN_STATUS.REPLACE_A_CARD,
+      CoreConstants.TURN_STATUS.THROW_OR_REPLACE,
     ])
 
     game.replaceCard(column, row)
@@ -107,7 +103,7 @@ export class GameService extends BaseService {
 
   async onDiscardCard(socket: SkyjoSocket) {
     const { game } = await this.checkPlayAuthorization(socket, [
-      TURN_STATUS.THROW_OR_REPLACE,
+      CoreConstants.TURN_STATUS.THROW_OR_REPLACE,
     ])
 
     game.discardCard(game.selectedCardValue!)
@@ -120,7 +116,7 @@ export class GameService extends BaseService {
 
   async onTurnCard(socket: SkyjoSocket, { column, row }: PlayTurnCard) {
     const { game, player } = await this.checkPlayAuthorization(socket, [
-      TURN_STATUS.TURN_A_CARD,
+      CoreConstants.TURN_STATUS.TURN_A_CARD,
     ])
 
     game.turnCard(player, column, row)
@@ -132,9 +128,9 @@ export class GameService extends BaseService {
 
   async onReplay(socket: SkyjoSocket) {
     const game = await this.getGame(socket.data.gameCode)
-    if (game.status !== GAME_STATUS.FINISHED) {
+    if (game.status !== CoreConstants.GAME_STATUS.FINISHED) {
       throw new CError(`Player try to replay but the game is not finished.`, {
-        code: ERROR.NOT_ALLOWED,
+        code: ErrorConstants.ERROR.NOT_ALLOWED,
         meta: {
           game,
           socket,
@@ -163,15 +159,15 @@ export class GameService extends BaseService {
     const game = await this.getGame(socket.data.gameCode)
 
     if (
-      game.status !== GAME_STATUS.PLAYING ||
-      (game.roundStatus !== ROUND_STATUS.PLAYING &&
-        game.roundStatus !== ROUND_STATUS.LAST_LAP)
+      game.status !== CoreConstants.GAME_STATUS.PLAYING ||
+      (game.roundStatus !== CoreConstants.ROUND_STATUS.PLAYING &&
+        game.roundStatus !== CoreConstants.ROUND_STATUS.LAST_LAP)
     ) {
       await this.sendGame(socket, game)
       throw new CError(
         `Player try to play but the game is not in playing state. Sent game to the player to fix the issue.`,
         {
-          code: ERROR.NOT_ALLOWED,
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
           level: "warn",
           meta: {
             game,
@@ -186,7 +182,7 @@ export class GameService extends BaseService {
     const player = game.getPlayerById(socket.data.playerId)
     if (!player) {
       throw new CError(`Player try to play but is not found.`, {
-        code: ERROR.PLAYER_NOT_FOUND,
+        code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
         meta: {
           game,
           socket,
@@ -201,7 +197,7 @@ export class GameService extends BaseService {
       throw new CError(
         `Player try to play but it's not his turn. Sent game to the player to fix the issue.`,
         {
-          code: ERROR.NOT_ALLOWED,
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
           level: "warn",
           meta: {
             game,
@@ -219,7 +215,7 @@ export class GameService extends BaseService {
       throw new CError(
         `Player try to play but the game is not in the allowed turn state. Sent game to the player to fix the issue.`,
         {
-          code: ERROR.INVALID_TURN_STATE,
+          code: ErrorConstants.ERROR.INVALID_TURN_STATE,
           level: "warn",
           meta: {
             game,

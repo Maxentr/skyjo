@@ -1,24 +1,24 @@
-import type { Error } from "../constants.js"
+import type {
+  ChangeSettingsInput,
+  CreatePlayer,
+  JoinGame,
+  PlayPickCard,
+  PlayReplaceCard,
+  PlayRevealCard,
+  PlayTurnCard,
+  SkyjoPlayerToJson,
+  SkyjoToJson,
+} from "@skyjo/core"
+import type { KickVoteToJson } from "@skyjo/core"
+import type { Error as ThrownError } from "@skyjo/error"
+import type { SendChatMessage } from "validations/chatMessage.js"
+import type { InitiateKickVote, VoteToKick } from "validations/kick.js"
 import type {
   ServerChatMessage,
   SystemChatMessage,
   UserChatMessage,
 } from "../types/chat.js"
-import type { KickVoteToJson } from "../types/kickVote.js"
-import type { SkyjoPlayerToJson } from "../types/skyjoPlayer.js"
-import type { ChangeSettingsInput } from "../validations/changeSettings.js"
-import type { SendChatMessage } from "../validations/chatMessage.js"
-import type { JoinGame } from "../validations/joinGame.js"
-import type { InitiateKickVote, VoteToKick } from "../validations/kick.js"
-import type {
-  PlayPickCard,
-  PlayReplaceCard,
-  PlayRevealCard,
-  PlayTurnCard,
-} from "../validations/play.js"
-import type { CreatePlayer } from "../validations/player.js"
 import type { LastGame } from "../validations/reconnect.js"
-import type { SkyjoToJson } from "./skyjo.js"
 
 export type ClientToServerEvents = {
   "create-private": (player: CreatePlayer) => void
@@ -42,10 +42,10 @@ export type ClientToServerEvents = {
 }
 
 export type ErrorJoinMessage = Extract<
-  Error,
+  ThrownError,
   "game-not-found" | "game-already-started" | "game-is-full"
 >
-export type ErrorReconnectMessage = Extract<Error, "cannot-reconnect">
+export type ErrorReconnectMessage = Extract<ThrownError, "cannot-reconnect">
 
 export type ServerToClientEvents = {
   "error:join": (message: ErrorJoinMessage) => void

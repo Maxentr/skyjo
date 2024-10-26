@@ -1,6 +1,7 @@
 {
-  "name": "shared",
-  "version": "1.0.0",
+  "name": "@skyjo/shared",
+  "description": "Shared types and validations between the server and the client",
+  "version": "1.32.0",
   "type": "module",
   "types": "./dist/*.d.ts",
   "exports": {
@@ -18,7 +19,9 @@
     "biome:check": "pnpm biome check --write ."
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@skyjo/core": "workspace:*",
+    "@skyjo/error": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

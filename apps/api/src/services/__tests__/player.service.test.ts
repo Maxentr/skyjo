@@ -1,23 +1,20 @@
-import { Skyjo } from "@/class/Skyjo.js"
-import { SkyjoCard } from "@/class/SkyjoCard.js"
-import { SkyjoPlayer } from "@/class/SkyjoPlayer.js"
-import { SkyjoSettings } from "@/class/SkyjoSettings.js"
 import { mockBaseService, mockSocket } from "@/services/__tests__/_mock.js"
 import { BaseService } from "@/services/base.service.js"
 import { PlayerService } from "@/services/player.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { TEST_SOCKET_ID, TEST_UNKNOWN_GAME_ID } from "@tests/constants-test.js"
 import {
-  AVATARS,
-  CONNECTION_STATUS,
   type ConnectionStatus,
-  ERROR,
-  GAME_STATUS,
+  Constants as CoreConstants,
   type GameStatus,
-  ROUND_STATUS,
   type RoundStatus,
-} from "shared/constants"
-import type { LastGame } from "shared/validations/reconnect"
+  Skyjo,
+  SkyjoCard,
+  SkyjoPlayer,
+  SkyjoSettings,
+} from "@skyjo/core"
+import { Constants as ErrorConstants } from "@skyjo/error"
+import type { LastGame } from "@skyjo/shared/validations/reconnect"
+import { TEST_SOCKET_ID, TEST_UNKNOWN_GAME_ID } from "@tests/constants-test.js"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 describe("PlayerService", () => {
@@ -35,13 +32,13 @@ describe("PlayerService", () => {
       socket.data.gameCode = TEST_UNKNOWN_GAME_ID
 
       await expect(service.onLeave(socket)).not.toThrowCErrorWithCode(
-        ERROR.GAME_NOT_FOUND,
+        ErrorConstants.ERROR.GAME_NOT_FOUND,
       )
     })
 
     it("should throw if player is not in the game", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.ELEPHANT },
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -51,20 +48,20 @@ describe("PlayerService", () => {
       socket.data.gameCode = game.code
 
       const opponent2 = new SkyjoPlayer(
-        { username: "opponent2", avatar: AVATARS.TURTLE },
+        { username: "opponent2", avatar: CoreConstants.AVATARS.TURTLE },
         "socketId9887",
       )
       game.addPlayer(opponent2)
       game.start()
 
       await expect(service.onLeave(socket)).toThrowCErrorWithCode(
-        ERROR.PLAYER_NOT_FOUND,
+        ErrorConstants.ERROR.PLAYER_NOT_FOUND,
       )
     })
 
     it("should set the player to connection lost", async () => {
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
@@ -74,7 +71,7 @@ describe("PlayerService", () => {
       socket.data.playerId = player.id
 
       const opponent = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.ELEPHANT },
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
       )
       game.addPlayer(opponent)
@@ -90,13 +87,13 @@ describe("PlayerService", () => {
       await service.onLeave(socket, true)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.CONNECTION_LOST,
+        CoreConstants.CONNECTION_STATUS.CONNECTION_LOST,
       )
     })
 
     it("should remove the player from the game if the game is in lobby", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -105,7 +102,7 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const player = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -115,13 +112,13 @@ describe("PlayerService", () => {
 
       await service.onLeave(socket)
 
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.LOBBY)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.LOBBY)
       expect(game.players.length).toBe(1)
     })
 
     it("should set the player to leave state and let the game goes", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -130,7 +127,7 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const player = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -138,7 +135,7 @@ describe("PlayerService", () => {
       socket.data.playerId = player.id
 
       const opponent2 = new SkyjoPlayer(
-        { username: "opponent2", avatar: AVATARS.TURTLE },
+        { username: "opponent2", avatar: CoreConstants.AVATARS.TURTLE },
         "socketId9887",
       )
       game.addPlayer(opponent2)
@@ -162,15 +159,15 @@ describe("PlayerService", () => {
       await service.onLeave(socket)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.LEAVE,
+        CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
       expect(game.players.length).toBe(3)
     })
 
     it("should disconnect the player and remove the game if there is no more player", async () => {
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
@@ -181,7 +178,7 @@ describe("PlayerService", () => {
 
       await service.onLeave(socket)
 
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.LOBBY)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.LOBBY)
       expect(game.players.length).toBe(0)
     })
 
@@ -189,7 +186,7 @@ describe("PlayerService", () => {
       vi.useFakeTimers()
 
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -198,7 +195,7 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const player = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -206,7 +203,7 @@ describe("PlayerService", () => {
       socket.data.playerId = player.id
 
       const opponent2 = new SkyjoPlayer(
-        { username: "opponent2", avatar: AVATARS.TURTLE },
+        { username: "opponent2", avatar: CoreConstants.AVATARS.TURTLE },
         "socketId9887",
       )
       game.addPlayer(opponent2)
@@ -230,21 +227,23 @@ describe("PlayerService", () => {
       await service.onLeave(socket)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.LEAVE,
+        CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
       expect(game.roundStatus).toBe<RoundStatus>(
-        ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
       )
       expect(game.players.length).toBe(3)
 
       vi.runAllTimers()
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.DISCONNECTED,
+        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(ROUND_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.roundStatus).toBe<RoundStatus>(
+        CoreConstants.ROUND_STATUS.PLAYING,
+      )
       expect(game.players.length).toBe(3)
 
       vi.useRealTimers()
@@ -254,7 +253,7 @@ describe("PlayerService", () => {
       vi.useFakeTimers()
 
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -263,7 +262,7 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const player = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -271,7 +270,7 @@ describe("PlayerService", () => {
       socket.data.playerId = player.id
 
       const opponent2 = new SkyjoPlayer(
-        { username: "opponent2", avatar: AVATARS.TURTLE },
+        { username: "opponent2", avatar: CoreConstants.AVATARS.TURTLE },
         "socketId9887",
       )
       game.addPlayer(opponent2)
@@ -299,19 +298,23 @@ describe("PlayerService", () => {
       await service.onLeave(socket)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.LEAVE,
+        CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(ROUND_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.roundStatus).toBe<RoundStatus>(
+        CoreConstants.ROUND_STATUS.PLAYING,
+      )
       expect(game.players.length).toBe(3)
 
       vi.runAllTimers()
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.DISCONNECTED,
+        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(ROUND_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.roundStatus).toBe<RoundStatus>(
+        CoreConstants.ROUND_STATUS.PLAYING,
+      )
       expect(game.players.length).toBe(3)
 
       vi.useRealTimers()
@@ -321,7 +324,7 @@ describe("PlayerService", () => {
       vi.useFakeTimers()
 
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -330,7 +333,7 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const player = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -338,7 +341,7 @@ describe("PlayerService", () => {
       socket.data.playerId = player.id
 
       const opponent2 = new SkyjoPlayer(
-        { username: "opponent2", avatar: AVATARS.TURTLE },
+        { username: "opponent2", avatar: CoreConstants.AVATARS.TURTLE },
         "socketId9887",
       )
       game.addPlayer(opponent2)
@@ -366,20 +369,24 @@ describe("PlayerService", () => {
       await service.onLeave(socket)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.LEAVE,
+        CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(ROUND_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.roundStatus).toBe<RoundStatus>(
+        CoreConstants.ROUND_STATUS.PLAYING,
+      )
       expect(game.players.length).toBe(3)
       expect(game.turn).toBe(1)
 
       vi.runAllTimers()
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.DISCONNECTED,
+        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(ROUND_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.roundStatus).toBe<RoundStatus>(
+        CoreConstants.ROUND_STATUS.PLAYING,
+      )
       expect(game.players.length).toBe(3)
       expect(game.turn).toBe(2)
 
@@ -390,7 +397,7 @@ describe("PlayerService", () => {
       vi.useFakeTimers()
 
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -399,7 +406,7 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const player = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -420,17 +427,17 @@ describe("PlayerService", () => {
       await service.onLeave(socket)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.LEAVE,
+        CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
       expect(game.players.length).toBe(2)
 
       vi.runAllTimers()
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.DISCONNECTED,
+        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.STOPPED)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.STOPPED)
       expect(game.players.length).toBe(2)
       expect(BaseService["games"].length).toBe(0)
 
@@ -441,7 +448,7 @@ describe("PlayerService", () => {
       vi.useFakeTimers()
 
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -450,13 +457,13 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const opponent2 = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         "socketId9887",
       )
       game.addPlayer(opponent2)
 
       const player = new SkyjoPlayer(
-        { username: "player3", avatar: AVATARS.PENGUIN },
+        { username: "player3", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -465,7 +472,7 @@ describe("PlayerService", () => {
 
       game.start()
 
-      game.roundStatus = ROUND_STATUS.LAST_LAP
+      game.roundStatus = CoreConstants.ROUND_STATUS.LAST_LAP
       game.firstToFinishPlayerId = opponent.id
 
       opponent.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
@@ -477,20 +484,22 @@ describe("PlayerService", () => {
       await service.onLeave(socket)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.LEAVE,
+        CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(ROUND_STATUS.LAST_LAP)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.roundStatus).toBe<RoundStatus>(
+        CoreConstants.ROUND_STATUS.LAST_LAP,
+      )
       expect(game.players.length).toBe(3)
 
       vi.runAllTimers()
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.DISCONNECTED,
+        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
       )
-      expect(game.status).toBe<GameStatus>(GAME_STATUS.PLAYING)
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
       expect(game.roundStatus).toBe<RoundStatus>(
-        ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
       )
       expect(game.roundNumber).toBe(2)
       expect(game.players.length).toBe(3)
@@ -508,7 +517,7 @@ describe("PlayerService", () => {
       }
 
       await expect(service.onReconnect(socket, lastGame)).toThrowCErrorWithCode(
-        ERROR.PLAYER_NOT_FOUND,
+        ErrorConstants.ERROR.PLAYER_NOT_FOUND,
       )
 
       expect(socket.emit).not.toHaveBeenCalled()
@@ -516,7 +525,7 @@ describe("PlayerService", () => {
 
     it("should throw if player is in the game but cannot reconnect", async () => {
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
@@ -526,7 +535,7 @@ describe("PlayerService", () => {
       socket.data.playerId = player.id
 
       const opponent = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.ELEPHANT },
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
       )
       game.addPlayer(opponent)
@@ -552,13 +561,13 @@ describe("PlayerService", () => {
       )
 
       await expect(service.onReconnect(socket, lastGame)).toThrowCErrorWithCode(
-        ERROR.CANNOT_RECONNECT,
+        ErrorConstants.ERROR.CANNOT_RECONNECT,
       )
     })
 
     it("should reconnect the player if in the time limit", async () => {
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
@@ -566,7 +575,7 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const opponent = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.ELEPHANT },
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
       )
       game.addPlayer(opponent)
@@ -586,7 +595,7 @@ describe("PlayerService", () => {
       await service.onLeave(socket, true)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.CONNECTION_LOST,
+        CoreConstants.CONNECTION_STATUS.CONNECTION_LOST,
       )
 
       const lastGame: LastGame = {
@@ -603,13 +612,13 @@ describe("PlayerService", () => {
       await service.onReconnect(socket, lastGame)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.CONNECTED,
+        CoreConstants.CONNECTION_STATUS.CONNECTED,
       )
     })
 
     it("should reconnect the player if no time limit", async () => {
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
@@ -617,7 +626,7 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const opponent = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.ELEPHANT },
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
       )
       game.addPlayer(opponent)
@@ -648,7 +657,7 @@ describe("PlayerService", () => {
       await service.onReconnect(socket, lastGame)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.CONNECTED,
+        CoreConstants.CONNECTION_STATUS.CONNECTED,
       )
     })
   })
@@ -658,7 +667,7 @@ describe("PlayerService", () => {
       vi.useFakeTimers()
 
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -667,13 +676,13 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const opponent2 = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         "socketId9887",
       )
       game.addPlayer(opponent2)
 
       const player = new SkyjoPlayer(
-        { username: "player3", avatar: AVATARS.PENGUIN },
+        { username: "player3", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -685,14 +694,14 @@ describe("PlayerService", () => {
       opponent.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
       opponent2.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
 
-      player.connectionStatus = CONNECTION_STATUS.CONNECTION_LOST
+      player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
 
       await expect(service.onRecover(socket)).toThrowCErrorWithCode(
-        ERROR.PLAYER_NOT_FOUND,
+        ErrorConstants.ERROR.PLAYER_NOT_FOUND,
       )
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.CONNECTION_LOST,
+        CoreConstants.CONNECTION_STATUS.CONNECTION_LOST,
       )
     })
 
@@ -700,7 +709,7 @@ describe("PlayerService", () => {
       vi.useFakeTimers()
 
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -709,13 +718,13 @@ describe("PlayerService", () => {
       BaseService["games"].push(game)
 
       const opponent2 = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         "socketId9887",
       )
       game.addPlayer(opponent2)
 
       const player = new SkyjoPlayer(
-        { username: "player3", avatar: AVATARS.PENGUIN },
+        { username: "player3", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       game.addPlayer(player)
@@ -727,7 +736,7 @@ describe("PlayerService", () => {
       opponent.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
       opponent2.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
 
-      player.connectionStatus = CONNECTION_STATUS.CONNECTION_LOST
+      player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
       player.disconnectionTimeout = setTimeout(() => {
         throw new Error("test")
       }, 100000)
@@ -737,7 +746,7 @@ describe("PlayerService", () => {
       vi.runAllTimers()
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CONNECTION_STATUS.CONNECTED,
+        CoreConstants.CONNECTION_STATUS.CONNECTED,
       )
 
       vi.useRealTimers()

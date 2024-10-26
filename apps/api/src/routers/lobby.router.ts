@@ -1,14 +1,15 @@
 import { LobbyService } from "@/services/lobby.service.js"
-import { CError } from "@/utils/CError.js"
 import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
-import { ERROR } from "shared/constants"
-import type { ErrorJoinMessage } from "shared/types/socket"
 import {
   type ChangeSettings,
+  type CreatePlayer,
+  type JoinGame,
   changeSettings,
-} from "shared/validations/changeSettings"
-import { type JoinGame, joinGame } from "shared/validations/joinGame"
-import { type CreatePlayer, createPlayer } from "shared/validations/player"
+  createPlayer,
+  joinGame,
+} from "@skyjo/core"
+import { CError, Constants as ErrorConstants } from "@skyjo/error"
+import type { ErrorJoinMessage } from "@skyjo/shared/types/socket"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
 const instance = new LobbyService()
@@ -39,9 +40,9 @@ const lobbyRouter = (socket: SkyjoSocket) => {
       } catch (error) {
         if (
           error instanceof CError &&
-          (error.code === ERROR.GAME_NOT_FOUND ||
-            error.code === ERROR.GAME_ALREADY_STARTED ||
-            error.code === ERROR.GAME_IS_FULL)
+          (error.code === ErrorConstants.ERROR.GAME_NOT_FOUND ||
+            error.code === ErrorConstants.ERROR.GAME_ALREADY_STARTED ||
+            error.code === ErrorConstants.ERROR.GAME_IS_FULL)
         ) {
           socket.emit("error:join", error.code satisfies ErrorJoinMessage)
         } else {

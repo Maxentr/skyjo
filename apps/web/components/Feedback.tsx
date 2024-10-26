@@ -23,10 +23,10 @@ import { useToast } from "@/components/ui/use-toast"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { feedbackSchema } from "@skyjo/shared/validations/feedback"
 import { useTranslations } from "next-intl"
 import { Dispatch, SetStateAction } from "react"
 import { useForm } from "react-hook-form"
-import { feedbackSchema } from "shared/validations/feedback"
 import { z } from "zod"
 
 type FeedbackProps = {

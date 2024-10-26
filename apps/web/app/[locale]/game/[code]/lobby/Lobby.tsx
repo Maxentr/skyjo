@@ -18,13 +18,12 @@ import {
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import { cn } from "@/lib/utils"
 import { useRouter } from "@/navigation"
+import { ChangeSettings, Constants as CoreConstants } from "@skyjo/core"
 import { m } from "framer-motion"
 import { HomeIcon, LockIcon, UnlockIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useLocalStorage } from "react-use"
-import { GAME_STATUS, SKYJO_DEFAULT_SETTINGS } from "shared/constants"
-import { ChangeSettings } from "shared/validations/changeSettings"
 
 type ChangeSettingsKey = keyof ChangeSettings
 type ChangeSettingsValue = ChangeSettings[ChangeSettingsKey]
@@ -71,7 +70,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
   }, [])
 
   useEffect(() => {
-    if (status !== GAME_STATUS.LOBBY) {
+    if (status !== CoreConstants.GAME_STATUS.LOBBY) {
       clearTimeout(timeoutStart)
       router.replace(`/game/${code}`)
     }
@@ -181,7 +180,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </Label>
                 <RadioNumber
                   name="nb-columns"
-                  max={SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN}
+                  max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN}
                   selected={settings.cardPerColumn}
                   onChange={(value) => changeSettings("cardPerColumn", value)}
                   title={t("settings.nb-columns.title")}
@@ -193,7 +192,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 <Label htmlFor="nb-rows">{t("settings.nb-rows.label")}</Label>
                 <RadioNumber
                   name="nb-rows"
-                  max={SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW}
+                  max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW}
                   selected={settings.cardPerRow}
                   onChange={(value) => changeSettings("cardPerRow", value)}
                   title={t("settings.nb-rows.title")}

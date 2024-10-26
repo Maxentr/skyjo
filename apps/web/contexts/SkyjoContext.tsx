@@ -6,6 +6,13 @@ import { useSocket } from "@/contexts/SocketContext"
 import { getCurrentUser, getOpponents } from "@/lib/skyjo"
 import { useRouter } from "@/navigation"
 import { Opponents } from "@/types/opponents"
+import {
+  ChangeSettings,
+  Constants as CoreConstants,
+  PlayPickCard,
+  SkyjoPlayerToJson,
+  SkyjoToJson,
+} from "@skyjo/core"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import {
@@ -17,11 +24,6 @@ import {
   useRef,
   useState,
 } from "react"
-import { GAME_STATUS } from "shared/constants"
-import { SkyjoToJson } from "shared/types/skyjo"
-import { SkyjoPlayerToJson } from "shared/types/skyjoPlayer"
-import { ChangeSettings } from "shared/validations/changeSettings"
-import { PlayPickCard } from "shared/validations/play"
 
 dayjs.extend(utc)
 
@@ -80,7 +82,8 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
 
   useEffect(() => {
     const onUnload = () => {
-      if (gameStatusRef.current === GAME_STATUS.PLAYING) saveLastGame()
+      if (gameStatusRef.current === CoreConstants.GAME_STATUS.PLAYING)
+        saveLastGame()
     }
 
     window.addEventListener("beforeunload", onUnload)

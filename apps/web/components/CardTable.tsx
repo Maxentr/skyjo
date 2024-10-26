@@ -6,10 +6,9 @@ import {
   isCurrentUserTurn,
 } from "@/lib/skyjo"
 import { cn } from "@/lib/utils"
+import { Constants as CoreConstants, SkyjoCardToJson } from "@skyjo/core"
 import { AnimatePresence, m } from "framer-motion"
 import { useEffect, useState } from "react"
-import { LAST_TURN_STATUS, ROUND_STATUS, TURN_STATUS } from "shared/constants"
-import { SkyjoCardToJson } from "shared/types/skyjoCard"
 
 type CardTableProps = {
   cards: SkyjoCardToJson[][]
@@ -31,9 +30,9 @@ const CardTable = ({
     canTurnInitialCard(game) &&
     !hasTurnedCard(player, game.settings.initialTurnedCount)
   const canReplaceCard =
-    game.turnStatus === TURN_STATUS.THROW_OR_REPLACE ||
-    game.turnStatus === TURN_STATUS.REPLACE_A_CARD
-  const canTurnCard = game.turnStatus === TURN_STATUS.TURN_A_CARD
+    game.turnStatus === CoreConstants.TURN_STATUS.THROW_OR_REPLACE ||
+    game.turnStatus === CoreConstants.TURN_STATUS.REPLACE_A_CARD
+  const canTurnCard = game.turnStatus === CoreConstants.TURN_STATUS.TURN_A_CARD
 
   const onClick = (column: number, row: number) => {
     if (canTurnCardsAtBeginning) {
@@ -41,7 +40,7 @@ const CardTable = ({
     } else if (isCurrentUserTurn(game, player)) {
       if (canReplaceCard) actions.replaceCard(column, row)
       else if (
-        game.turnStatus === TURN_STATUS.TURN_A_CARD &&
+        game.turnStatus === CoreConstants.TURN_STATUS.TURN_A_CARD &&
         !cards[column][row].isVisible
       )
         actions.turnCard(column, row)
@@ -88,10 +87,12 @@ const CardTable = ({
                     : ""
                 }
                 disabled={cardDisabled || !canBeSelected}
-                flipAnimation={game?.lastTurnStatus === LAST_TURN_STATUS.TURN}
+                flipAnimation={
+                  game?.lastTurnStatus === CoreConstants.LAST_TURN_STATUS.TURN
+                }
                 exitAnimation={
-                  game.roundStatus === ROUND_STATUS.PLAYING ||
-                  game.roundStatus === ROUND_STATUS.LAST_LAP
+                  game.roundStatus === CoreConstants.ROUND_STATUS.PLAYING ||
+                  game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP
                 }
               />
             )

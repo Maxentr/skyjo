@@ -6,10 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Constants as CoreConstants, SkyjoPlayerToJson } from "@skyjo/core"
 import { useTranslations } from "next-intl"
 import { useEffect } from "react"
-import { CONNECTION_STATUS } from "shared/constants"
-import { SkyjoPlayerToJson } from "shared/types/skyjoPlayer"
 
 type Props = {
   players: SkyjoPlayerToJson[]
@@ -34,11 +33,17 @@ const ScoreTable = ({ players, winner, scrollToEnd = false }: Props) => {
   }, [])
 
   const sortedConnectedPlayers = players
-    .filter((player) => player.connectionStatus === CONNECTION_STATUS.CONNECTED)
+    .filter(
+      (player) =>
+        player.connectionStatus === CoreConstants.CONNECTION_STATUS.CONNECTED,
+    )
     .sort((a, b) => a.score - b.score)
 
   const sortedDisconnectedPlayers = players
-    .filter((player) => player.connectionStatus !== CONNECTION_STATUS.CONNECTED)
+    .filter(
+      (player) =>
+        player.connectionStatus !== CoreConstants.CONNECTION_STATUS.CONNECTED,
+    )
     .sort((a, b) => a.score - b.score)
 
   const sortedPlayers = [

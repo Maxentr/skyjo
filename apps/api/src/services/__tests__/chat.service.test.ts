@@ -1,13 +1,17 @@
-import { Skyjo } from "@/class/Skyjo.js"
-import { SkyjoPlayer } from "@/class/SkyjoPlayer.js"
-import { SkyjoSettings } from "@/class/SkyjoSettings.js"
 import { mockBaseService, mockSocket } from "@/services/__tests__/_mock.js"
 import { BaseService } from "@/services/base.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
+import {
+  Constants as CoreConstants,
+  Skyjo,
+  SkyjoPlayer,
+  SkyjoSettings,
+} from "@skyjo/core"
+import { Constants as ErrorConstants } from "@skyjo/error"
 import { TEST_SOCKET_ID, TEST_UNKNOWN_GAME_ID } from "@tests/constants-test.js"
-import { AVATARS, ERROR } from "shared/constants"
 import { beforeEach, describe, expect, it } from "vitest"
 import { ChatService } from "../chat.service.js"
+import "@skyjo/error/test/expect-extend"
 
 describe("ChatService", () => {
   let service: ChatService
@@ -30,14 +34,14 @@ describe("ChatService", () => {
 
       await expect(
         service.onMessage(socket, { username: "player1", message: "Hello!" }),
-      ).toThrowCErrorWithCode(ERROR.GAME_NOT_FOUND)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
     it("should throw if player is not in the game", async () => {
       const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.ELEPHANT },
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
@@ -48,14 +52,14 @@ describe("ChatService", () => {
 
       await expect(
         service.onMessage(socket, { username: "player2", message: "Hello!" }),
-      ).toThrowCErrorWithCode(ERROR.PLAYER_NOT_FOUND)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
     it("should send a message", async () => {
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: AVATARS.PENGUIN },
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
@@ -65,7 +69,7 @@ describe("ChatService", () => {
       socket.data.playerId = player.id
 
       const opponent = new SkyjoPlayer(
-        { username: "player2", avatar: AVATARS.ELEPHANT },
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
       )
       game.addPlayer(opponent)

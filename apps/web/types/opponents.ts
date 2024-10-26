@@ -1,4 +1,4 @@
-import { SkyjoToJson } from "shared/types/skyjo"
+import { SkyjoToJson } from "@skyjo/core"
 
 export type Opponents = [
   SkyjoToJson["players"],

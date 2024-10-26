@@ -2,9 +2,9 @@
 
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import { hasRevealedCardCount, isCurrentUserTurn } from "@/lib/skyjo"
+import { Constants as CoreConstants } from "@skyjo/core"
 import { AnimatePresence, m } from "framer-motion"
 import { useTranslations } from "next-intl"
-import { GAME_STATUS, ROUND_STATUS } from "shared/constants"
 
 const GameInfo = () => {
   const { game, player, opponents } = useSkyjo()
@@ -16,8 +16,9 @@ const GameInfo = () => {
     if (!player || !game) return t("waiting")
 
     if (
-      game.status === GAME_STATUS.PLAYING &&
-      game.roundStatus === ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
+      game.status === CoreConstants.GAME_STATUS.PLAYING &&
+      game.roundStatus ===
+        CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
     ) {
       if (hasRevealedCardCount(player, game.settings.initialTurnedCount)) {
         return t("waiting-opponents-to-turn-cards", {
@@ -37,7 +38,7 @@ const GameInfo = () => {
   return (
     <div className="absolute -top-8 sm:-top-11 text-center text-sm animate-scale flex flex-col items-center">
       <AnimatePresence>
-        {game.roundStatus === ROUND_STATUS.LAST_LAP && (
+        {game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP && (
           <m.p
             key="game-info-last-turn"
             initial={{
@@ -64,9 +65,9 @@ const GameInfo = () => {
         )}
         {isPlayerTurn &&
           (game.roundStatus ===
-            ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS ||
-            game.roundStatus === ROUND_STATUS.PLAYING ||
-            game.roundStatus === ROUND_STATUS.LAST_LAP) && (
+            CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS ||
+            game.roundStatus === CoreConstants.ROUND_STATUS.PLAYING ||
+            game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP) && (
             <m.p
               key="game-info-text"
               className="text-nowrap text-sm text-black dark:text-dark-font"

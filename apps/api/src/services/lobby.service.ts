@@ -1,12 +1,15 @@
-import { Skyjo } from "@/class/Skyjo.js"
-import { SkyjoPlayer } from "@/class/SkyjoPlayer.js"
-import { SkyjoSettings } from "@/class/SkyjoSettings.js"
 import { BaseService } from "@/services/base.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { CError } from "@/utils/CError.js"
-import { ERROR, GAME_STATUS } from "shared/constants"
-import type { ChangeSettings } from "shared/validations/changeSettings"
-import type { CreatePlayer } from "shared/validations/player"
+import {
+  type ChangeSettings,
+  Constants as CoreConstants,
+  type CreatePlayer,
+  Skyjo,
+  SkyjoPlayer,
+  SkyjoSettings,
+} from "@skyjo/core"
+import { CError, Constants as ErrorConstants } from "@skyjo/error"
+import { Logger } from "@skyjo/logger"
 
 export class LobbyService extends BaseService {
   private readonly MAX_GAME_INACTIVE_TIME = 300000 // 5 minutes
@@ -58,7 +61,7 @@ export class LobbyService extends BaseService {
       throw new CError(
         `Player try to change game settings but is not the admin.`,
         {
-          code: ERROR.NOT_ALLOWED,
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
           level: "warn",
           meta: {
             game,
@@ -86,7 +89,7 @@ export class LobbyService extends BaseService {
     const game = await this.getGame(socket.data.gameCode)
     if (!game.isAdmin(socket.data.playerId)) {
       throw new CError(`Player try to start the game but is not the admin.`, {
-        code: ERROR.NOT_ALLOWED,
+        code: ErrorConstants.ERROR.NOT_ALLOWED,
         level: "warn",
         meta: {
           game,
@@ -98,6 +101,8 @@ export class LobbyService extends BaseService {
     }
 
     game.start()
+
+    Logger.info(`Game ${game.code} started.`)
 
     const updateGame = BaseService.gameDb.updateGame(game)
     const broadcast = this.broadcastGame(socket, game)
@@ -128,7 +133,7 @@ export class LobbyService extends BaseService {
 
       return (
         !game.settings.private &&
-        game.status === GAME_STATUS.LOBBY &&
+        game.status === CoreConstants.GAME_STATUS.LOBBY &&
         !game.isFull() &&
         hasRecentActivity
       )
@@ -158,11 +163,11 @@ export class LobbyService extends BaseService {
     game: Skyjo,
     player: SkyjoPlayer,
   ) {
-    if (game.status !== GAME_STATUS.LOBBY) {
+    if (game.status !== CoreConstants.GAME_STATUS.LOBBY) {
       throw new CError(
         `Player try to join a game but the game is not in the lobby.`,
         {
-          code: ERROR.GAME_ALREADY_STARTED,
+          code: ErrorConstants.ERROR.GAME_ALREADY_STARTED,
           level: "warn",
           meta: {
             game,

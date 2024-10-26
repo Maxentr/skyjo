@@ -1,6 +1,5 @@
 import { vi } from "vitest"
-import "./cerror-matcher"
-import type { Env } from "@env"
+import "@skyjo/error/test/expect-extend"
 
 vi.mock("database/provider", () => ({
   db: {
@@ -18,4 +17,5 @@ vi.spyOn(process, "env", "get").mockReturnValue({
   SEQ_API_KEY: "e",
   DATABASE_URL: "e",
   REGION: "LOCAL",
-} as const satisfies Env)
+  npm_package_version: "-99",
+})

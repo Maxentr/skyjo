@@ -7,10 +7,10 @@ import {
   getNextPlayerIndex,
   isCurrentUserTurn,
 } from "@/lib/skyjo"
+import { Constants as CoreConstants } from "@skyjo/core"
 import { AnimatePresence, m } from "framer-motion"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
-import { GAME_STATUS } from "shared/constants"
 
 const OpponentsMobileView = () => {
   const { opponents, game, player } = useSkyjo()
@@ -59,7 +59,7 @@ const OpponentsMobileView = () => {
   ])
 
   useEffect(() => {
-    if (game.status === GAME_STATUS.PLAYING) {
+    if (game.status === CoreConstants.GAME_STATUS.PLAYING) {
       const nextPlayerIndex = getNextPlayerIndex(game, player)
       if (nextPlayerIndex !== -1) setSelectedOpponentIndex(nextPlayerIndex)
     }

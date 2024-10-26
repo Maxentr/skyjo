@@ -1,18 +1,13 @@
-import type { Skyjo } from "@/class/Skyjo.js"
-import type { SkyjoPlayer } from "@/class/SkyjoPlayer.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { CError } from "@/utils/CError.js"
 import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
 import {
-  CONNECTION_LOST_TIMEOUT_IN_MS,
-  CONNECTION_STATUS,
-  ERROR,
-  GAME_STATUS,
-  LEAVE_TIMEOUT_IN_MS,
-  ROUND_STATUS,
-  SERVER_MESSAGE_TYPE,
-} from "shared/constants"
-import type { LastGame } from "shared/validations/reconnect"
+  Constants as CoreConstants,
+  type Skyjo,
+  type SkyjoPlayer,
+} from "@skyjo/core"
+import { CError, Constants as ErrorConstants } from "@skyjo/error"
+import { Constants as SharedConstants } from "@skyjo/shared/constants"
+import type { LastGame } from "@skyjo/shared/validations/reconnect"
 import { BaseService } from "./base.service.js"
 
 export class PlayerService extends BaseService {
@@ -25,7 +20,7 @@ export class PlayerService extends BaseService {
         throw new CError(
           `Player try to leave a game but he has not been found.`,
           {
-            code: ERROR.PLAYER_NOT_FOUND,
+            code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
             level: "warn",
             meta: {
               game,
@@ -38,17 +33,17 @@ export class PlayerService extends BaseService {
       }
 
       player.connectionStatus = timeout
-        ? CONNECTION_STATUS.CONNECTION_LOST
-        : CONNECTION_STATUS.LEAVE
+        ? CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
+        : CoreConstants.CONNECTION_STATUS.LEAVE
 
       await BaseService.playerDb.updatePlayer(player)
 
       if (game.isAdmin(player.id)) await this.changeAdmin(game)
 
       if (
-        game.status === GAME_STATUS.LOBBY ||
-        game.status === GAME_STATUS.FINISHED ||
-        game.status === GAME_STATUS.STOPPED
+        game.status === CoreConstants.GAME_STATUS.LOBBY ||
+        game.status === CoreConstants.GAME_STATUS.FINISHED ||
+        game.status === CoreConstants.GAME_STATUS.STOPPED
       ) {
         game.removePlayer(player.id)
         await BaseService.playerDb.removePlayer(game.id, player.id)
@@ -78,14 +73,17 @@ export class PlayerService extends BaseService {
       socket.to(game.code).emit("message:server", {
         id: crypto.randomUUID(),
         username: player.name,
-        message: SERVER_MESSAGE_TYPE.PLAYER_LEFT,
-        type: SERVER_MESSAGE_TYPE.PLAYER_LEFT,
+        message: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT,
+        type: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT,
       })
 
       await socket.leave(game.code)
     } catch (error) {
       // If the game is not found, it means the player wasn't in a game so we don't need to do anything
-      if (error instanceof CError && error.code === ERROR.GAME_NOT_FOUND) {
+      if (
+        error instanceof CError &&
+        error.code === ErrorConstants.ERROR.GAME_NOT_FOUND
+      ) {
         return
       } else {
         throw error
@@ -102,7 +100,7 @@ export class PlayerService extends BaseService {
       throw new CError(
         `Player try to reconnect but he has not been found in the game.`,
         {
-          code: ERROR.PLAYER_NOT_FOUND,
+          code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
           level: "warn",
           meta: {
             socket,
@@ -118,7 +116,7 @@ export class PlayerService extends BaseService {
     )
     if (!canReconnect) {
       throw new CError(`Player try to reconnect but he cannot reconnect.`, {
-        code: ERROR.CANNOT_RECONNECT,
+        code: ErrorConstants.ERROR.CANNOT_RECONNECT,
         level: "warn",
         meta: {
           socket,
@@ -152,16 +150,18 @@ export class PlayerService extends BaseService {
     callback: (...args: unknown[]) => Promise<void>,
   ) {
     player.connectionStatus = connectionLost
-      ? CONNECTION_STATUS.CONNECTION_LOST
-      : CONNECTION_STATUS.LEAVE
+      ? CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
+      : CoreConstants.CONNECTION_STATUS.LEAVE
     BaseService.playerDb.updateDisconnectionDate(player, new Date())
 
     player.disconnectionTimeout = setTimeout(
       socketErrorHandlerWrapper(async () => {
-        player.connectionStatus = CONNECTION_STATUS.DISCONNECTED
+        player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
         await callback()
       }),
-      connectionLost ? CONNECTION_LOST_TIMEOUT_IN_MS : LEAVE_TIMEOUT_IN_MS,
+      connectionLost
+        ? SharedConstants.CONNECTION_LOST_TIMEOUT_IN_MS
+        : SharedConstants.LEAVE_TIMEOUT_IN_MS,
     )
   }
 
@@ -170,7 +170,7 @@ export class PlayerService extends BaseService {
     game: Skyjo,
   ) {
     if (!game.haveAtLeastMinPlayersConnected()) {
-      game.status = GAME_STATUS.STOPPED
+      game.status = CoreConstants.GAME_STATUS.STOPPED
 
       const removeGame = this.removeGame(game.code)
       const broadcast = this.broadcastGame(socket, game)
@@ -183,13 +183,16 @@ export class PlayerService extends BaseService {
       game.nextTurn()
     }
 
-    if (game.roundStatus === ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS)
+    if (
+      game.roundStatus ===
+      CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
+    )
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
 
     game.checkEndOfRound()
     if (
-      game.roundStatus === ROUND_STATUS.OVER &&
-      game.status !== GAME_STATUS.FINISHED
+      game.roundStatus === CoreConstants.ROUND_STATUS.OVER &&
+      game.status !== CoreConstants.GAME_STATUS.FINISHED
     ) {
       this.restartRound(socket, game)
     }
@@ -214,7 +217,7 @@ export class PlayerService extends BaseService {
       throw new CError(
         `Game or player not found in game when trying to reconnect. This error can only happen if socket.data is wrong in onRecover method.`,
         {
-          code: ERROR.PLAYER_NOT_FOUND,
+          code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
           level: "critical",
           meta: {
             game,
@@ -227,7 +230,7 @@ export class PlayerService extends BaseService {
 
     if (player.disconnectionTimeout) clearTimeout(player.disconnectionTimeout)
     player.socketId = socket.id
-    player.connectionStatus = CONNECTION_STATUS.CONNECTED
+    player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
 
     const updatePlayer = BaseService.playerDb.reconnectPlayer(player)
     const joinGame = this.joinGame(socket, game, player, true)

@@ -6,12 +6,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { Constants as CoreConstants, SkyjoPlayerToJson } from "@skyjo/core"
 import { ClassValue } from "clsx"
 import { AlertTriangleIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
-import { CONNECTION_STATUS } from "shared/constants"
-import { SkyjoPlayerToJson } from "shared/types/skyjoPlayer"
 
 type OpponentBoardProps = {
   opponent: SkyjoPlayerToJson
@@ -53,14 +52,15 @@ const OpponentBoard = ({
         )}
       >
         {opponent.name}
-        {opponent.connectionStatus === CONNECTION_STATUS.CONNECTION_LOST && (
+        {opponent.connectionStatus ===
+          CoreConstants.CONNECTION_STATUS.CONNECTION_LOST && (
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger className="relative">
                 <AlertTriangleIcon size={16} className="text-yellow-700" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>{to(CONNECTION_STATUS.CONNECTION_LOST)}</p>
+                <p>{to(CoreConstants.CONNECTION_STATUS.CONNECTION_LOST)}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

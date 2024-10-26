@@ -1,7 +1,7 @@
 import ScoreTable from "@/components/ScoreTable"
+import { SkyjoPlayerToJson } from "@skyjo/core"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
-import { SkyjoPlayerToJson } from "shared/types/skyjoPlayer"
 
 type Props = {
   players: SkyjoPlayerToJson[]

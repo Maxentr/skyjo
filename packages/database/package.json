@@ -1,6 +1,6 @@
 {
-  "name": "database",
-  "version": "1.0.0",
+  "name": "@skyjo/database",
+  "version": "1.32.0",
   "type": "module",
   "exports": {
     "./*": "./dist/src/*.js"
@@ -21,7 +21,8 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.32.2",
     "pg": "^8.13.0",
-    "shared": "workspace:*",
+    "@skyjo/shared": "workspace:*",
+    "@skyjo/core": "workspace:*",
     "zod": "^3.23.8"
   },
   "devDependencies": {

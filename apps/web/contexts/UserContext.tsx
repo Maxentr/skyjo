@@ -1,5 +1,6 @@
 "use client"
 
+import { Avatar, Constants as CoreConstants, createPlayer } from "@skyjo/core"
 import {
   Dispatch,
   PropsWithChildren,
@@ -11,13 +12,11 @@ import {
   useState,
 } from "react"
 import { useLocalStorage } from "react-use"
-import { AVATARS, Avatar } from "shared/constants"
-import { createPlayer } from "shared/validations/player"
 
 const USERNAME_KEY = "username"
 const AVATAR_KEY = "Avatar-index"
 
-export const AVATARS_ARRAY = Object.values(AVATARS)
+export const AVATARS_ARRAY = Object.values(CoreConstants.AVATARS)
 
 type UserContext = {
   username: string

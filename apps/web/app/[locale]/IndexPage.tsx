@@ -5,9 +5,9 @@ import SelectAvatar from "@/components/SelectAvatar"
 import { Input } from "@/components/ui/input"
 import { useSocket } from "@/contexts/SocketContext"
 import { useUser } from "@/contexts/UserContext"
+import { CreatePlayer } from "@skyjo/core"
 import { useTranslations } from "next-intl"
 import { ChangeEvent, useEffect } from "react"
-import { CreatePlayer } from "shared/validations/player"
 
 type Props = {
   searchParams: {

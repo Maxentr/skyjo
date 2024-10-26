@@ -2,6 +2,13 @@
 
 import { useSettings } from "@/contexts/SettingsContext"
 import { useSocket } from "@/contexts/SocketContext"
+import { Constants as CoreConstants, SystemMessageType } from "@skyjo/core"
+import {
+  ChatMessage,
+  ServerChatMessage,
+  SystemChatMessage,
+  UserChatMessage,
+} from "@skyjo/shared/types/chat"
 import { Howl } from "howler"
 import { useTranslations } from "next-intl"
 import {
@@ -12,13 +19,6 @@ import {
   useMemo,
   useState,
 } from "react"
-import { SYSTEM_MESSAGE_TYPE, SystemMessageType } from "shared/constants"
-import {
-  ChatMessage,
-  ServerChatMessage,
-  SystemChatMessage,
-  UserChatMessage,
-} from "shared/types/chat"
 
 const messageSound = new Howl({
   src: ["/sounds/message.ogg"],
@@ -121,7 +121,7 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
 
   const addSystemMessage = (
     message: string,
-    type: SystemMessageType = SYSTEM_MESSAGE_TYPE.SYSTEM_MESSAGE,
+    type: SystemMessageType = CoreConstants.SYSTEM_MESSAGE_TYPE.SYSTEM_MESSAGE,
   ) => {
     const chatMessage: SystemChatMessage = {
       id: crypto.randomUUID(),
@@ -144,7 +144,7 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
     if (!username) {
       addSystemMessage(
         t("argument-required", { command: "/mute" }),
-        SYSTEM_MESSAGE_TYPE.WARN_SYSTEM_MESSAGE,
+        CoreConstants.SYSTEM_MESSAGE_TYPE.WARN_SYSTEM_MESSAGE,
       )
     } else if (mutedPlayers.includes(username)) {
       addSystemMessage(t("player-already-muted", { username }))
@@ -158,7 +158,7 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
     if (!username) {
       addSystemMessage(
         t("argument-required", { command: "/unmute" }),
-        SYSTEM_MESSAGE_TYPE.WARN_SYSTEM_MESSAGE,
+        CoreConstants.SYSTEM_MESSAGE_TYPE.WARN_SYSTEM_MESSAGE,
       )
     } else if (!mutedPlayers.includes(username)) {
       addSystemMessage(t("player-not-muted", { username }))

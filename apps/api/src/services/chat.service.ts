@@ -1,8 +1,8 @@
 import { BaseService } from "@/services/base.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { CError } from "@/utils/CError.js"
-import { ERROR, USER_MESSAGE_TYPE } from "shared/constants"
-import type { UserChatMessage } from "shared/types/chat"
+import { Constants as CoreConstants } from "@skyjo/core"
+import { CError, Constants as ErrorConstants } from "@skyjo/error"
+import type { UserChatMessage } from "@skyjo/shared/types/chat"
 
 export class ChatService extends BaseService {
   async onMessage(
@@ -13,7 +13,7 @@ export class ChatService extends BaseService {
 
     if (!game.getPlayerById(socket.data.playerId)) {
       throw new CError(`Player try to send a message but is not found.`, {
-        code: ERROR.PLAYER_NOT_FOUND,
+        code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
         meta: {
           game,
           socket,
@@ -29,7 +29,7 @@ export class ChatService extends BaseService {
       id: crypto.randomUUID(),
       username,
       message,
-      type: USER_MESSAGE_TYPE,
+      type: CoreConstants.USER_MESSAGE_TYPE,
     }
 
     socket.to(game.code).emit("message", newMessage)

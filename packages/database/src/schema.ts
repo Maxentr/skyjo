@@ -1,4 +1,15 @@
 import {
+  type Avatar,
+  type ConnectionStatus,
+  Constants,
+  type GameStatus,
+  type LastTurnStatus,
+  type RoundStatus,
+  type SkyjoCardDb,
+  type SkyjoPlayerScores,
+  type TurnStatus,
+} from "@skyjo/core"
+import {
   boolean,
   integer,
   json,
@@ -8,54 +19,38 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core"
-import {
-  API_REGIONS_TAGS,
-  AVATARS,
-  type ApiRegionsTag,
-  type Avatar,
-  CONNECTION_STATUS,
-  type ConnectionStatus,
-  GAME_STATUS,
-  type GameStatus,
-  LAST_TURN_STATUS,
-  type LastTurnStatus,
-  ROUND_STATUS,
-  type RoundStatus,
-  SKYJO_DEFAULT_SETTINGS,
-  TURN_STATUS,
-  type TurnStatus,
-} from "shared/constants"
-import type { SkyjoCardDb } from "shared/types/skyjoCard"
-import type { SkyjoPlayerScores } from "shared/types/skyjoPlayer"
 
 const gameStatusEnum = pgEnum(
   "game_status",
-  Object.values(GAME_STATUS) as [string],
+  Object.values(Constants.GAME_STATUS) as [string],
 )
 
 const roundStatusEnum = pgEnum(
   "round_status",
-  Object.values(ROUND_STATUS) as [string],
+  Object.values(Constants.ROUND_STATUS) as [string],
 )
 
 const turnStatusEnum = pgEnum(
   "turn_status",
-  Object.values(TURN_STATUS) as [string],
+  Object.values(Constants.TURN_STATUS) as [string],
 )
 
 const lastTurnStatusEnum = pgEnum(
   "last_turn_status",
-  Object.values(LAST_TURN_STATUS) as [string],
+  Object.values(Constants.LAST_TURN_STATUS) as [string],
 )
 
-const avatarEnum = pgEnum("avatar", Object.values(AVATARS) as [string])
+const avatarEnum = pgEnum(
+  "avatar",
+  Object.values(Constants.AVATARS) as [string],
+)
 
 const connectionStatusEnum = pgEnum(
   "connection_status",
-  Object.values(CONNECTION_STATUS) as [string],
+  Object.values(Constants.CONNECTION_STATUS) as [string],
 )
 
-const regionsEnum = pgEnum("regions", API_REGIONS_TAGS)
+const regionEnum = pgEnum("region", ["FR", "LOCAL"])
 
 export const gameTable = pgTable("games", {
   id: uuid("id").primaryKey(),
@@ -79,34 +74,35 @@ export const gameTable = pgTable("games", {
   // settings
   allowSkyjoForColumn: boolean("allow_skyjo_for_column")
     .notNull()
-    .default(SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN),
+    .default(Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN),
   allowSkyjoForRow: boolean("allow_skyjo_for_row")
     .notNull()
-    .default(SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_ROW),
+    .default(Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_ROW),
   initialTurnedCount: integer("initial_turned_count")
     .notNull()
-    .default(SKYJO_DEFAULT_SETTINGS.CARDS.INITIAL_TURNED_COUNT),
+    .default(Constants.SKYJO_DEFAULT_SETTINGS.CARDS.INITIAL_TURNED_COUNT),
   cardPerRow: integer("card_per_row")
     .notNull()
-    .default(SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW),
+    .default(Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW),
   cardPerColumn: integer("card_per_column")
     .notNull()
-    .default(SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN),
+    .default(Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN),
   scoreToEndGame: integer("score_to_end_game")
     .notNull()
-    .default(SKYJO_DEFAULT_SETTINGS.SCORE_TO_END_GAME),
+    .default(Constants.SKYJO_DEFAULT_SETTINGS.SCORE_TO_END_GAME),
   multiplierForFirstPlayer: integer("multiplier_for_first_player")
     .notNull()
-    .default(SKYJO_DEFAULT_SETTINGS.MULTIPLIER_FOR_FIRST_PLAYER),
+    .default(Constants.SKYJO_DEFAULT_SETTINGS.MULTIPLIER_FOR_FIRST_PLAYER),
   maxPlayers: integer("max_players")
     .notNull()
-    .default(SKYJO_DEFAULT_SETTINGS.MAX_PLAYERS),
+    .default(Constants.SKYJO_DEFAULT_SETTINGS.MAX_PLAYERS),
   isPrivate: boolean("is_private").notNull(),
+
+  region: regionEnum("regions").notNull(),
 
   // computed
   isFull: boolean("is_full").notNull(),
 
-  region: regionsEnum("regions").$type<ApiRegionsTag>().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 })

@@ -1,5 +1,5 @@
-import { CError } from "@/utils/CError.js"
-import { Logger } from "@/utils/Logger.js"
+import { CError } from "@skyjo/error"
+import { Logger } from "@skyjo/logger"
 
 export function socketErrorHandlerWrapper(
   // biome-ignore lint/suspicious/noExplicitAny: any is required for a callback with a dynamic number of arguments

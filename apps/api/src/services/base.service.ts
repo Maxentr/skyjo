@@ -1,18 +1,15 @@
 import { Constants } from "@/constants.js"
 import { GameDb } from "@/db/game.db.js"
 import { PlayerDb } from "@/db/player.db.js"
-import { CError } from "@/utils/CError.js"
-import { Logger } from "@/utils/Logger.js"
-import cron from "node-cron"
 import {
-  ERROR,
-  GAME_STATUS,
-  ROUND_STATUS,
-  SERVER_MESSAGE_TYPE,
-} from "shared/constants"
-import type { ServerChatMessage } from "shared/types/chat"
-import type { Skyjo } from "../class/Skyjo.js"
-import type { SkyjoPlayer } from "../class/SkyjoPlayer.js"
+  Constants as CoreConstants,
+  type Skyjo,
+  type SkyjoPlayer,
+} from "@skyjo/core"
+import { CError, Constants as ErrorConstants } from "@skyjo/error"
+import { Logger } from "@skyjo/logger"
+import type { ServerChatMessage } from "@skyjo/shared/types/chat"
+import cron from "node-cron"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
 export abstract class BaseService {
@@ -40,7 +37,7 @@ export abstract class BaseService {
         throw new CError(
           `Someone try to get game but it doesn't exist in memory nor in database`,
           {
-            code: ERROR.GAME_NOT_FOUND,
+            code: ErrorConstants.ERROR.GAME_NOT_FOUND,
             level: "warn",
             meta: {
               gameCode,
@@ -80,8 +77,8 @@ export abstract class BaseService {
     socket.emit("join", game.toJson(), player.id)
 
     const messageType = reconnection
-      ? SERVER_MESSAGE_TYPE.PLAYER_RECONNECT
-      : SERVER_MESSAGE_TYPE.PLAYER_JOINED
+      ? CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_RECONNECT
+      : CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_JOINED
     const message: ServerChatMessage = {
       id: crypto.randomUUID(),
       username: player.name,
@@ -120,8 +117,8 @@ export abstract class BaseService {
     BaseService.playerDb.updatePlayer(player)
 
     if (
-      game.roundStatus === ROUND_STATUS.OVER &&
-      game.status !== GAME_STATUS.FINISHED
+      game.roundStatus === CoreConstants.ROUND_STATUS.OVER &&
+      game.status !== CoreConstants.GAME_STATUS.FINISHED
     ) {
       this.restartRound(socket, game)
     }

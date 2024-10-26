@@ -1,14 +1,12 @@
-import { Skyjo } from "@/class/Skyjo.js"
-import { SkyjoSettings } from "@/class/SkyjoSettings.js"
 import { PlayerDb } from "@/db/player.db.js"
-import { CError } from "@/utils/CError.js"
-import { Logger } from "@/utils/Logger.js"
 import { ENV } from "@env"
+import { Constants as CoreConstants, Skyjo, SkyjoSettings } from "@skyjo/core"
+import { CError } from "@skyjo/error"
+import { Logger } from "@skyjo/logger"
 import { db } from "database/provider"
 import { type DbGame, gameTable, playerTable } from "database/schema"
 import dayjs from "dayjs"
 import { and, eq, lte } from "drizzle-orm"
-import { GAME_STATUS } from "shared/constants"
 
 export class GameDb {
   playerDb: PlayerDb
@@ -144,7 +142,7 @@ export class GameDb {
   async getPublicGameWithFreePlace() {
     const game = await db.query.gameTable.findFirst({
       where: and(
-        eq(gameTable.status, GAME_STATUS.LOBBY),
+        eq(gameTable.status, CoreConstants.GAME_STATUS.LOBBY),
         eq(gameTable.isFull, false),
         eq(gameTable.isPrivate, false),
         eq(gameTable.region, ENV.REGION),

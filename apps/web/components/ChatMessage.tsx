@@ -1,8 +1,8 @@
 import { useSkyjo } from "@/contexts/SkyjoContext"
+import type { ChatMessage } from "@skyjo/shared/types/chat"
 import { cva } from "class-variance-authority"
 import { m } from "framer-motion"
 import { useTranslations } from "next-intl"
-import type { ChatMessage } from "shared/types/chat"
 
 const chatMessageClasses = cva(
   "font-inter text-sm text-wrap break-words w-full",

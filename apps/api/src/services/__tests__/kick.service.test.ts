@@ -1,16 +1,14 @@
-import { Skyjo } from "@/class/Skyjo.js"
-import { SkyjoPlayer } from "@/class/SkyjoPlayer.js"
-import { SkyjoSettings } from "@/class/SkyjoSettings.js"
 import { mockBaseService, mockSocket } from "@/services/__tests__/_mock.js"
 import { BaseService } from "@/services/base.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { RANDOM_SOCKET_ID, TEST_SOCKET_ID } from "@tests/constants-test.js"
 import {
-  AVATARS,
-  CONNECTION_STATUS,
-  ERROR,
-  GAME_STATUS,
-} from "shared/constants"
+  Constants as CoreConstants,
+  Skyjo,
+  SkyjoPlayer,
+  SkyjoSettings,
+} from "@skyjo/core"
+import { Constants as ErrorConstants } from "@skyjo/error"
+import { RANDOM_SOCKET_ID, TEST_SOCKET_ID } from "@tests/constants-test.js"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { KickService } from "../kick.service.js"
 
@@ -33,15 +31,15 @@ describe("KickService", () => {
     socket = mockSocket()
 
     player = new SkyjoPlayer(
-      { username: "player", avatar: AVATARS.BEE },
+      { username: "player", avatar: CoreConstants.AVATARS.BEE },
       TEST_SOCKET_ID,
     )
     opponent1 = new SkyjoPlayer(
-      { username: "opponent1", avatar: AVATARS.CRAB },
+      { username: "opponent1", avatar: CoreConstants.AVATARS.CRAB },
       RANDOM_SOCKET_ID(),
     )
     opponent2 = new SkyjoPlayer(
-      { username: "opponent2", avatar: AVATARS.DOG },
+      { username: "opponent2", avatar: CoreConstants.AVATARS.DOG },
       RANDOM_SOCKET_ID(),
     )
 
@@ -74,13 +72,13 @@ describe("KickService", () => {
 
       await expect(
         service.onInitiateKickVote(socket, opponent2.id),
-      ).toThrowCErrorWithCode(ERROR.PLAYER_NOT_FOUND)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
     })
 
     it("should throw if the targeted player is not in the game", async () => {
       await expect(
         service.onInitiateKickVote(socket, crypto.randomUUID()),
-      ).toThrowCErrorWithCode(ERROR.PLAYER_NOT_FOUND)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
     })
 
     it("should initiate a kick vote", async () => {
@@ -94,7 +92,7 @@ describe("KickService", () => {
 
       await expect(
         service.onInitiateKickVote(socket, opponent2.id),
-      ).toThrowCErrorWithCode(ERROR.KICK_VOTE_IN_PROGRESS)
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.KICK_VOTE_IN_PROGRESS)
     })
 
     it("should check vote status if the kick vote has expired", async () => {
@@ -116,7 +114,7 @@ describe("KickService", () => {
       socket.data.gameCode = "NOT-A-GAME-CODE"
 
       await expect(service.onVoteToKick(socket, true)).toThrowCErrorWithCode(
-        ERROR.GAME_NOT_FOUND,
+        ErrorConstants.ERROR.GAME_NOT_FOUND,
       )
     })
 
@@ -124,13 +122,13 @@ describe("KickService", () => {
       socket.data.playerId = "NOT-A-PLAYER-ID"
 
       await expect(service.onVoteToKick(socket, true)).toThrowCErrorWithCode(
-        ERROR.PLAYER_NOT_FOUND,
+        ErrorConstants.ERROR.PLAYER_NOT_FOUND,
       )
     })
 
     it("should throw if no kick vote is in progress", async () => {
       await expect(service.onVoteToKick(socket, true)).toThrowCErrorWithCode(
-        ERROR.NO_KICK_VOTE_IN_PROGRESS,
+        ErrorConstants.ERROR.NO_KICK_VOTE_IN_PROGRESS,
       )
     })
 
@@ -138,7 +136,7 @@ describe("KickService", () => {
       await service.onInitiateKickVote(socket, opponent2.id)
 
       await expect(service.onVoteToKick(socket, true)).toThrowCErrorWithCode(
-        ERROR.PLAYER_ALREADY_VOTED,
+        ErrorConstants.ERROR.PLAYER_ALREADY_VOTED,
       )
       expect(service["kickVotes"].get(game.id)?.["votes"].length).toBe(1)
     })
@@ -147,7 +145,7 @@ describe("KickService", () => {
       await service.onInitiateKickVote(opponent1Socket, opponent2.id)
 
       const opponent3 = new SkyjoPlayer(
-        { username: "opponent3", avatar: AVATARS.DOG },
+        { username: "opponent3", avatar: CoreConstants.AVATARS.DOG },
         RANDOM_SOCKET_ID(),
       )
       game.addPlayer(opponent3)
@@ -169,7 +167,7 @@ describe("KickService", () => {
       game.removePlayer(opponent2.id)
 
       await expect(service.onVoteToKick(socket, true)).toThrowCErrorWithCode(
-        ERROR.PLAYER_NOT_FOUND,
+        ErrorConstants.ERROR.PLAYER_NOT_FOUND,
       )
     })
 
@@ -197,7 +195,7 @@ describe("KickService", () => {
     })
 
     it("should add a vote to the kick vote, broadcast the success and remove the player if game is finished", async () => {
-      game.status = GAME_STATUS.FINISHED
+      game.status = CoreConstants.GAME_STATUS.FINISHED
       await service.onInitiateKickVote(opponent1Socket, opponent2.id)
 
       await service.onVoteToKick(socket, true)
@@ -213,7 +211,7 @@ describe("KickService", () => {
     })
 
     it("should add a vote to the kick vote, broadcast the success and remove the player if game is stopped", async () => {
-      game.status = GAME_STATUS.STOPPED
+      game.status = CoreConstants.GAME_STATUS.STOPPED
       await service.onInitiateKickVote(opponent1Socket, opponent2.id)
 
       await service.onVoteToKick(socket, true)
@@ -229,7 +227,7 @@ describe("KickService", () => {
     })
 
     it("should add a vote to the kick vote, broadcast the success and not remove the player if game is in progress", async () => {
-      game.status = GAME_STATUS.PLAYING
+      game.status = CoreConstants.GAME_STATUS.PLAYING
 
       await service.onInitiateKickVote(opponent1Socket, opponent2.id)
 
@@ -246,12 +244,12 @@ describe("KickService", () => {
       const kickedPlayer = game.players.find((p) => p.id === opponent2.id)
       expect(kickedPlayer).toBeDefined()
       expect(kickedPlayer?.connectionStatus).toBe(
-        CONNECTION_STATUS.DISCONNECTED,
+        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
       )
     })
 
     it("should add a vote to the kick vote and broadcast the failure", async () => {
-      game.status = GAME_STATUS.PLAYING
+      game.status = CoreConstants.GAME_STATUS.PLAYING
 
       await service.onInitiateKickVote(opponent1Socket, opponent2.id)
 
@@ -267,7 +265,9 @@ describe("KickService", () => {
 
       const kickedPlayer = game.players.find((p) => p.id === opponent2.id)
       expect(kickedPlayer).toBeDefined()
-      expect(kickedPlayer?.connectionStatus).toBe(CONNECTION_STATUS.CONNECTED)
+      expect(kickedPlayer?.connectionStatus).toBe(
+        CoreConstants.CONNECTION_STATUS.CONNECTED,
+      )
     })
   })
 })

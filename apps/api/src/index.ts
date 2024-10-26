@@ -1,15 +1,13 @@
 import { initializeSocketServer } from "@/initializeSocketServer.js"
-import { Logger } from "@/utils/Logger.js"
 import { mailer } from "@/utils/mailer.js"
 import { ENV } from "@env"
 import { serve } from "@hono/node-server"
 import { zValidator } from "@hono/zod-validator"
-import { config } from "dotenv"
+import { Logger } from "@skyjo/logger"
+
+import { feedbackSchema } from "@skyjo/shared/validations/feedback"
 import { Hono } from "hono"
 import { cors } from "hono/cors"
-import { feedbackSchema } from "shared/validations/feedback"
-
-config()
 
 const app = new Hono()
 

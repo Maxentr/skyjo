@@ -3,6 +3,7 @@ import { useSkyjo } from "@/contexts/SkyjoContext"
 import { useSocket } from "@/contexts/SocketContext"
 import { useKickVoteToasts } from "@/hooks/useKickVoteToasts"
 import { useRouter } from "@/navigation"
+import { KickVoteToJson } from "@skyjo/core"
 import {
   PropsWithChildren,
   createContext,
@@ -11,7 +12,6 @@ import {
   useMemo,
   useState,
 } from "react"
-import { KickVoteToJson } from "shared/types/kickVote"
 
 type VoteKickContext = {
   actions: {

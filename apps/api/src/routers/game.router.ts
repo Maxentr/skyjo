@@ -9,7 +9,7 @@ import {
   playReplaceCard,
   playRevealCard,
   playTurnCard,
-} from "shared/validations/play"
+} from "@skyjo/core"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
 const instance = new GameService()

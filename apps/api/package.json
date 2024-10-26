@@ -1,10 +1,11 @@
 {
-  "name": "api",
-  "version": "1.0.0",
+  "name": "@skyjo/api",
+  "description": "Skyjo API",
+  "version": "1.32.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/index.ts --env-file=.env",
     "build": "tsc --project tsconfig.prod.json && pnpx tsc-alias --project tsconfig.prod.json",
     "prod": "tsx dist/src/index.js",
     "biome:check": "pnpm biome check --write .",
@@ -13,20 +14,20 @@
     "test:ui": "vitest --ui --coverage.enabled=true"
   },
   "dependencies": {
-    "@datalust/winston-seq": "^2.0.0",
     "@hono/node-server": "^1.13.2",
     "@hono/zod-validator": "^0.2.2",
-    "database": "workspace:*",
+    "@skyjo/core": "workspace:*",
+    "@skyjo/logger": "workspace:*",
+    "@skyjo/error": "workspace:*",
+    "@skyjo/database": "workspace:*",
+    "@skyjo/shared": "workspace:*",
     "dayjs": "^1.11.13",
-    "dotenv": "^16.4.5",
     "drizzle-orm": "^0.32.2",
     "hono": "^3.12.12",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.15",
-    "shared": "workspace:*",
     "socket.io": "^4.8.0",
     "socket.io-msgpack-parser": "^3.0.2",
-    "winston": "^3.15.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
