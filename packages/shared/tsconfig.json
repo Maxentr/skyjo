@@ -1,4 +1,8 @@
 {
   "extends": "@skyjo/ts-config/base-package.json",
-  "include": ["validations", "types", "constants.ts"]
+  "include": ["validations", "types", "constants.ts"],
+  "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./dist"
+  }
 }

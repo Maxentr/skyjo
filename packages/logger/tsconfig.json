@@ -2,6 +2,8 @@
   "extends": "@skyjo/ts-config/base-package.json",
   "include": ["src", "env.ts"],
   "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*"]
     }

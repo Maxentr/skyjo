@@ -3,6 +3,8 @@
   "include": ["src"],
   "exclude": ["node_modules", "dist", "./src/**/__tests__", "tests"],
   "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*"]
     }
