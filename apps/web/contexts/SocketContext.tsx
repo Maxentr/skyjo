@@ -24,23 +24,10 @@ import customParser from "socket.io-msgpack-parser"
 
 dayjs.extend(utc)
 
-const initSocket = (url: string) => {
-  console.log("Connecting to", url)
-  const socket = io(url, {
-    autoConnect: true,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 2000,
-    parser: customParser,
-  })
-
-  return socket
-}
-
 export type SkyjoSocket = Socket<ServerToClientEvents, ClientToServerEvents>
 
 type SocketContext = {
   socket: SkyjoSocket | null
-  createSocket: () => void
   getLastGameIfPossible: () => LastGame | null
   saveLastGame: () => void
 }
@@ -53,13 +40,31 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   const [socket, setSocket] = useState<SkyjoSocket | null>(null)
 
   useEffect(() => {
-    if (socket === null) return
+    if (socket !== null) return
 
-    initGameListeners()
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      throw new Error("NEXT_PUBLIC_API_URL is not set")
+    }
+
+    const newSocket = io(process.env.NEXT_PUBLIC_API_URL, {
+      autoConnect: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 2000,
+      parser: customParser,
+    })
+
+    setSocket(newSocket)
 
     return () => {
-      destroyGameListeners()
+      newSocket.disconnect()
     }
+  }, [])
+
+  useEffect(() => {
+    if (socket === null) return
+    initGameListeners()
+
+    return () => destroyGameListeners()
   }, [socket])
 
   //#region reconnection
@@ -109,13 +114,6 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   }
   //#endregion reconnection
 
-  const createSocket = async () => {
-    if (!process.env.NEXT_PUBLIC_API_URL)
-      throw new Error("NEXT_PUBLIC_API_URL is not set")
-
-    setSocket(initSocket(process.env.NEXT_PUBLIC_API_URL))
-  }
-
   //#region listeners
   const onConnect = () => {
     if (socket!.recovered) console.log("Socket reconnected")
@@ -164,7 +162,6 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   const value = useMemo(
     () => ({
       socket,
-      createSocket,
       saveLastGame,
       getLastGameIfPossible,
     }),
