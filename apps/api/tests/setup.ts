@@ -1,7 +1,7 @@
 import { vi } from "vitest"
 import "@skyjo/error/test/expect-extend"
 
-vi.mock("database/provider", () => ({
+vi.mock("@skyjo/database/provider", () => ({
   db: {
     query: vi.fn(),
   },

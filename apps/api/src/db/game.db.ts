@@ -1,10 +1,10 @@
 import { PlayerDb } from "@/db/player.db.js"
 import { ENV } from "@env"
 import { Constants as CoreConstants, Skyjo, SkyjoSettings } from "@skyjo/core"
+import { db } from "@skyjo/database/provider"
+import { type DbGame, gameTable, playerTable } from "@skyjo/database/schema"
 import { CError } from "@skyjo/error"
 import { Logger } from "@skyjo/logger"
-import { db } from "database/provider"
-import { type DbGame, gameTable, playerTable } from "database/schema"
 import dayjs from "dayjs"
 import { and, eq, lte } from "drizzle-orm"
 

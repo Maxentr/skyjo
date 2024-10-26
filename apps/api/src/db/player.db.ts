@@ -1,7 +1,7 @@
 import { Constants as CoreConstants, SkyjoPlayer } from "@skyjo/core"
+import { db } from "@skyjo/database/provider"
+import { playerTable } from "@skyjo/database/schema"
 import { CError } from "@skyjo/error"
-import { db } from "database/provider"
-import { playerTable } from "database/schema"
 
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
 import { and, eq, inArray } from "drizzle-orm"

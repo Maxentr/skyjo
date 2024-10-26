@@ -1,6 +1,6 @@
 import { vi } from "vitest"
 
-vi.mock("database/provider", () => ({
+vi.mock("@skyjo/database/provider", () => ({
   db: {
     query: vi.fn(),
   },
