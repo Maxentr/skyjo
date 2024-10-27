@@ -63,9 +63,8 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
-
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-            docker rm -f ${{ env.DOCKER_NAME }}
-            docker run --name ${{ env.DOCKER_NAME }} --env-file ~/.env -d -p 3001:3001 --restart always ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            cd skyjo
+            git pull
+            docker compose down api
+            docker compose pull api
+            docker compose up -d api
