@@ -9,11 +9,14 @@ export const envSchema = z.object({
   GMAIL_APP_PASSWORD: z.string({
     message: "GMAIL_APP_PASSWORD must be set in .env file",
   }),
-
-  DATABASE_URL: z.string({ message: "DATABASE_URL must be set in .env file" }),
-
-  REGION: z.enum(["FR", "LOCAL"]),
 })
 
-export const ENV = envSchema.parse(process.env)
-export type Env = typeof ENV
+const parsedEnv = envSchema.safeParse(process.env)
+
+if (!parsedEnv.success) {
+  console.error(parsedEnv.error.message)
+  process.exit(1)
+}
+
+export const ENV = parsedEnv.data
+export type Env = z.infer<typeof envSchema>
