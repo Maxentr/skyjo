@@ -7,12 +7,12 @@ export class KickService extends BaseService {
   private readonly kickVotes: Map<string, KickVote> = new Map()
 
   async onInitiateKickVote(socket: SkyjoSocket, targetId: string) {
-    const game = await this.getGame(socket.data.gameCode)
+    const game = await this.redis.getGame(socket.data.gameCode)
     await this.initiateKickVote(socket, game, targetId)
   }
 
   async onVoteToKick(socket: SkyjoSocket, vote: boolean) {
-    const game = await this.getGame(socket.data.gameCode)
+    const game = await this.redis.getGame(socket.data.gameCode)
 
     const player = game.getPlayerById(socket.data.playerId)
     if (!player) {
@@ -194,9 +194,9 @@ export class KickService extends BaseService {
     }
 
     playerToKick.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
-    await BaseService.playerDb.updatePlayer(playerToKick)
+    await this.redis.updatePlayer(game.code, playerToKick.toJson())
 
-    if (game.isAdmin(playerToKick.id)) await this.changeAdmin(game)
+    if (game.isAdmin(playerToKick.id)) await this.changeAdmin(socket, game)
 
     if (
       game.status === CoreConstants.GAME_STATUS.LOBBY ||
@@ -204,7 +204,7 @@ export class KickService extends BaseService {
       game.status === CoreConstants.GAME_STATUS.STOPPED
     ) {
       game.removePlayer(playerToKick.id)
-      await BaseService.playerDb.removePlayer(game.id, playerToKick.id)
+      await this.redis.removePlayer(game.code, playerToKick.id)
     }
 
     await this.broadcastKickVote(
@@ -214,7 +214,7 @@ export class KickService extends BaseService {
       kickVote,
     )
 
-    const updateGame = BaseService.gameDb.updateGame(game)
+    const updateGame = this.redis.updateGame(game)
     const broadcast = this.broadcastGame(socket, game)
 
     await Promise.all([updateGame, broadcast])

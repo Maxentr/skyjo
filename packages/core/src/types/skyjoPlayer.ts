@@ -1,16 +1,17 @@
 import type { Avatar, ConnectionStatus } from "@/constants.js"
 import type { SkyjoCardDb, SkyjoCardToJson } from "./skyjoCard.js"
 
-export interface SkyjoPlayerPopulate {
+export type SkyjoPlayerPopulate = {
   id: string
   name: string
   socketId: string
   avatar: Avatar
-  score: number
-  scores: SkyjoPlayerScores
-  wantsReplay: boolean
   connectionStatus: ConnectionStatus
   cards: SkyjoCardDb[][]
+  score: number
+  scores: SkyjoPlayerScores
+  hasPlayedLastTurn: boolean
+  wantsReplay: boolean
 
   // Allow any additional fields, they will be ignored
   [key: string]: unknown
@@ -18,16 +19,15 @@ export interface SkyjoPlayerPopulate {
 
 export type SkyjoPlayerScores = (number | "-")[]
 
-export interface SkyjoPlayerToJson {
+export type SkyjoPlayerToJson = {
   id: string
   name: string
-  readonly socketId: string
-  readonly avatar: Avatar
-  readonly score: number
-  readonly wantsReplay: boolean
-  readonly connectionStatus: ConnectionStatus
-  readonly scores: SkyjoPlayerScores
-  readonly currentScore: number
-  readonly cards: SkyjoCardToJson[][]
-  readonly isAdmin: boolean
+  socketId: string
+  avatar: Avatar
+  connectionStatus: ConnectionStatus
+  cards: SkyjoCardToJson[][]
+  score: number
+  scores: SkyjoPlayerScores
+  hasPlayedLastTurn: boolean
+  wantsReplay: boolean
 }

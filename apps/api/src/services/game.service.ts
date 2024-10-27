@@ -12,7 +12,7 @@ import { BaseService } from "./base.service.js"
 
 export class GameService extends BaseService {
   async onGet(socket: SkyjoSocket) {
-    const game = await this.getGame(socket.data.gameCode)
+    const game = await this.redis.getGame(socket.data.gameCode)
 
     socket.emit("game", game.toJson())
   }
@@ -21,7 +21,7 @@ export class GameService extends BaseService {
     const { column, row } = turnData
     const gameCode = socket.data.gameCode
 
-    const game = await this.getGame(gameCode)
+    const game = await this.redis.getGame(gameCode)
 
     const player = game.getPlayerById(socket.data.playerId)
     if (!player) {
@@ -65,7 +65,7 @@ export class GameService extends BaseService {
 
     game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
 
-    const updateGame = BaseService.gameDb.updateGame(game)
+    const updateGame = this.redis.updateGame(game)
     const broadcast = this.broadcastGame(socket, game)
 
     await Promise.all([updateGame, broadcast])
@@ -79,7 +79,7 @@ export class GameService extends BaseService {
     if (pile === "draw") game.drawCard()
     else game.pickFromDiscard()
 
-    const updateGame = BaseService.gameDb.updateGame(game)
+    const updateGame = this.redis.updateGame(game)
     const broadcast = this.broadcastGame(socket, game)
 
     await Promise.all([updateGame, broadcast])
@@ -93,7 +93,7 @@ export class GameService extends BaseService {
 
     game.replaceCard(column, row)
 
-    const updateGame = BaseService.gameDb.updateGame(game)
+    const updateGame = this.redis.updateGame(game)
     const broadcast = this.broadcastGame(socket, game)
 
     await Promise.all([updateGame, broadcast])
@@ -108,7 +108,7 @@ export class GameService extends BaseService {
 
     game.discardCard(game.selectedCardValue!)
 
-    const updateGame = BaseService.gameDb.updateGame(game)
+    const updateGame = this.redis.updateGame(game)
     const broadcast = this.broadcastGame(socket, game)
 
     await Promise.all([updateGame, broadcast])
@@ -127,7 +127,7 @@ export class GameService extends BaseService {
   }
 
   async onReplay(socket: SkyjoSocket) {
-    const game = await this.getGame(socket.data.gameCode)
+    const game = await this.redis.getGame(socket.data.gameCode)
     if (game.status !== CoreConstants.GAME_STATUS.FINISHED) {
       throw new CError(`Player try to replay but the game is not finished.`, {
         code: ErrorConstants.ERROR.NOT_ALLOWED,
@@ -144,7 +144,7 @@ export class GameService extends BaseService {
 
     game.restartGameIfAllPlayersWantReplay()
 
-    const updateGame = BaseService.gameDb.updateGame(game)
+    const updateGame = this.redis.updateGame(game)
     const broadcast = this.broadcastGame(socket, game)
 
     await Promise.all([updateGame, broadcast])
@@ -156,7 +156,7 @@ export class GameService extends BaseService {
     socket: SkyjoSocket,
     allowedStates: TurnStatus[],
   ) {
-    const game = await this.getGame(socket.data.gameCode)
+    const game = await this.redis.getGame(socket.data.gameCode)
 
     if (
       game.status !== CoreConstants.GAME_STATUS.PLAYING ||

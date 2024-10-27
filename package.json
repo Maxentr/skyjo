@@ -6,6 +6,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "prod": "turbo run prod",
     "biome:check": "turbo run biome:check",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",

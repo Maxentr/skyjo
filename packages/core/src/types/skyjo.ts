@@ -7,7 +7,7 @@ import type {
 import type { SkyjoPlayerToJson } from "./skyjoPlayer.js"
 import type { SkyjoSettingsToJson } from "./skyjoSettings.js"
 
-export interface SkyjoPopulate {
+export type SkyjoPopulate = {
   id: string
   code: string
   status: GameStatus
@@ -41,17 +41,23 @@ export interface SkyjoPopulate {
   [key: string]: unknown
 }
 
-export interface SkyjoToJson {
+export type SkyjoToJson = {
+  id: string
   code: string
-  status: GameStatus
   adminId: string
+  isFull: boolean
+  status: GameStatus
   players: SkyjoPlayerToJson[]
   turn: number
+  discardPile: number[]
+  drawPile: number[]
   settings: SkyjoSettingsToJson
   selectedCardValue: number | null
+  roundNumber: number
   roundStatus: RoundStatus
   turnStatus: TurnStatus
-  lastDiscardCardValue?: number
   lastTurnStatus: LastTurnStatus
+  firstToFinishPlayerId: string | null
+  createdAt: Date
   updatedAt: Date
 }

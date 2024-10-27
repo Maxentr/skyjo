@@ -208,7 +208,7 @@ export class SkyjoPlayer implements SkyjoPlayerInterface {
     this.hasPlayedLastTurn = false
   }
 
-  toJson(adminId?: string) {
+  toJson() {
     return {
       id: this.id,
       name: this.name,
@@ -218,8 +218,7 @@ export class SkyjoPlayer implements SkyjoPlayerInterface {
       wantsReplay: this.wantsReplay,
       connectionStatus: this.connectionStatus,
       scores: this.scores,
-      currentScore: this.currentScore(),
-      isAdmin: this.id === adminId,
+      hasPlayedLastTurn: this.hasPlayedLastTurn,
       cards: this.cards.map((column) => column.map((card) => card.toJson())),
     } satisfies SkyjoPlayerToJson
   }

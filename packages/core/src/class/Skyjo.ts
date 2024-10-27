@@ -25,6 +25,7 @@ interface SkyjoInterface {
   firstToFinishPlayerId: string | null
   turnStatus: TurnStatus
   lastTurnStatus: LastTurnStatus
+  roundStatus: RoundStatus
 
   start(): void
   checkAllPlayersRevealedCards(count: number): void
@@ -230,6 +231,10 @@ export class Skyjo implements SkyjoInterface {
     this.lastTurnStatus = Constants.LAST_TURN_STATUS.TURN
   }
 
+  getLastDiscardCardValue() {
+    return this.discardPile[this.discardPile.length - 1]
+  }
+
   nextTurn() {
     const currentPlayer = this.getCurrentPlayer()
 
@@ -293,17 +298,23 @@ export class Skyjo implements SkyjoInterface {
 
   toJson() {
     return {
+      id: this.id,
       code: this.code,
-      status: this.status,
-      turn: this.turn,
       adminId: this.adminId,
-      players: this.players.map((player) => player.toJson(this.adminId)),
+      isFull: this.isFull(),
+      status: this.status,
+      players: this.players.map((player) => player.toJson()),
+      turn: this.turn,
+      discardPile: this.discardPile,
+      drawPile: this.drawPile,
+      settings: this.settings.toJson(),
       selectedCardValue: this.selectedCardValue,
-      lastDiscardCardValue: this.discardPile[this.discardPile.length - 1],
+      roundNumber: this.roundNumber,
       roundStatus: this.roundStatus,
       turnStatus: this.turnStatus,
       lastTurnStatus: this.lastTurnStatus,
-      settings: this.settings.toJson(),
+      firstToFinishPlayerId: this.firstToFinishPlayerId,
+      createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     } satisfies SkyjoToJson
   }
