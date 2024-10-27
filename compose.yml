@@ -1,12 +1,43 @@
-version: '3.8'
-
 services:
   api:
-    image: ghcr.io/maxentr/skyjo/api:test
+    image: ghcr.io/maxentr/skyjo/api:latest
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    depends_on:
+      - redis
     ports:
       - "3001:3001"
+    networks:
+      - internal
+      - external
+    env_file:
+      - .env
+      - .env.api
     environment:
       - NODE_ENV=production
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+    restart: always
+
+  redis:
+    image: redis/redis-stack-server:latest
+    command: redis-server --loadmodule /opt/redis-stack/lib/rejson.so --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    ports:
+      - 6379:6379
+    networks:
+      - internal
     env_file:
-      - ./apps/api/.env
-    restart: unless-stopped
+      - .env
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    restart: always
+
+networks:
+  internal:
+    internal: true
+  external:
+
+volumes:
+  redis-data:
