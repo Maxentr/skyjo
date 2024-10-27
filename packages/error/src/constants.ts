@@ -1,6 +1,7 @@
 export class Constants {
   static readonly ERROR = {
     GAME_NOT_FOUND: "game-not-found",
+    GAME_ALREADY_EXISTS: "game-already-exists",
     PLAYER_NOT_FOUND: "player-not-found",
     NOT_ALLOWED: "not-allowed",
     INVALID_TURN_STATE: "invalid-turn-state",
