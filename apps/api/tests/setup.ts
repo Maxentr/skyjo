@@ -1,12 +1,6 @@
 import { vi } from "vitest"
 import "@skyjo/error/test/expect-extend"
 
-vi.mock("@skyjo/database/provider", () => ({
-  db: {
-    query: vi.fn(),
-  },
-}))
-
 vi.spyOn(process, "env", "get").mockReturnValue({
   NODE_ENV: "test",
   APP_NAME: "skyjo-api",

@@ -1,49 +1,7 @@
-import { GameDb } from "@/db/game.db.js"
-import { PlayerDb } from "@/db/player.db.js"
-import { BaseService } from "@/services/base.service.js"
+import type { BaseService } from "@/services/base.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import { TEST_SOCKET_ID } from "@tests/constants-test.js"
 import { vi } from "vitest"
-
-const mockPlayerDb = () => {
-  return {
-    createPlayer: vi.fn(),
-    updatePlayer: vi.fn(),
-    updateSocketId: vi.fn(),
-    removePlayer: vi.fn(),
-    canReconnect: vi.fn(),
-    updateDisconnectionDate: vi.fn(),
-    reconnectPlayer: vi.fn(),
-    getPlayersByGameId: vi.fn(),
-  } satisfies PlayerDb
-}
-
-const mockGameDb = () => {
-  return {
-    playerDb: mockPlayerDb(),
-    createGame: vi.fn(),
-    updateGame: vi.fn(),
-    updateSettings: vi.fn(),
-    updateAdmin: vi.fn(),
-    getGamesByRegion: vi.fn(),
-    getGameById: vi.fn(),
-    getGameByCode: vi.fn(),
-    getPublicGameWithFreePlace: vi.fn(),
-    isPlayerInGame: vi.fn(),
-    retrieveGameByCode: vi.fn(),
-    removeGame: vi.fn(),
-    removeInactiveGames: vi.fn(),
-  } satisfies Omit<GameDb, "formatSkyjo"> as unknown as GameDb
-}
-
-export const mockBaseService = () => {
-  // this prevent the beforeStart method to be called
-  BaseService["firstInit"] = false
-  BaseService["games"] = []
-
-  BaseService["playerDb"] = mockPlayerDb()
-  BaseService["gameDb"] = mockGameDb()
-}
 
 export const mockSocket = (id: string = TEST_SOCKET_ID) => {
   return {
@@ -58,4 +16,29 @@ export const mockSocket = (id: string = TEST_SOCKET_ID) => {
     disconnected: false,
     recovered: true,
   } as unknown as SkyjoSocket
+}
+
+export const mockRedis = (service: BaseService) => {
+  service["redis"].getGame = vi.fn(() =>
+    Promise.reject(new Error("This is the default mock of getGame")),
+  )
+  service["redis"].getPublicGameWithFreePlace = vi.fn(() =>
+    Promise.reject(
+      new Error("This is the default mock of getPublicGameWithFreePlace"),
+    ),
+  )
+  service["redis"].isPlayerInGame = vi.fn(() =>
+    Promise.reject(new Error("This is the default mock of isPlayerInGame")),
+  )
+  service["redis"].canReconnectPlayer = vi.fn(() =>
+    Promise.reject(new Error("This is the default mock of canReconnectPlayer")),
+  )
+
+  // these methods doesn't need to be mocked inside tests because they return void
+  service["redis"].createGame = vi.fn()
+  service["redis"].updateGame = vi.fn()
+  service["redis"].updatePlayer = vi.fn()
+  service["redis"].updatePlayerSocketId = vi.fn()
+  service["redis"].removeGame = vi.fn()
+  service["redis"].removePlayer = vi.fn()
 }

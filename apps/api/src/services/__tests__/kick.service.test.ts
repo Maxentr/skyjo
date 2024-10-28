@@ -1,5 +1,4 @@
-import { mockBaseService, mockSocket } from "@/services/__tests__/_mock.js"
-import { BaseService } from "@/services/base.service.js"
+import { mockRedis, mockSocket } from "@/services/__tests__/_mock.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import {
   Constants as CoreConstants,
@@ -25,8 +24,8 @@ describe("KickService", () => {
   let opponent2: SkyjoPlayer
 
   beforeEach(() => {
-    mockBaseService()
     service = new KickService()
+    mockRedis(service)
 
     socket = mockSocket()
 
@@ -49,7 +48,7 @@ describe("KickService", () => {
     opponent1Socket = mockSocket(opponent1.socketId)
     game.addPlayer(opponent2)
 
-    BaseService["games"].push(game)
+    service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
     socket.data = {
       gameCode: game.code,
@@ -110,14 +109,6 @@ describe("KickService", () => {
   })
 
   describe("onVoteToKick", () => {
-    it("should throw if the game is not found", async () => {
-      socket.data.gameCode = "NOT-A-GAME-CODE"
-
-      await expect(service.onVoteToKick(socket, true)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.GAME_NOT_FOUND,
-      )
-    })
-
     it("should throw if the player is not found", async () => {
       socket.data.playerId = "NOT-A-PLAYER-ID"
 

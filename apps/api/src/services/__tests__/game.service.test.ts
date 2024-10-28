@@ -1,5 +1,4 @@
-import { mockBaseService, mockSocket } from "@/services/__tests__/_mock.js"
-import { BaseService } from "@/services/base.service.js"
+import { mockRedis, mockSocket } from "@/services/__tests__/_mock.js"
 import { GameService } from "@/services/game.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import {
@@ -12,7 +11,7 @@ import {
   SkyjoSettings,
   type TurnStatus,
 } from "@skyjo/core"
-import { Constants as ErrorConstants } from "@skyjo/error"
+import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { TEST_SOCKET_ID, TEST_UNKNOWN_GAME_ID } from "@tests/constants-test.js"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -21,8 +20,8 @@ describe("GameService", () => {
   let socket: SkyjoSocket
 
   beforeEach(() => {
-    mockBaseService()
     service = new GameService()
+    mockRedis(service)
 
     socket = mockSocket()
   })
@@ -35,6 +34,12 @@ describe("GameService", () => {
     it("should not get a game if it does not exist", async () => {
       socket.data.gameCode = TEST_UNKNOWN_GAME_ID
 
+      service["redis"].getGame = vi.fn(() =>
+        Promise.reject(
+          new CError("", { code: ErrorConstants.ERROR.GAME_NOT_FOUND }),
+        ),
+      )
+
       await expect(service.onGet(socket)).toThrowCErrorWithCode(
         ErrorConstants.ERROR.GAME_NOT_FOUND,
       )
@@ -42,25 +47,7 @@ describe("GameService", () => {
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
-    it("should get the game from memory", async () => {
-      const player = new SkyjoPlayer(
-        { username: "player", avatar: CoreConstants.AVATARS.BEE },
-        "socketId132312",
-      )
-      const newGame = new Skyjo(player.id, new SkyjoSettings(false))
-      newGame.addPlayer(player)
-      BaseService["games"].push(newGame)
-      socket.data.gameCode = newGame.code
-
-      const gameCode = newGame.code
-
-      await service.onGet(socket)
-      const game = await service["getGame"](gameCode)
-
-      expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
-    })
-
-    it("should get the game from database", async () => {
+    it("should get the game", async () => {
       const player = new SkyjoPlayer(
         { username: "player", avatar: CoreConstants.AVATARS.BEE },
         "socketId132312",
@@ -69,30 +56,15 @@ describe("GameService", () => {
       newGame.addPlayer(player)
       socket.data.gameCode = newGame.code
 
-      // mock the retrieveGameByCode method to return the newGame like if it was in the database
-      BaseService["gameDb"].retrieveGameByCode = vi.fn(() =>
-        Promise.resolve(newGame),
-      )
+      service["redis"].getGame = vi.fn(() => Promise.resolve(newGame))
 
       await service.onGet(socket)
-      const game = await service["getGame"](newGame.code)
 
-      expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
-      expect(BaseService["games"]).toContain(game)
+      expect(socket.emit).toHaveBeenNthCalledWith(1, "game", newGame.toJson())
     })
   })
 
   describe("onRevealCard", () => {
-    it("should throw if game does not exist", async () => {
-      socket.data.gameCode = TEST_UNKNOWN_GAME_ID
-
-      await expect(
-        service.onRevealCard(socket, { column: 0, row: 0 }),
-      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
-
-      expect(socket.emit).not.toHaveBeenCalled()
-    })
-
     it("should throw if player is not in the game", async () => {
       const player = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
@@ -102,7 +74,7 @@ describe("GameService", () => {
       game.addPlayer(player)
       socket.data.gameCode = game.code
 
-      BaseService["games"].push(game)
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.TURTLE },
@@ -124,7 +96,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -133,6 +105,8 @@ describe("GameService", () => {
         "socketId132312",
       )
       game.addPlayer(opponent)
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
         service.onRevealCard(socket, { column: 0, row: 0 }),
@@ -148,7 +122,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
@@ -161,7 +135,9 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
-      service.onRevealCard(socket, { column: 0, row: 2 })
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await service.onRevealCard(socket, { column: 0, row: 2 })
 
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
       expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
@@ -176,12 +152,11 @@ describe("GameService", () => {
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
       )
-
       game.addPlayer(opponent)
 
       game.addPlayer(player)
@@ -190,6 +165,8 @@ describe("GameService", () => {
 
       game.start()
       player.turnCard(0, 0)
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await service.onRevealCard(socket, { column: 0, row: 2 })
 
@@ -202,16 +179,6 @@ describe("GameService", () => {
   })
 
   describe("onPickCard", () => {
-    it("should throw if game does not exist", async () => {
-      socket.data.gameCode = TEST_UNKNOWN_GAME_ID
-
-      await expect(
-        service.onPickCard(socket, { pile: "draw" }),
-      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
-
-      expect(socket.emit).not.toHaveBeenCalled()
-    })
-
     it("should throw if player is not in the game", async () => {
       const opponent = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
@@ -220,7 +187,6 @@ describe("GameService", () => {
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
       game.addPlayer(opponent)
 
-      BaseService["games"].push(game)
       socket.data.gameCode = game.code
 
       const opponent2 = new SkyjoPlayer(
@@ -239,6 +205,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(
         service.onPickCard(socket, { pile: "draw" }),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
@@ -253,7 +221,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -262,6 +230,8 @@ describe("GameService", () => {
         "socketId132312",
       )
       game.addPlayer(opponent)
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
         service.onPickCard(socket, { pile: "draw" }),
@@ -277,7 +247,6 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -297,6 +266,8 @@ describe("GameService", () => {
 
       game.turn = 1
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(
         service.onPickCard(socket, { pile: "draw" }),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
@@ -313,7 +284,7 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
@@ -329,6 +300,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
       game.turnStatus = CoreConstants.TURN_STATUS.REPLACE_A_CARD
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
         service.onPickCard(socket, { pile: "draw" }),
@@ -346,7 +319,6 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
 
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
@@ -363,6 +335,8 @@ describe("GameService", () => {
 
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await service.onPickCard(socket, { pile: "draw" })
 
@@ -381,7 +355,6 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
 
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
@@ -399,6 +372,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await service.onPickCard(socket, { pile: "discard" })
 
       expect(socket.emit).toHaveBeenCalledOnce()
@@ -410,16 +385,6 @@ describe("GameService", () => {
   })
 
   describe("onReplaceCard", () => {
-    it("should throw if the game does not exist", async () => {
-      socket.data.gameCode = TEST_UNKNOWN_GAME_ID
-
-      await expect(
-        service.onReplaceCard(socket, { column: 0, row: 0 }),
-      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
-
-      expect(socket.emit).not.toHaveBeenCalled()
-    })
-
     it("should throw if player is not in the game", async () => {
       const opponent = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
@@ -428,7 +393,6 @@ describe("GameService", () => {
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
       game.addPlayer(opponent)
 
-      BaseService["games"].push(game)
       socket.data.gameCode = game.code
 
       const opponent2 = new SkyjoPlayer(
@@ -447,6 +411,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(
         service.onReplaceCard(socket, { column: 0, row: 2 }),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
@@ -461,7 +427,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -470,6 +436,8 @@ describe("GameService", () => {
         "socketId132312",
       )
       game.addPlayer(opponent)
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
         service.onReplaceCard(socket, { column: 0, row: 0 }),
@@ -485,7 +453,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -505,6 +473,8 @@ describe("GameService", () => {
 
       game.turn = 1
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(
         service.onReplaceCard(socket, { column: 0, row: 2 }),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
@@ -521,7 +491,7 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
@@ -537,6 +507,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
       game.turnStatus = CoreConstants.TURN_STATUS.CHOOSE_A_PILE
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
         service.onReplaceCard(socket, { column: 0, row: 2 }),
@@ -554,7 +526,7 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
@@ -572,6 +544,8 @@ describe("GameService", () => {
       game.selectedCardValue = 0
       game.turnStatus = CoreConstants.TURN_STATUS.REPLACE_A_CARD
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await service.onReplaceCard(socket, { column: 0, row: 2 })
 
       expect(socket.emit).toHaveBeenCalledTimes(2)
@@ -584,16 +558,6 @@ describe("GameService", () => {
   })
 
   describe("onDiscardCard", () => {
-    it("should throw if the game does not exist", async () => {
-      socket.data.gameCode = TEST_UNKNOWN_GAME_ID
-
-      await expect(service.onDiscardCard(socket)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.GAME_NOT_FOUND,
-      )
-
-      expect(socket.emit).not.toHaveBeenCalled()
-    })
-
     it("should throw if player is not in the game", async () => {
       const opponent = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
@@ -602,7 +566,6 @@ describe("GameService", () => {
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
       game.addPlayer(opponent)
 
-      BaseService["games"].push(game)
       socket.data.gameCode = game.code
 
       const opponent2 = new SkyjoPlayer(
@@ -621,6 +584,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(service.onDiscardCard(socket)).toThrowCErrorWithCode(
         ErrorConstants.ERROR.PLAYER_NOT_FOUND,
       )
@@ -635,7 +600,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -644,6 +609,8 @@ describe("GameService", () => {
         "socketId132312",
       )
       game.addPlayer(opponent)
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(service.onDiscardCard(socket)).toThrowCErrorWithCode(
         ErrorConstants.ERROR.NOT_ALLOWED,
@@ -659,7 +626,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -679,6 +646,8 @@ describe("GameService", () => {
 
       game.turn = 1
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(service.onDiscardCard(socket)).toThrowCErrorWithCode(
         ErrorConstants.ERROR.NOT_ALLOWED,
       )
@@ -695,7 +664,7 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
@@ -713,6 +682,8 @@ describe("GameService", () => {
       game.turnStatus = CoreConstants.TURN_STATUS.CHOOSE_A_PILE
       game.selectedCardValue = 0
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(service.onDiscardCard(socket)).toThrowCErrorWithCode(
         ErrorConstants.ERROR.INVALID_TURN_STATE,
       )
@@ -729,7 +700,7 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
@@ -747,6 +718,8 @@ describe("GameService", () => {
       game.turnStatus = CoreConstants.TURN_STATUS.THROW_OR_REPLACE
       game.selectedCardValue = 0
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await service.onDiscardCard(socket)
 
       expect(game.selectedCardValue).toBeNull()
@@ -758,14 +731,6 @@ describe("GameService", () => {
   })
 
   describe("onTurnCard", () => {
-    it("should throw if the game does not exist", async () => {
-      socket.data.gameCode = TEST_UNKNOWN_GAME_ID
-
-      await expect(
-        service.onTurnCard(socket, { column: 0, row: 0 }),
-      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
-    })
-
     it("should throw if player is not in the game", async () => {
       const opponent = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
@@ -774,7 +739,6 @@ describe("GameService", () => {
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
       game.addPlayer(opponent)
 
-      BaseService["games"].push(game)
       socket.data.gameCode = game.code
 
       const opponent2 = new SkyjoPlayer(
@@ -793,6 +757,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(
         service.onTurnCard(socket, { column: 0, row: 2 }),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
@@ -807,7 +773,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -816,6 +782,8 @@ describe("GameService", () => {
         "socketId132312",
       )
       game.addPlayer(opponent)
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
         service.onTurnCard(socket, { column: 0, row: 0 }),
@@ -831,7 +799,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -851,6 +819,8 @@ describe("GameService", () => {
 
       game.turn = 1
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(
         service.onTurnCard(socket, { column: 0, row: 2 }),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
@@ -867,7 +837,7 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
@@ -883,6 +853,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
       game.turnStatus = CoreConstants.TURN_STATUS.REPLACE_A_CARD
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
         service.onTurnCard(socket, { column: 0, row: 2 }),
@@ -900,7 +872,7 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
@@ -916,6 +888,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.turn = 0
       game.turnStatus = CoreConstants.TURN_STATUS.TURN_A_CARD
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await service.onTurnCard(socket, { column: 0, row: 2 })
 
@@ -936,7 +910,7 @@ describe("GameService", () => {
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       const opponent = new SkyjoPlayer(
         { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socketId132312",
@@ -968,6 +942,8 @@ describe("GameService", () => {
       game.turnStatus = CoreConstants.TURN_STATUS.TURN_A_CARD
       game.roundStatus = CoreConstants.ROUND_STATUS.LAST_LAP
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await service.onTurnCard(socket, { column: 0, row: 2 })
 
       expect(game.roundStatus).toBe<RoundStatus>(
@@ -992,7 +968,6 @@ describe("GameService", () => {
         TEST_SOCKET_ID,
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
-      BaseService["games"].push(game)
 
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
@@ -1034,6 +1009,8 @@ describe("GameService", () => {
       game.turnStatus = CoreConstants.TURN_STATUS.TURN_A_CARD
       game.roundStatus = CoreConstants.ROUND_STATUS.LAST_LAP
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await service.onTurnCard(socket, { column: 0, row: 2 })
 
       expect(game.roundStatus).toBe<RoundStatus>(
@@ -1053,16 +1030,6 @@ describe("GameService", () => {
   })
 
   describe("onReplay", () => {
-    it("should throw if it does not exist", async () => {
-      socket.data.gameCode = TEST_UNKNOWN_GAME_ID
-
-      await expect(service.onReplay(socket)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.GAME_NOT_FOUND,
-      )
-
-      expect(socket.emit).not.toHaveBeenCalled()
-    })
-
     it("should throw if the game is not finished", async () => {
       const player = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
@@ -1070,7 +1037,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -1090,6 +1057,8 @@ describe("GameService", () => {
       game.turn = 0
       game.turnStatus = CoreConstants.TURN_STATUS.CHOOSE_A_PILE
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await expect(service.onReplay(socket)).toThrowCErrorWithCode(
         ErrorConstants.ERROR.NOT_ALLOWED,
       )
@@ -1104,7 +1073,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -1123,6 +1092,8 @@ describe("GameService", () => {
       game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
       game.status = CoreConstants.GAME_STATUS.FINISHED
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
       await service.onReplay(socket)
 
       expect(socket.emit).toHaveBeenCalledOnce()
@@ -1137,7 +1108,7 @@ describe("GameService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
+
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -1157,6 +1128,8 @@ describe("GameService", () => {
       game.status = CoreConstants.GAME_STATUS.FINISHED
 
       opponent.wantsReplay = true
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await service.onReplay(socket)
 

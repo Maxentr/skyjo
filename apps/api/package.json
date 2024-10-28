@@ -16,11 +16,11 @@
   "dependencies": {
     "@hono/node-server": "^1.13.2",
     "@hono/zod-validator": "^0.2.2",
+    "@skyjo/cache": "workspace:*",
     "@skyjo/core": "workspace:*",
     "@skyjo/error": "workspace:*",
     "@skyjo/logger": "workspace:*",
     "@skyjo/shared": "workspace:*",
-    "@skyjo/cache": "workspace:*",
     "dayjs": "^1.11.13",
     "drizzle-orm": "^0.32.2",
     "hono": "^3.12.12",

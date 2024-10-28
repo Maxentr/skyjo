@@ -4,7 +4,6 @@ import { ENV } from "@env"
 import { serve } from "@hono/node-server"
 import { zValidator } from "@hono/zod-validator"
 import { Logger } from "@skyjo/logger"
-
 import { feedbackSchema } from "@skyjo/shared/validations/feedback"
 import { Hono } from "hono"
 import { cors } from "hono/cors"
