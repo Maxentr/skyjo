@@ -111,13 +111,6 @@ export const hasTurnedCard = (player: SkyjoPlayerToJson, count: number) => {
   return visibleCards.length === count
 }
 
-export const getWinner = (game: SkyjoToJson) => {
-  const connectedPlayers = getConnectedPlayers(game.players)
-  return connectedPlayers.reduce((prev, current) =>
-    prev.score < current.score ? prev : current,
-  )
-}
-
 export const getCurrentWhoHasToPlay = (game: SkyjoToJson) => {
   const players = getConnectedPlayers(game.players)
 
@@ -148,4 +141,10 @@ export const getNextPlayerIndex = (
   }
 
   return nextOpponentIndex
+}
+
+export const isAdmin = (game?: SkyjoToJson, playerId?: string) => {
+  if (!game || !playerId) return false
+
+  return playerId === game.adminId
 }

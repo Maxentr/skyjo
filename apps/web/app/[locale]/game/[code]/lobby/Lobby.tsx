@@ -16,6 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useSkyjo } from "@/contexts/SkyjoContext"
+import { isAdmin } from "@/lib/skyjo"
 import { cn } from "@/lib/utils"
 import { useRouter } from "@/navigation"
 import { Constants as CoreConstants } from "@skyjo/core"
@@ -32,20 +33,16 @@ type LobbyProps = {
 
 const Lobby = ({ gameCode }: LobbyProps) => {
   const t = useTranslations("pages.Lobby")
-  const {
-    player,
-    game: { players, status, settings, code },
-    actions,
-  } = useSkyjo()
+  const { player, game, actions } = useSkyjo()
   const router = useRouter()
   const [gameSettingsLocalStorage, setGameSettingsLocalStorage] =
     useLocalStorage<GameSettings>("gameSettings")
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const isAdmin = player?.isAdmin ?? false
-  const hasMinPlayers = players.length < 2
-  const nbCards = settings.cardPerColumn * settings.cardPerRow
+  const admin = isAdmin(game, player?.id)
+  const hasMinPlayers = game.players.length < 2
+  const nbCards = game.settings.cardPerColumn * game.settings.cardPerRow
   const maxInitialTurnedCount = nbCards === 1 ? 1 : nbCards - 1
   let timeoutStart: NodeJS.Timeout
 
@@ -60,8 +57,8 @@ const Lobby = ({ gameCode }: LobbyProps) => {
 
     if (gameSettingsLocalStorage) {
       const newSettings = { ...gameSettingsLocalStorage }
-      if (gameSettingsLocalStorage.private !== settings.private)
-        newSettings.private = settings.private
+      if (gameSettingsLocalStorage.private !== game.settings.private)
+        newSettings.private = game.settings.private
 
       actions.updateSettings(newSettings)
     }
@@ -70,7 +67,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
   useEffect(() => {
     if (status !== CoreConstants.GAME_STATUS.LOBBY) {
       clearTimeout(timeoutStart)
-      router.replace(`/game/${code}`)
+      router.replace(`/game/${gameCode}`)
     }
   }, [status])
 
@@ -78,7 +75,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
     if (isLoading) return
 
     setIsLoading(true)
-    setGameSettingsLocalStorage(settings)
+    setGameSettingsLocalStorage(game.settings)
 
     actions.startGame()
 
@@ -104,13 +101,13 @@ const Lobby = ({ gameCode }: LobbyProps) => {
             />
             <span className="absolute top-4 right-4">
               <TooltipProvider delayDuration={200}>
-                <Tooltip defaultOpen={isAdmin}>
+                <Tooltip defaultOpen={admin}>
                   <TooltipTrigger className="relative">
-                    {settings.private ? (
+                    {game.settings.private ? (
                       <LockIcon
                         className={cn(
                           "h-6 w-6 text-black dark:text-dark-font",
-                          isAdmin ? "cursor-pointer" : "cursor-not-allowed",
+                          admin ? "cursor-pointer" : "cursor-not-allowed",
                         )}
                         onClick={() =>
                           actions.updateSingleSettings("private", false)
@@ -120,7 +117,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                       <UnlockIcon
                         className={cn(
                           "h-6 w-6 text-black dark:text-dark-font",
-                          !isAdmin && "cursor-default",
+                          !admin && "cursor-default",
                         )}
                         onClick={() =>
                           actions.updateSingleSettings("private", true)
@@ -129,7 +126,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     )}
                   </TooltipTrigger>
                   <TooltipContent>
-                    {settings.private
+                    {game.settings.private
                       ? t("settings.private.tooltip.on")
                       : t("settings.private.tooltip.off")}
                   </TooltipContent>
@@ -144,7 +141,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
               <div className="flex flex-row items-center gap-2">
                 <Switch
                   id="skyjo-for-column"
-                  checked={settings.allowSkyjoForColumn}
+                  checked={game.settings.allowSkyjoForColumn}
                   onCheckedChange={(checked) =>
                     actions.updateSingleSettings("allowSkyjoForColumn", checked)
                   }
@@ -158,7 +155,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
               <div className="flex flex-row items-center gap-2">
                 <Switch
                   id="skyjo-for-row"
-                  checked={settings.allowSkyjoForRow}
+                  checked={game.settings.allowSkyjoForRow}
                   onCheckedChange={(checked) =>
                     actions.updateSingleSettings("allowSkyjoForRow", checked)
                   }
@@ -176,13 +173,15 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 <RadioNumber
                   name="nb-columns"
                   max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN}
-                  selected={settings.cardPerColumn}
+                  selected={game.settings.cardPerColumn}
                   onChange={(value) =>
                     actions.updateSingleSettings("cardPerColumn", value)
                   }
                   title={t("settings.nb-columns.title")}
-                  disabled={!isAdmin}
-                  disabledRadioNumber={settings.cardPerRow === 1 ? [1] : []}
+                  disabled={!admin}
+                  disabledRadioNumber={
+                    game.settings.cardPerRow === 1 ? [1] : []
+                  }
                 />
               </div>
               <div className="flex flex-col gap-1">
@@ -190,7 +189,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 <RadioNumber
                   name="nb-rows"
                   max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW}
-                  selected={settings.cardPerRow}
+                  selected={game.settings.cardPerRow}
                   onChange={(value) =>
                     actions.updateSingleSettings("cardPerRow", value)
                   }
@@ -204,26 +203,26 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </Label>
                 <div className="flex flex-row gap-2 items-center">
                   <Slider
-                    key={settings.initialTurnedCount}
+                    key={game.settings.initialTurnedCount}
                     name={"initial-turned-count"}
                     step={1}
                     min={0}
                     max={maxInitialTurnedCount}
-                    defaultValue={[settings.initialTurnedCount]}
+                    defaultValue={[game.settings.initialTurnedCount]}
                     onValueCommit={(value) =>
                       actions.updateSingleSettings("initialTurnedCount", +value)
                     }
                     title={t("settings.initial-turned-count.title", {
-                      number: settings.initialTurnedCount,
+                      number: game.settings.initialTurnedCount,
                     })}
-                    disabled={!isAdmin}
+                    disabled={!admin}
                   />
                   <Input
                     name={"initial-turned-count"}
                     type="number"
                     min={0}
                     max={maxInitialTurnedCount}
-                    value={settings.initialTurnedCount}
+                    value={game.settings.initialTurnedCount}
                     onChange={(e) =>
                       actions.updateSingleSettings(
                         "initialTurnedCount",
@@ -231,9 +230,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                       )
                     }
                     title={t("settings.initial-turned-count.title", {
-                      number: settings.initialTurnedCount,
+                      number: game.settings.initialTurnedCount,
                     })}
-                    disabled={!isAdmin}
+                    disabled={!admin}
                     className="w-16 text-center"
                   />
                 </div>
@@ -244,12 +243,12 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </Label>
                 <div className="flex flex-row gap-2 items-center">
                   <Slider
-                    key={settings.multiplierForFirstPlayer}
+                    key={game.settings.multiplierForFirstPlayer}
                     name={"multiplier-for-first-player"}
                     step={1}
                     min={1}
                     max={10}
-                    defaultValue={[settings.multiplierForFirstPlayer]}
+                    defaultValue={[game.settings.multiplierForFirstPlayer]}
                     onValueCommit={(value) =>
                       actions.updateSingleSettings(
                         "multiplierForFirstPlayer",
@@ -257,16 +256,16 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                       )
                     }
                     title={t("settings.multiplier-for-first-player.title", {
-                      number: settings.multiplierForFirstPlayer,
+                      number: game.settings.multiplierForFirstPlayer,
                     })}
-                    disabled={!isAdmin}
+                    disabled={!admin}
                   />
                   <Input
                     name={"multiplier-for-first-player"}
                     type="number"
                     min={1}
                     max={10}
-                    value={settings.multiplierForFirstPlayer}
+                    value={game.settings.multiplierForFirstPlayer}
                     onChange={(e) =>
                       actions.updateSingleSettings(
                         "multiplierForFirstPlayer",
@@ -274,9 +273,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                       )
                     }
                     title={t("settings.multiplier-for-first-player.title", {
-                      number: settings.multiplierForFirstPlayer,
+                      number: game.settings.multiplierForFirstPlayer,
                     })}
-                    disabled={!isAdmin}
+                    disabled={!admin}
                     className="w-16 text-center"
                   />
                 </div>
@@ -287,26 +286,26 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </Label>
                 <div className="flex flex-row gap-2 items-center">
                   <Slider
-                    key={settings.scoreToEndGame}
+                    key={game.settings.scoreToEndGame}
                     name={"score-to-end-game"}
                     step={10}
                     min={10}
                     max={1000}
-                    defaultValue={[settings.scoreToEndGame]}
+                    defaultValue={[game.settings.scoreToEndGame]}
                     onValueCommit={(value) =>
                       actions.updateSingleSettings("scoreToEndGame", +value)
                     }
                     title={t("settings.score-to-end-game.title", {
-                      number: settings.scoreToEndGame,
+                      number: game.settings.scoreToEndGame,
                     })}
-                    disabled={!isAdmin}
+                    disabled={!admin}
                   />
                   <Input
                     name={"score-to-end-game"}
                     type="number"
                     min={10}
                     max={1000}
-                    value={settings.scoreToEndGame}
+                    value={game.settings.scoreToEndGame}
                     onChange={(e) =>
                       actions.updateSingleSettings(
                         "scoreToEndGame",
@@ -314,16 +313,16 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                       )
                     }
                     title={t("settings.score-to-end-game.title", {
-                      number: settings.scoreToEndGame,
+                      number: game.settings.scoreToEndGame,
                     })}
-                    disabled={!isAdmin}
+                    disabled={!admin}
                     className="w-20 text-center"
                   />
                 </div>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4 lg:gap-8 mt-6 lg:mt-8">
-              {isAdmin && (
+              {admin && (
                 <Button
                   onClick={actions.resetSettings}
                   className="bg-slate-200"
@@ -333,7 +332,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
               )}
               <Button
                 onClick={beforeStartGame}
-                disabled={hasMinPlayers || !isAdmin}
+                disabled={hasMinPlayers || !admin}
                 loading={isLoading}
               >
                 {t("start-game-button")}
@@ -345,7 +344,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
               {t("player-section.title")}
             </h3>
             <div className="flex flex-row flex-wrap justify-center gap-2">
-              {players.map((player) => (
+              {game.players.map((player) => (
                 <UserAvatar key={player.id} player={player} size="small" />
               ))}
             </div>
