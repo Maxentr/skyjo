@@ -1,4 +1,4 @@
-import type { CreatePlayer, JoinGame, SkyjoToJson } from "@skyjo/core"
+import type { CreatePlayer, GameStatus, JoinGame } from "@skyjo/core"
 import type { Error as ThrownError } from "@skyjo/error"
 
 export interface ClientToServerLobbyEvents {
@@ -15,5 +15,5 @@ export type ErrorJoinMessage = Extract<
 
 export interface ServerToClientLobbyEvents {
   "error:join": (message: ErrorJoinMessage) => void
-  join: (game: SkyjoToJson, playerId: string) => void
+  "game:join": (code: string, status: GameStatus, playerId: string) => void
 }

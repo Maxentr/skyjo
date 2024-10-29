@@ -1,3 +1,4 @@
+import type { SkyjoOperation } from "@/types/operation.js"
 import type {
   PlayPickCard,
   PlayReplaceCard,
@@ -18,4 +19,5 @@ export interface ClientToServerGameEvents {
 
 export interface ServerToClientGameEvents {
   game: (game: SkyjoToJson) => void
+  "game:update": (operations: SkyjoOperation[]) => void
 }

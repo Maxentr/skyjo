@@ -1,4 +1,5 @@
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
+import { GameStateManager } from "@/utils/GameStateManager.js"
 import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
 import {
   Constants as CoreConstants,
@@ -7,6 +8,7 @@ import {
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
+import type { ServerChatMessage } from "@skyjo/shared/types/chat"
 import type { LastGame } from "@skyjo/shared/validations/reconnect"
 import { BaseService } from "./base.service.js"
 
@@ -14,6 +16,7 @@ export class PlayerService extends BaseService {
   async onLeave(socket: SkyjoSocket, timeout: boolean = false) {
     try {
       const game = await this.redis.getGame(socket.data.gameCode)
+      const stateManager = new GameStateManager(game)
 
       const player = game.getPlayerById(socket.data.playerId)
       if (!player) {
@@ -38,7 +41,7 @@ export class PlayerService extends BaseService {
 
       await this.redis.updateGame(game)
 
-      if (game.isAdmin(player.id)) await this.changeAdmin(socket, game)
+      if (game.isAdmin(player.id)) await this.changeAdmin(game)
 
       if (
         game.status === CoreConstants.GAME_STATUS.LOBBY ||
@@ -58,9 +61,7 @@ export class PlayerService extends BaseService {
           promises.push(updateGame)
         }
 
-        const broadcast = this.broadcastGame(socket, game)
-        promises.push(broadcast)
-
+        this.sendGameUpdateToSocketAndRoom(socket, stateManager)
         await Promise.all(promises)
       } else {
         this.startDisconnectionTimeout(player, timeout, () =>
@@ -68,12 +69,14 @@ export class PlayerService extends BaseService {
         )
       }
 
-      socket.to(game.code).emit("message:server", {
+      const message: ServerChatMessage = {
         id: crypto.randomUUID(),
         username: player.name,
         message: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT,
         type: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT,
-      })
+      }
+
+      this.sendToRoom(socket, "message:server", message)
 
       await socket.leave(game.code)
     } catch (error) {
@@ -171,13 +174,13 @@ export class PlayerService extends BaseService {
     socket: SkyjoSocket,
     game: Skyjo,
   ) {
+    const stateManager = new GameStateManager(game)
+
     if (!game.haveAtLeastMinPlayersConnected()) {
       game.status = CoreConstants.GAME_STATUS.STOPPED
 
-      const removeGame = this.redis.removeGame(game.code)
-      const broadcast = this.broadcastGame(socket, game)
-
-      await Promise.all([removeGame, broadcast])
+      this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+      await this.redis.removeGame(game.code)
       return
     }
 
@@ -199,10 +202,8 @@ export class PlayerService extends BaseService {
       this.restartRound(socket, game)
     }
 
-    const updateGame = this.redis.updateGame(game)
-    const broadcast = this.broadcastGame(socket, game)
-
-    await Promise.all([updateGame, broadcast])
+    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    await this.redis.updateGame(game)
   }
 
   private async reconnectPlayer(
@@ -229,11 +230,17 @@ export class PlayerService extends BaseService {
         },
       )
 
+    const stateManager = new GameStateManager(game)
+
     if (player.disconnectionTimeout) clearTimeout(player.disconnectionTimeout)
     player.socketId = socket.id
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
 
-    await this.joinGame(socket, game, player, true)
+    this.sendGameUpdateToRoom(socket, stateManager)
+    await Promise.all([
+      this.redis.updateGame(game),
+      this.joinGame(socket, game, player, true),
+    ])
   }
   //#endregion
 }

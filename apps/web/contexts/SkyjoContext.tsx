@@ -3,7 +3,7 @@
 import { useToast } from "@/components/ui/use-toast"
 import { useChat } from "@/contexts/ChatContext"
 import { useSocket } from "@/contexts/SocketContext"
-import { getCurrentUser, getOpponents } from "@/lib/skyjo"
+import { getCurrentUser, getOpponents, isAdmin } from "@/lib/skyjo"
 import { useRouter } from "@/navigation"
 import { Opponents } from "@/types/opponents"
 import {
@@ -12,6 +12,8 @@ import {
   SkyjoPlayerToJson,
   SkyjoToJson,
 } from "@skyjo/core"
+import type { SkyjoOperation } from "@skyjo/shared/types/operation"
+import { applyOperations } from "@skyjo/shared/utils/applyOperations"
 import { UpdateGameSettings } from "@skyjo/shared/validations/updateGameSettings"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
@@ -66,6 +68,8 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const player = getCurrentUser(game?.players, socket?.id ?? "")
   const opponents = getOpponents(game?.players, socket?.id ?? "")
 
+  const admin = isAdmin(game, socket?.id)
+
   useEffect(() => {
     if (!gameCode || !socket) return
 
@@ -99,11 +103,21 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   //#endregion
 
   //#region listeners
-  const onGameUpdate = async (game: SkyjoToJson) => {
-    console.log("game updated", game)
+  //#region game
+  const onGameReceive = (game: SkyjoToJson) => {
     setGame(game)
   }
 
+  const onGameUpdate = (operations: SkyjoOperation[]) => {
+    if (!game)
+      throw new Error(
+        "Received game update without game. This should not happen. Please report this bug.",
+      )
+
+    const gameUpdated = applyOperations(game, operations)
+
+    setGame(gameUpdated)
+  }
   const onLeave = () => {
     setGame(undefined)
     setChat([])
@@ -111,11 +125,14 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   }
 
   const initGameListeners = () => {
-    socket!.on("game", onGameUpdate)
+    socket!.on("game", onGameReceive)
+    socket!.on("game:update", onGameUpdate)
     socket!.on("leave:success", onLeave)
   }
+
   const destroyGameListeners = () => {
-    socket!.off("game", onGameUpdate)
+    socket!.off("game", onGameReceive)
+    socket!.off("game:update", onGameUpdate)
     socket!.off("leave:success", onLeave)
   }
   //#endregion
@@ -125,7 +142,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     key: T,
     value: UpdateGameSettings[T],
   ) => {
-    if (!player?.isAdmin) return
+    if (!admin) return
 
     switch (key) {
       case "private":
@@ -161,13 +178,13 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   }
 
   const updateSettings = (settings: UpdateGameSettings) => {
-    if (!player?.isAdmin) return
+    if (!admin) return
 
     socket!.emit("game:settings", settings)
   }
 
   const resetSettings = () => {
-    if (!player?.isAdmin) return
+    if (!admin) return
 
     socket!.emit("game:settings", {
       private: game?.settings.private ?? false,
@@ -175,7 +192,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   }
 
   const startGame = () => {
-    if (!player?.isAdmin) return
+    if (!admin) return
 
     socket!.emit("start")
   }

@@ -35,5 +35,3 @@ export interface ClientToServerSettingsEvents {
     multiplierForFirstPlayer: UpdateGameSettingsMultiplierForFirstPlayer,
   ) => void
 }
-
-// export interface ServerToClientSettingsEvents {}

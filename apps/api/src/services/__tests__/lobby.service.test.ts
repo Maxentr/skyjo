@@ -41,12 +41,8 @@ describe("LobbyService", () => {
 
       expect(socket.emit).toHaveBeenCalledWith(
         "game:join",
-        expect.objectContaining({
-          code: socket.data.gameCode,
-          settings: expect.objectContaining({
-            private: true,
-          }),
-        }),
+        socket.data.gameCode,
+        CoreConstants.GAME_STATUS.LOBBY,
         socket.data.playerId,
       )
     })
@@ -62,12 +58,8 @@ describe("LobbyService", () => {
       expect(socket.emit).toHaveBeenNthCalledWith(
         1,
         "game:join",
-        expect.objectContaining({
-          code: socket.data.gameCode,
-          settings: expect.objectContaining({
-            private: false,
-          }),
-        }),
+        socket.data.gameCode,
+        CoreConstants.GAME_STATUS.LOBBY,
         socket.data.playerId,
       )
     })
@@ -158,7 +150,8 @@ describe("LobbyService", () => {
       expect(socket.emit).toHaveBeenNthCalledWith(
         1,
         "game:join",
-        game.toJson(),
+        socket.data.gameCode,
+        CoreConstants.GAME_STATUS.LOBBY,
         socket.data.playerId,
       )
       expect(socket.emit).toHaveBeenNthCalledWith(
@@ -190,12 +183,8 @@ describe("LobbyService", () => {
       expect(socket.emit).toHaveBeenNthCalledWith(
         1,
         "game:join",
-        expect.objectContaining({
-          code: gameCode,
-          players: expect.arrayContaining([
-            expect.objectContaining({ id: socket.data.playerId }),
-          ]),
-        }),
+        gameCode,
+        CoreConstants.GAME_STATUS.LOBBY,
         socket.data.playerId,
       )
       expect(socket.emit).toHaveBeenNthCalledWith(
@@ -235,7 +224,8 @@ describe("LobbyService", () => {
       expect(socket.emit).toHaveBeenNthCalledWith(
         1,
         "game:join",
-        game?.toJson(),
+        game.code,
+        CoreConstants.GAME_STATUS.LOBBY,
         game.players[1].id,
       )
 
@@ -269,9 +259,8 @@ describe("LobbyService", () => {
       expect(socket.emit).toHaveBeenNthCalledWith(
         1,
         "game:join",
-        expect.objectContaining({
-          code: socket.data.gameCode,
-        }),
+        socket.data.gameCode,
+        CoreConstants.GAME_STATUS.LOBBY,
         socket.data.playerId,
       )
 
