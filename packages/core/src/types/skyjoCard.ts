@@ -1,6 +1,6 @@
 export type SkyjoCardToJson = {
   id: string
-  value: number
+  value?: number
   isVisible: boolean
 }
 

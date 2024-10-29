@@ -218,7 +218,6 @@ export class SkyjoPlayer implements SkyjoPlayerInterface {
       wantsReplay: this.wantsReplay,
       connectionStatus: this.connectionStatus,
       scores: this.scores,
-      hasPlayedLastTurn: this.hasPlayedLastTurn,
       cards: this.cards.map((column) => column.map((card) => card.toJson())),
     } satisfies SkyjoPlayerToJson
   }

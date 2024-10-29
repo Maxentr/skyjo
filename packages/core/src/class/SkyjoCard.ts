@@ -27,7 +27,7 @@ export class SkyjoCard implements SkyjoCardInterface {
   toJson() {
     return {
       id: this.id,
-      value: this.value,
+      value: this.isVisible ? this.value : undefined,
       isVisible: this.isVisible,
     } satisfies SkyjoCardToJson
   }

@@ -2,7 +2,7 @@ import {
   Constants as CoreConstants,
   Skyjo,
   type SkyjoPlayerToJson,
-  type SkyjoToJson,
+  type SkyjoToDb,
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { RedisClient } from "./client.js"
@@ -12,7 +12,7 @@ export class GameRepository extends RedisClient {
   private static readonly GAME_TTL = 60 * 10 // 10 minutes
 
   async createGame(game: Skyjo) {
-    const existingGame = await this.getGame(game.code)
+    const existingGame = await this.getGameSafe(game.code)
     if (existingGame) {
       throw new CError("A game with this code already exists in cache", {
         code: ErrorConstants.ERROR.GAME_ALREADY_EXISTS,
@@ -33,13 +33,22 @@ export class GameRepository extends RedisClient {
 
     if (!games) return []
 
-    return (games as SkyjoToJson[]).map((game) => this.deserializeGame(game))
+    return (games as SkyjoToDb[]).map((game) => this.deserializeGame(game))
   }
 
-  async getGame(code: string) {
-    const client = await RedisClient.getClient()
+  async getGameSafe(code: string = "") {
+    try {
+      return await this.getGame(code)
+    } catch {
+      return null
+    }
+  }
 
-    const game = await client.json.get(this.getGameKey(code))
+  async getGame(code: string = "") {
+    const client = await RedisClient.getClient()
+    const key = this.getGameKey(code)
+
+    const game = await client.json.get(key)
     if (!game) {
       throw new CError("Game not found in cache", {
         level: "warn",
@@ -48,7 +57,7 @@ export class GameRepository extends RedisClient {
       })
     }
 
-    return this.deserializeGame(game as SkyjoToJson)
+    return this.deserializeGame(game as SkyjoToDb)
   }
 
   async isPlayerInGame(gameCode: string, playerId: string) {
@@ -118,11 +127,7 @@ export class GameRepository extends RedisClient {
     return `${GameRepository.GAME_PREFIX}${code}`
   }
 
-  private serializeGame(game: Skyjo) {
-    return game.toJson()
-  }
-
-  private deserializeGame(game: SkyjoToJson): Skyjo {
+  private deserializeGame(game: SkyjoToDb): Skyjo {
     const skyjo = new Skyjo(game.adminId)
     skyjo.populate(game, { players: game.players })
 
@@ -133,7 +138,7 @@ export class GameRepository extends RedisClient {
     const client = await RedisClient.getClient()
 
     const key = this.getGameKey(game.code)
-    const json = this.serializeGame(game)
+    const json = game.serializeGame()
 
     await client.json.set(key, "$", json)
 

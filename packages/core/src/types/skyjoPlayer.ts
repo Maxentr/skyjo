@@ -24,10 +24,9 @@ export type SkyjoPlayerToJson = {
   name: string
   socketId: string
   avatar: Avatar
+  wantsReplay: boolean
   connectionStatus: ConnectionStatus
-  cards: SkyjoCardToJson[][]
   score: number
   scores: SkyjoPlayerScores
-  hasPlayedLastTurn: boolean
-  wantsReplay: boolean
+  cards: SkyjoCardToJson[][]
 }

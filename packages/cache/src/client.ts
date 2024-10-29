@@ -22,7 +22,6 @@ export abstract class RedisClient {
         },
       })
 
-      console.log("test")
       // Add error handling
       this.instance.on("error", (err) => {
         Logger.error("Redis Client Error", { error: err })

@@ -1,4 +1,4 @@
-import type { SkyjoPopulate, SkyjoToJson } from "@/types/skyjo.js"
+import type { SkyjoPopulate, SkyjoToDb, SkyjoToJson } from "@/types/skyjo.js"
 import type { SkyjoPlayerPopulate } from "@/types/skyjoPlayer.js"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import {
@@ -37,6 +37,7 @@ interface SkyjoInterface {
   nextTurn(): void
   resetRound(): void
   toJson(): SkyjoToJson
+  serializeGame(): SkyjoToDb
 }
 
 export class Skyjo implements SkyjoInterface {
@@ -222,6 +223,7 @@ export class Skyjo implements SkyjoInterface {
     const player = this.getCurrentPlayer()
     const oldCardValue = player.cards[column][row].value
     player.replaceCard(column, row, this.selectedCardValue!)
+    this.selectedCardValue = null
     this.discardCard(oldCardValue)
     this.lastTurnStatus = Constants.LAST_TURN_STATUS.REPLACE
   }
@@ -298,16 +300,60 @@ export class Skyjo implements SkyjoInterface {
 
   toJson() {
     return {
+      code: this.code,
+      adminId: this.adminId,
+      status: this.status,
+      players: this.players.map((player) => player.toJson()),
+      turn: this.turn,
+      lastDiscardCardValue: this.discardPile[this.discardPile.length - 1],
+      selectedCardValue: this.selectedCardValue,
+      roundStatus: this.roundStatus,
+      turnStatus: this.turnStatus,
+      lastTurnStatus: this.lastTurnStatus,
+      settings: this.settings.toJson(),
+      updatedAt: this.updatedAt,
+    } satisfies SkyjoToJson
+  }
+
+  serializeGame() {
+    return {
       id: this.id,
       code: this.code,
       adminId: this.adminId,
       isFull: this.isFull(),
       status: this.status,
-      players: this.players.map((player) => player.toJson()),
+      players: this.players.map((player) => ({
+        id: player.id,
+        name: player.name,
+        socketId: player.socketId,
+        avatar: player.avatar,
+        score: player.score,
+        wantsReplay: player.wantsReplay,
+        connectionStatus: player.connectionStatus,
+        scores: player.scores,
+        hasPlayedLastTurn: player.hasPlayedLastTurn,
+        cards: player.cards.map((column) =>
+          column.map((card) => ({
+            id: card.id,
+            value: card.value,
+            isVisible: card.isVisible,
+          })),
+        ),
+      })),
       turn: this.turn,
       discardPile: this.discardPile,
       drawPile: this.drawPile,
-      settings: this.settings.toJson(),
+      settings: {
+        private: this.settings.private,
+        maxPlayers: this.settings.maxPlayers,
+        allowSkyjoForColumn: this.settings.allowSkyjoForColumn,
+        allowSkyjoForRow: this.settings.allowSkyjoForRow,
+        initialTurnedCount: this.settings.initialTurnedCount,
+        cardPerRow: this.settings.cardPerRow,
+        cardPerColumn: this.settings.cardPerColumn,
+        scoreToEndGame: this.settings.scoreToEndGame,
+        multiplierForFirstPlayer: this.settings.multiplierForFirstPlayer,
+      },
       selectedCardValue: this.selectedCardValue,
       roundNumber: this.roundNumber,
       roundStatus: this.roundStatus,
@@ -316,7 +362,7 @@ export class Skyjo implements SkyjoInterface {
       firstToFinishPlayerId: this.firstToFinishPlayerId,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-    } satisfies SkyjoToJson
+    } satisfies SkyjoToDb
   }
 
   //#region private methods
