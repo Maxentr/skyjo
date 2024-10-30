@@ -5,6 +5,7 @@ import type {
   RoundStatus,
   SkyjoCardToJson,
   SkyjoPlayerScores,
+  SkyjoPlayerToJson,
   SkyjoSettingsToJson,
   TurnStatus,
 } from "@skyjo/core"
@@ -18,6 +19,7 @@ export type PlayerOperation =
   | ["player:scores", PlayerOperationValue<SkyjoPlayerScores>]
   | ["player:connectionStatus", PlayerOperationValue<ConnectionStatus>]
   | ["player:wantsReplay", PlayerOperationValue<boolean>]
+  | ["player:add", SkyjoPlayerToJson]
   | ["player:remove", string]
 
 export type SkyjoOperation =

@@ -13,7 +13,7 @@ export class GameStateManager {
   private readonly game: Skyjo
 
   constructor(game: Skyjo) {
-    this.previousState = game.toJson()
+    this.previousState = structuredClone(game.toJson())
     this.game = game
   }
 
@@ -24,7 +24,7 @@ export class GameStateManager {
       currentState,
     )
 
-    this.previousState = currentState
+    this.previousState = structuredClone(currentState)
 
     return operations
   }
@@ -45,8 +45,8 @@ export class GameStateManager {
     )
     ops.push(...settingsOps)
 
-    oldState.players.forEach((oldPlayer, playerIdx) => {
-      const newPlayer = newState.players[playerIdx]
+    oldState.players.forEach((oldPlayer) => {
+      const newPlayer = newState.players.find((p) => p.id === oldPlayer.id)
       if (!newPlayer) {
         ops.push(["player:remove", oldPlayer.id])
         return
@@ -54,6 +54,10 @@ export class GameStateManager {
       const playerOps = this.comparePlayer(oldPlayer, newPlayer)
 
       ops.push(...playerOps)
+    })
+
+    newState.players.slice(oldState.players.length).forEach((newPlayer) => {
+      ops.push(["player:add", newPlayer])
     })
 
     return ops
@@ -129,6 +133,14 @@ export class GameStateManager {
   ): SkyjoOperation[] {
     const ops: SkyjoOperation[] = []
     const playerId = oldPlayer.id
+
+    if (oldPlayer.socketId !== newPlayer.socketId) {
+      ops.push(["player:socketId", { playerId, value: newPlayer.socketId }])
+    }
+
+    if (oldPlayer.score !== newPlayer.score) {
+      ops.push(["player:score", { playerId, value: newPlayer.score }])
+    }
 
     if (!isDeepStrictEqual(oldPlayer.scores, newPlayer.scores)) {
       ops.push(["player:scores", { playerId, value: newPlayer.scores }])

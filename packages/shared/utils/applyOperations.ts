@@ -41,6 +41,9 @@ export const applyOperations = (
         Object.assign(gameUpdated.settings, data)
         break
       // player operations
+      case "player:add":
+        gameUpdated.players.push(data)
+        break
       case "player:socketId":
         updatePlayer(gameUpdated, data.playerId, "socketId", data.value)
         break
