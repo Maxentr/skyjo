@@ -68,13 +68,12 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const player = getCurrentUser(game?.players, socket?.id ?? "")
   const opponents = getOpponents(game?.players, socket?.id ?? "")
 
-  const admin = isAdmin(game, socket?.id)
+  const admin = isAdmin(game, player?.id)
 
   useEffect(() => {
     if (!gameCode || !socket) return
 
     initGameListeners()
-
     // get game
     socket.emit("get")
 
@@ -109,14 +108,12 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   }
 
   const onGameUpdate = (operations: SkyjoOperation[]) => {
-    if (!game)
-      throw new Error(
-        "Received game update without game. This should not happen. Please report this bug.",
-      )
-
-    const gameUpdated = applyOperations(game, operations)
-
-    setGame(gameUpdated)
+    setGame((prev) => {
+      if (!prev) return prev
+      const prevState = structuredClone(prev)
+      const newState = applyOperations(prevState, operations)
+      return newState
+    })
   }
   const onLeave = () => {
     setGame(undefined)
