@@ -253,10 +253,9 @@ export class PlayerService extends BaseService {
       room: game.code,
       stateManager,
     })
-    await Promise.all([
-      this.redis.updateGame(game),
-      this.joinGame(socket, game, player, true),
-    ])
+
+    await this.redis.updateGame(game)
+    await this.joinGame(socket, game, player, true)
   }
   //#endregion
 }

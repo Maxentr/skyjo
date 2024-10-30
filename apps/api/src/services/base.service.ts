@@ -139,12 +139,16 @@ export abstract class BaseService {
     ) {
       this.restartRound(socket, game)
     }
+
+    await this.redis.updateGame(game)
   }
 
   protected async restartRound(socket: SkyjoSocket, game: Skyjo) {
-    setTimeout(() => {
+    setTimeout(async () => {
       const stateManager = new GameStateManager(game)
       game.startNewRound()
+
+      await this.redis.updateGame(game)
       this.sendGameUpdateToSocketAndRoom(socket, {
         room: game.code,
         stateManager,
