@@ -65,11 +65,11 @@ const Lobby = ({ gameCode }: LobbyProps) => {
   }, [])
 
   useEffect(() => {
-    if (status !== CoreConstants.GAME_STATUS.LOBBY) {
+    if (game.status !== CoreConstants.GAME_STATUS.LOBBY) {
       clearTimeout(timeoutStart)
       router.replace(`/game/${gameCode}`)
     }
-  }, [status])
+  }, [game.status])
 
   const beforeStartGame = () => {
     if (isLoading) return
