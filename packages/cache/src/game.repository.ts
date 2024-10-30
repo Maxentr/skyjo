@@ -24,16 +24,9 @@ export class GameRepository extends RedisClient {
   }
 
   async getPublicGameWithFreePlace() {
-    const client = await RedisClient.getClient()
+    const games = await this.getEligibleGames()
 
-    const key = this.getGameKey("*")
-    const games = await client.json.get(key, {
-      path: `$.[?(@.status == '${CoreConstants.GAME_STATUS.LOBBY}' && @.settings.private == false && @.isFull == false)]`,
-    })
-
-    if (!games) return []
-
-    return (games as SkyjoToDb[]).map((game) => this.deserializeGame(game))
+    return games
   }
 
   async getGameSafe(code: string = "") {
@@ -145,4 +138,31 @@ export class GameRepository extends RedisClient {
     await client.expire(this.getGameKey(game.code), GameRepository.GAME_TTL)
   }
   //#endregion
+
+  private async getEligibleGames() {
+    const client = await RedisClient.getClient()
+    const eligibleGames: Skyjo[] = []
+
+    let cursor = 0
+    do {
+      const result = await client.scan(cursor, { MATCH: "game:*", COUNT: 100 })
+
+      for (const key of result.keys) {
+        const game = await this.getGame(
+          key.replace(GameRepository.GAME_PREFIX, ""),
+        )
+
+        const isEligible =
+          !game.settings.private &&
+          game.status === CoreConstants.GAME_STATUS.LOBBY &&
+          !game.isFull()
+
+        if (isEligible) eligibleGames.push(game)
+      }
+
+      cursor = result.cursor
+    } while (cursor !== 0)
+
+    return eligibleGames
+  }
 }
