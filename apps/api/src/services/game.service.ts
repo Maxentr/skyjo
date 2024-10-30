@@ -67,7 +67,10 @@ export class GameService extends BaseService {
 
     game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
 
@@ -80,7 +83,10 @@ export class GameService extends BaseService {
     if (pile === "draw") game.drawCard()
     else game.pickFromDiscard()
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
 
@@ -93,11 +99,17 @@ export class GameService extends BaseService {
 
     game.replaceCard(column, row)
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
 
     await this.finishTurn(socket, game)
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
   }
 
   async onDiscardCard(socket: SkyjoSocket) {
@@ -108,7 +120,10 @@ export class GameService extends BaseService {
 
     game.discardCard(game.selectedCardValue!)
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
 
@@ -120,11 +135,17 @@ export class GameService extends BaseService {
 
     game.turnCard(player, column, row)
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
 
     await this.finishTurn(socket, game)
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
   }
 
   async onReplay(socket: SkyjoSocket) {
@@ -146,7 +167,10 @@ export class GameService extends BaseService {
 
     game.restartGameIfAllPlayersWantReplay()
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
 

@@ -15,58 +15,71 @@ export abstract class BaseService {
 
   protected sendToSocket<T extends keyof ServerToClientEvents>(
     socket: SkyjoSocket,
-    event: T,
-    ...data: Parameters<ServerToClientEvents[T]>
+    params: {
+      event: T
+      data: Parameters<ServerToClientEvents[T]>
+    },
   ) {
-    socket.emit(event, ...data)
+    socket.emit(params.event, ...params.data)
   }
 
   protected sendToRoom<T extends keyof ServerToClientEvents>(
     socket: SkyjoSocket,
-    event: T,
-    ...data: Parameters<ServerToClientEvents[T]>
+    params: {
+      room: string
+      event: T
+      data: Parameters<ServerToClientEvents[T]>
+    },
   ) {
-    socket.to(socket.data.gameCode).emit(event, ...data)
+    socket.to(params.room).emit(params.event, ...params.data)
   }
 
   protected sendToSocketAndRoom<T extends keyof ServerToClientEvents>(
     socket: SkyjoSocket,
-    event: T,
-    ...data: Parameters<ServerToClientEvents[T]>
+    params: {
+      room: string
+      event: T
+      data: Parameters<ServerToClientEvents[T]>
+    },
   ) {
-    this.sendToSocket(socket, event, ...data)
-    this.sendToRoom(socket, event, ...data)
+    this.sendToSocket(socket, params)
+    this.sendToRoom(socket, params)
   }
 
   protected async sendGameToSocket(socket: SkyjoSocket, game: Skyjo) {
-    this.sendToSocket(socket, "game", game.toJson())
-  }
-
-  protected sendGameUpdateToSocket(
-    socket: SkyjoSocket,
-    stateManager: GameStateManager,
-  ) {
-    const operations = stateManager.getChanges()
-
-    this.sendToSocket(socket, "game:update", operations)
+    this.sendToSocket(socket, { event: "game", data: [game.toJson()] })
   }
 
   protected sendGameUpdateToRoom(
     socket: SkyjoSocket,
-    stateManager: GameStateManager,
+    params: {
+      room: string
+      stateManager: GameStateManager
+    },
   ) {
-    const operations = stateManager.getChanges()
+    const operations = params.stateManager.getChanges()
 
-    this.sendToRoom(socket, "game:update", operations)
+    this.sendToRoom(socket, {
+      room: params.room,
+      event: "game:update",
+      data: [operations],
+    })
   }
 
   protected sendGameUpdateToSocketAndRoom(
     socket: SkyjoSocket,
-    stateManager: GameStateManager,
+    params: {
+      room: string
+      stateManager: GameStateManager
+    },
   ) {
-    const operations = stateManager.getChanges()
+    const operations = params.stateManager.getChanges()
 
-    this.sendToSocketAndRoom(socket, "game:update", operations)
+    this.sendToSocketAndRoom(socket, {
+      room: params.room,
+      event: "game:update",
+      data: [operations],
+    })
   }
 
   protected async joinGame(
@@ -82,7 +95,10 @@ export abstract class BaseService {
       playerId: player.id,
     }
 
-    this.sendToSocket(socket, "game:join", game.code, game.status, player.id)
+    this.sendToSocket(socket, {
+      event: "game:join",
+      data: [game.code, game.status, player.id],
+    })
 
     const messageType = reconnection
       ? CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_RECONNECT
@@ -94,7 +110,11 @@ export abstract class BaseService {
       type: messageType,
     }
 
-    this.sendToSocketAndRoom(socket, "message:server", message)
+    this.sendToSocketAndRoom(socket, {
+      room: game.code,
+      event: "message:server",
+      data: [message],
+    })
 
     await this.redis.updateGame(game)
   }
@@ -125,7 +145,10 @@ export abstract class BaseService {
     setTimeout(() => {
       const stateManager = new GameStateManager(game)
       game.startNewRound()
-      this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+      this.sendGameUpdateToSocketAndRoom(socket, {
+        room: game.code,
+        stateManager,
+      })
     }, Constants.NEW_ROUND_DELAY)
   }
 }

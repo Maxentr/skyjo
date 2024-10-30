@@ -61,7 +61,10 @@ export class PlayerService extends BaseService {
           promises.push(updateGame)
         }
 
-        this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+        this.sendGameUpdateToSocketAndRoom(socket, {
+          room: game.code,
+          stateManager,
+        })
         await Promise.all(promises)
       } else {
         this.startDisconnectionTimeout(player, timeout, () =>
@@ -76,7 +79,11 @@ export class PlayerService extends BaseService {
         type: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT,
       }
 
-      this.sendToRoom(socket, "message:server", message)
+      this.sendToRoom(socket, {
+        room: game.code,
+        event: "message:server",
+        data: [message],
+      })
 
       await socket.leave(game.code)
     } catch (error) {
@@ -179,7 +186,10 @@ export class PlayerService extends BaseService {
     if (!game.haveAtLeastMinPlayersConnected()) {
       game.status = CoreConstants.GAME_STATUS.STOPPED
 
-      this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+      this.sendGameUpdateToSocketAndRoom(socket, {
+        room: game.code,
+        stateManager,
+      })
       await this.redis.removeGame(game.code)
       return
     }
@@ -202,7 +212,10 @@ export class PlayerService extends BaseService {
       this.restartRound(socket, game)
     }
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
 
@@ -236,7 +249,10 @@ export class PlayerService extends BaseService {
     player.socketId = socket.id
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
 
-    this.sendGameUpdateToRoom(socket, stateManager)
+    this.sendGameUpdateToRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await Promise.all([
       this.redis.updateGame(game),
       this.joinGame(socket, game, player, true),

@@ -133,7 +133,11 @@ export class KickService extends BaseService {
 
     this.kickVotes.set(game.id, kickVote)
 
-    this.sendToSocketAndRoom(socket, "kick:vote", kickVote.toJson())
+    this.sendToSocketAndRoom(socket, {
+      room: game.code,
+      event: "kick:vote",
+      data: [kickVote.toJson()],
+    })
 
     await this.checkKickVoteStatus(socket, game, kickVote)
 
@@ -160,10 +164,18 @@ export class KickService extends BaseService {
       if (kickVote.hasReachedRequiredVotes()) {
         await this.kickPlayer(socket, game, kickVote)
       } else {
-        this.sendToSocketAndRoom(socket, "kick:vote-failed", kickVote.toJson())
+        this.sendToSocketAndRoom(socket, {
+          room: game.code,
+          event: "kick:vote-failed",
+          data: [kickVote.toJson()],
+        })
       }
     } else {
-      this.sendToSocketAndRoom(socket, "kick:vote", kickVote.toJson())
+      this.sendToSocketAndRoom(socket, {
+        room: game.code,
+        event: "kick:vote",
+        data: [kickVote.toJson()],
+      })
     }
   }
 
@@ -206,9 +218,16 @@ export class KickService extends BaseService {
       await this.redis.removePlayer(game.code, playerToKick.id)
     }
 
-    this.sendToSocketAndRoom(socket, "kick:vote-success", kickVote.toJson())
+    this.sendToSocketAndRoom(socket, {
+      room: game.code,
+      event: "kick:vote-success",
+      data: [kickVote.toJson()],
+    })
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
   //#endregion

@@ -85,7 +85,10 @@ export class LobbyService extends BaseService {
 
     game.updatedAt = new Date()
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
 
@@ -113,7 +116,10 @@ export class LobbyService extends BaseService {
 
     game.updatedAt = new Date()
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
 
@@ -138,7 +144,10 @@ export class LobbyService extends BaseService {
 
     Logger.info(`Game ${game.code} started.`)
 
-    this.sendGameUpdateToSocketAndRoom(socket, stateManager)
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
 
@@ -205,7 +214,10 @@ export class LobbyService extends BaseService {
     game.addPlayer(player)
     game.updatedAt = new Date()
 
-    this.sendGameUpdateToRoom(socket, stateManager)
+    this.sendGameUpdateToRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
     await this.redis.updateGame(game)
   }
   //#endregion
