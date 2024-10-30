@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest"
 import { SkyjoSettings } from "../../class/SkyjoSettings.js"
 import { Constants } from "../../constants.js"
-import type { SkyjoPopulate } from "../../types/skyjo.js"
+import type { SkyjoToDb } from "../../types/skyjo.js"
 
 let settings: SkyjoSettings
 
@@ -35,20 +35,7 @@ describe("SkyjoSettings", () => {
   })
 
   it("should populate the class", () => {
-    const dbGame: SkyjoPopulate = {
-      id: crypto.randomUUID(),
-      code: "code",
-      status: Constants.GAME_STATUS.LOBBY,
-      turn: 0,
-      turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
-      lastTurnStatus: Constants.LAST_TURN_STATUS.TURN,
-      roundStatus: Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
-      roundNumber: 1,
-      discardPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      drawPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      selectedCardValue: null,
-      firstToFinishPlayerId: null,
-
+    const dbGameSettings: SkyjoToDb["settings"] = {
       allowSkyjoForColumn: false,
       allowSkyjoForRow: false,
       initialTurnedCount: 4,
@@ -58,24 +45,11 @@ describe("SkyjoSettings", () => {
       multiplierForFirstPlayer: 1,
       maxPlayers: 2,
       private: true,
-
-      createdAt: new Date(),
-      updatedAt: new Date(),
     }
 
-    const settings = new SkyjoSettings(false).populate(dbGame)
+    const settings = new SkyjoSettings(false).populate(dbGameSettings)
 
-    expect(structuredClone(settings)).toStrictEqual({
-      maxPlayers: dbGame.maxPlayers,
-      private: dbGame.private,
-      allowSkyjoForColumn: dbGame.allowSkyjoForColumn,
-      allowSkyjoForRow: dbGame.allowSkyjoForRow,
-      initialTurnedCount: dbGame.initialTurnedCount,
-      cardPerRow: dbGame.cardPerRow,
-      cardPerColumn: dbGame.cardPerColumn,
-      scoreToEndGame: dbGame.scoreToEndGame,
-      multiplierForFirstPlayer: dbGame.multiplierForFirstPlayer,
-    })
+    expect(structuredClone(settings)).toStrictEqual(dbGameSettings)
   })
 
   it("should update settings", () => {

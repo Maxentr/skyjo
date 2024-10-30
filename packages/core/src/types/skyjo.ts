@@ -1,4 +1,6 @@
 import type {
+  Avatar,
+  ConnectionStatus,
   GameStatus,
   LastTurnStatus,
   RoundStatus,
@@ -6,40 +8,6 @@ import type {
 } from "@/constants.js"
 import type { SkyjoPlayerScores, SkyjoPlayerToJson } from "./skyjoPlayer.js"
 import type { SkyjoSettingsToJson } from "./skyjoSettings.js"
-
-export type SkyjoPopulate = {
-  id: string
-  code: string
-  status: GameStatus
-  turn: number
-  discardPile: number[]
-  drawPile: number[]
-
-  selectedCardValue: number | null
-  turnStatus: TurnStatus
-  lastTurnStatus: LastTurnStatus
-  roundStatus: RoundStatus
-
-  roundNumber: number
-
-  firstToFinishPlayerId: string | null
-
-  private: boolean
-  maxPlayers: number
-  allowSkyjoForColumn: boolean
-  allowSkyjoForRow: boolean
-  initialTurnedCount: number
-  cardPerRow: number
-  cardPerColumn: number
-  scoreToEndGame: number
-  multiplierForFirstPlayer: number
-
-  createdAt: Date
-  updatedAt: Date
-
-  // Allow any additional fields, they will be ignored
-  [key: string]: unknown
-}
 
 export type SkyjoToJson = {
   code: string
@@ -61,15 +29,15 @@ export type SkyjoToDb = {
   code: string
   adminId: string
   isFull: boolean
-  status: string
+  status: GameStatus
   players: {
     id: string
     name: string
     socketId: string
-    avatar: string
+    avatar: Avatar
     score: number
     wantsReplay: boolean
-    connectionStatus: string
+    connectionStatus: ConnectionStatus
     scores: SkyjoPlayerScores
     hasPlayedLastTurn: boolean
     cards: Array<
@@ -96,9 +64,9 @@ export type SkyjoToDb = {
   }
   selectedCardValue: number | null
   roundNumber: number
-  roundStatus: string
-  turnStatus: string
-  lastTurnStatus: string | null
+  roundStatus: RoundStatus
+  turnStatus: TurnStatus
+  lastTurnStatus: LastTurnStatus
   firstToFinishPlayerId: string | null
   createdAt: Date
   updatedAt: Date

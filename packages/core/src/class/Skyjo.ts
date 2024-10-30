@@ -1,5 +1,4 @@
-import type { SkyjoPopulate, SkyjoToDb, SkyjoToJson } from "@/types/skyjo.js"
-import type { SkyjoPlayerPopulate } from "@/types/skyjoPlayer.js"
+import type { SkyjoToDb, SkyjoToJson } from "@/types/skyjo.js"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import {
   Constants,
@@ -74,10 +73,7 @@ export class Skyjo implements SkyjoInterface {
     this.updatedAt = now
   }
 
-  populate(
-    game: SkyjoPopulate,
-    { players }: { players: SkyjoPlayerPopulate[] },
-  ) {
+  populate(game: SkyjoToDb) {
     this.id = game.id
     this.code = game.code
     this.status = game.status
@@ -96,9 +92,11 @@ export class Skyjo implements SkyjoInterface {
     this.createdAt = game.createdAt
     this.updatedAt = game.updatedAt
 
-    this.players = players.map((player) => new SkyjoPlayer().populate(player))
+    this.players = game.players.map((player) =>
+      new SkyjoPlayer().populate(player),
+    )
 
-    this.settings = new SkyjoSettings().populate(game)
+    this.settings.populate(game.settings)
 
     return this
   }

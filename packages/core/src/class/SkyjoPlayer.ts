@@ -1,5 +1,5 @@
+import type { SkyjoToDb } from "@/types/skyjo.js"
 import type {
-  SkyjoPlayerPopulate,
   SkyjoPlayerScores,
   SkyjoPlayerToJson,
 } from "@/types/skyjoPlayer.js"
@@ -57,7 +57,7 @@ export class SkyjoPlayer implements SkyjoPlayerInterface {
     this.avatar = playerToCreate.avatar
   }
 
-  populate(player: SkyjoPlayerPopulate) {
+  populate(player: SkyjoToDb["players"][number]) {
     this.id = player.id
     this.name = player.name
     this.avatar = player.avatar
@@ -66,6 +66,7 @@ export class SkyjoPlayer implements SkyjoPlayerInterface {
     this.score = player.score
     this.scores = player.scores
     this.wantsReplay = player.wantsReplay
+    this.hasPlayedLastTurn = player.hasPlayedLastTurn
 
     if (player.cards.length > 0) {
       this.cards = player.cards.map((column) =>

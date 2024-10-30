@@ -11,8 +11,7 @@ import {
   type RoundStatus,
   type TurnStatus,
 } from "../../constants.js"
-import type { SkyjoPopulate } from "../../types/skyjo.js"
-import type { SkyjoPlayerPopulate } from "../../types/skyjoPlayer.js"
+import type { SkyjoToDb } from "../../types/skyjo.js"
 import "@skyjo/error/test/expect-extend"
 
 const TOTAL_CARDS = 150
@@ -45,9 +44,11 @@ describe("Skyjo", () => {
   //#region Game class
   describe("populate", () => {
     it("should populate the class without players", () => {
-      const game: SkyjoPopulate = {
+      const game: SkyjoToDb = {
         id: crypto.randomUUID(),
         code: "code",
+        adminId: player.id,
+        isFull: false,
         status: Constants.GAME_STATUS.LOBBY,
         turn: 0,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
@@ -59,50 +60,44 @@ describe("Skyjo", () => {
         drawPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         selectedCardValue: null,
         firstToFinishPlayerId: null,
+        players: [],
 
-        maxPlayers: 8,
-        private: false,
-        allowSkyjoForColumn: true,
-        allowSkyjoForRow: false,
-        initialTurnedCount: 2,
-        cardPerRow: 3,
-        cardPerColumn: 4,
-        scoreToEndGame: 100,
-        multiplierForFirstPlayer: 2,
+        settings: {
+          maxPlayers: 8,
+          private: false,
+          allowSkyjoForColumn: true,
+          allowSkyjoForRow: false,
+          initialTurnedCount: 2,
+          cardPerRow: 3,
+          cardPerColumn: 4,
+          scoreToEndGame: 100,
+          multiplierForFirstPlayer: 2,
+        },
 
         createdAt: new Date(),
         updatedAt: new Date(),
       }
       skyjo = new Skyjo(player.id)
-      skyjo.populate(game, { players: [] })
+      skyjo.populate(game)
 
       expect(skyjo.id).toBe(game.id)
       expect(skyjo.code).toBe(game.code)
       expect(skyjo.status).toBe(game.status)
       expect(skyjo.turn).toBe(game.turn)
       expect(skyjo.adminId).toBe(player.id)
-      expect(structuredClone(skyjo.settings)).toStrictEqual({
-        maxPlayers: game.maxPlayers,
-        private: game.private,
-        allowSkyjoForColumn: game.allowSkyjoForColumn,
-        allowSkyjoForRow: game.allowSkyjoForRow,
-        initialTurnedCount: game.initialTurnedCount,
-        cardPerRow: game.cardPerRow,
-        cardPerColumn: game.cardPerColumn,
-        scoreToEndGame: game.scoreToEndGame,
-        multiplierForFirstPlayer: game.multiplierForFirstPlayer,
-      })
+      expect(structuredClone(skyjo.settings)).toStrictEqual(game.settings)
     })
 
     it("should populate the class with players", () => {
-      const game: SkyjoPopulate = {
+      const game: SkyjoToDb = {
         id: crypto.randomUUID(),
+        adminId: player.id,
+        isFull: false,
         code: "code",
         status: Constants.GAME_STATUS.LOBBY,
         turn: 0,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
         lastTurnStatus: Constants.LAST_TURN_STATUS.TURN,
-        private: true,
         roundStatus:
           Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
         roundNumber: 1,
@@ -110,65 +105,57 @@ describe("Skyjo", () => {
         drawPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         selectedCardValue: null,
         firstToFinishPlayerId: null,
+        players: [
+          {
+            id: crypto.randomUUID(),
+            name: "player1",
+            avatar: Constants.AVATARS.BEE,
+            socketId: TEST_SOCKET_ID,
+            connectionStatus: Constants.CONNECTION_STATUS.CONNECTED,
+            score: 10,
+            scores: [5, 5],
+            wantsReplay: true,
+            cards: [
+              [new SkyjoCard(0), new SkyjoCard(1), new SkyjoCard(2)],
+              [new SkyjoCard(3), new SkyjoCard(4), new SkyjoCard(5)],
+              [new SkyjoCard(6), new SkyjoCard(7), new SkyjoCard(8)],
+            ],
+            hasPlayedLastTurn: false,
+          },
+        ],
 
-        maxPlayers: 8,
-        allowSkyjoForColumn: true,
-        allowSkyjoForRow: false,
-        initialTurnedCount: 2,
-        cardPerRow: 3,
-        cardPerColumn: 4,
-        scoreToEndGame: 100,
-        multiplierForFirstPlayer: 2,
+        settings: {
+          private: true,
+          maxPlayers: 8,
+          allowSkyjoForColumn: true,
+          allowSkyjoForRow: false,
+          initialTurnedCount: 2,
+          cardPerRow: 3,
+          cardPerColumn: 4,
+          scoreToEndGame: 100,
+          multiplierForFirstPlayer: 2,
+        },
 
         createdAt: new Date(),
         updatedAt: new Date(),
       }
 
-      const players: SkyjoPlayerPopulate[] = [
-        {
-          id: crypto.randomUUID(),
-          name: "player1",
-          avatar: Constants.AVATARS.BEE,
-          socketId: TEST_SOCKET_ID,
-          connectionStatus: Constants.CONNECTION_STATUS.CONNECTED,
-          score: 10,
-          scores: [5, 5],
-          wantsReplay: true,
-          cards: [
-            [new SkyjoCard(0), new SkyjoCard(1), new SkyjoCard(2)],
-            [new SkyjoCard(3), new SkyjoCard(4), new SkyjoCard(5)],
-            [new SkyjoCard(6), new SkyjoCard(7), new SkyjoCard(8)],
-          ],
-          hasPlayedLastTurn: false,
-        },
-      ]
-
       skyjo = new Skyjo(player.id)
-      skyjo.populate(game, { players })
+      skyjo.populate(game)
 
       expect(skyjo.id).toBe(game.id)
       expect(skyjo.code).toBe(game.code)
       expect(skyjo.status).toBe(game.status)
       expect(skyjo.turn).toBe(game.turn)
       expect(skyjo.adminId).toBe(player.id)
-      expect(structuredClone(skyjo.settings)).toStrictEqual({
-        maxPlayers: game.maxPlayers,
-        private: game.private,
-        allowSkyjoForColumn: game.allowSkyjoForColumn,
-        allowSkyjoForRow: game.allowSkyjoForRow,
-        initialTurnedCount: game.initialTurnedCount,
-        cardPerRow: game.cardPerRow,
-        cardPerColumn: game.cardPerColumn,
-        scoreToEndGame: game.scoreToEndGame,
-        multiplierForFirstPlayer: game.multiplierForFirstPlayer,
-      })
+      expect(structuredClone(skyjo.settings)).toStrictEqual(game.settings)
       expect(skyjo.players.length).toBe(1)
-      expect(skyjo.players[0].name).toBe(players[0].name)
-      expect(skyjo.players[0].socketId).toBe(players[0].socketId)
-      expect(skyjo.players[0].avatar).toBe(players[0].avatar)
-      expect(skyjo.players[0].score).toBe(players[0].score)
-      expect(skyjo.players[0].wantsReplay).toBe(players[0].wantsReplay)
-      expect(skyjo.players[0].cards).toStrictEqual(players[0].cards)
+      expect(skyjo.players[0].name).toBe(game.players[0].name)
+      expect(skyjo.players[0].socketId).toBe(game.players[0].socketId)
+      expect(skyjo.players[0].avatar).toBe(game.players[0].avatar)
+      expect(skyjo.players[0].score).toBe(game.players[0].score)
+      expect(skyjo.players[0].wantsReplay).toBe(game.players[0].wantsReplay)
+      expect(skyjo.players[0].cards).toStrictEqual(game.players[0].cards)
     })
   })
 
