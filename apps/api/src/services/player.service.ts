@@ -8,8 +8,8 @@ import {
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
-import type { ServerChatMessage } from "@skyjo/shared/types/chat"
-import type { LastGame } from "@skyjo/shared/validations/reconnect"
+import type { ServerChatMessage } from "@skyjo/shared/types"
+import type { LastGame } from "@skyjo/shared/validations"
 import { BaseService } from "./base.service.js"
 
 export class PlayerService extends BaseService {

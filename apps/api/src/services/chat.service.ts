@@ -2,7 +2,7 @@ import { BaseService } from "@/services/base.service.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import { Constants as CoreConstants } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
-import type { UserChatMessage } from "@skyjo/shared/types/chat"
+import type { UserChatMessage } from "@skyjo/shared/types"
 
 export class ChatService extends BaseService {
   async onMessage(

@@ -10,7 +10,7 @@ import {
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Logger } from "@skyjo/logger"
-import type { GameSettings } from "@skyjo/shared/validations/updateGameSettings"
+import type { GameSettings } from "@skyjo/shared/validations"
 
 export class LobbyService extends BaseService {
   private readonly MAX_GAME_INACTIVE_TIME = 300000 // 5 minutes

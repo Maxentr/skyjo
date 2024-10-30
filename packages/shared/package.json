@@ -5,9 +5,9 @@
   "type": "module",
   "types": "./dist/*.d.ts",
   "exports": {
-    "./validations/*": "./dist/validations/*.js",
-    "./utils/*": "./dist/utils/*.js",
-    "./types/*": "./dist/types/*.d.ts",
+    "./validations": "./dist/validations/index.js",
+    "./utils": "./dist/utils/index.js",
+    "./types": "./dist/types/index.d.ts",
     "./constants": "./dist/constants.js"
   },
   "typesVersions": {

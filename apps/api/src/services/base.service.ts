@@ -6,8 +6,8 @@ import {
   type Skyjo,
   type SkyjoPlayer,
 } from "@skyjo/core"
-import type { ServerChatMessage } from "@skyjo/shared/types/chat"
-import type { ServerToClientEvents } from "@skyjo/shared/types/socket"
+import type { ServerChatMessage } from "@skyjo/shared/types"
+import type { ServerToClientEvents } from "@skyjo/shared/types"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
 export abstract class BaseService {

@@ -12,9 +12,9 @@ import {
   SkyjoPlayerToJson,
   SkyjoToJson,
 } from "@skyjo/core"
-import type { SkyjoOperation } from "@skyjo/shared/types/operation"
-import { applyOperations } from "@skyjo/shared/utils/applyOperations"
-import { UpdateGameSettings } from "@skyjo/shared/validations/updateGameSettings"
+import type { SkyjoOperation } from "@skyjo/shared/types"
+import { applyOperations } from "@skyjo/shared/utils"
+import { UpdateGameSettings } from "@skyjo/shared/validations"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import {

@@ -3,11 +3,8 @@
 import { useToast } from "@/components/ui/use-toast"
 import { Constants as CoreConstants } from "@skyjo/core"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
-import {
-  ClientToServerEvents,
-  ServerToClientEvents,
-} from "@skyjo/shared/types/socket"
-import { LastGame } from "@skyjo/shared/validations/reconnect"
+import { ClientToServerEvents, ServerToClientEvents } from "@skyjo/shared/types"
+import { LastGame } from "@skyjo/shared/validations"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import { useTranslations } from "next-intl"
@@ -120,6 +117,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
     else console.log("Socket connected")
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: details is typed as Socket.DisconnectDescription but it's not exported
   const onConnectionLost = (reason: Socket.DisconnectReason, details?: any) => {
     // the reason of the disconnection, for example "transport error"
     console.log(reason)

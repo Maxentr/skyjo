@@ -11,7 +11,7 @@ import {
   SkyjoSettings,
 } from "@skyjo/core"
 import { Constants as ErrorConstants } from "@skyjo/error"
-import type { GameSettings } from "@skyjo/shared/validations/updateGameSettings"
+import type { GameSettings } from "@skyjo/shared/validations"
 import { TEST_SOCKET_ID } from "@tests/constants-test.js"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 

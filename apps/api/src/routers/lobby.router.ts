@@ -7,7 +7,7 @@ import {
   joinGame,
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
-import type { ErrorJoinMessage } from "@skyjo/shared/types/events/lobby"
+import type { ErrorJoinMessage } from "@skyjo/shared/types"
 import {
   type UpdateGameSettings,
   type UpdateGameSettingsAllowSkyjoForColumn,
@@ -27,7 +27,7 @@ import {
   updateGameSettingsPrivateSchema,
   updateGameSettingsSchema,
   updateGameSettingsScoreToEndGameSchema,
-} from "@skyjo/shared/validations/updateGameSettings"
+} from "@skyjo/shared/validations"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
 const instance = new LobbyService()

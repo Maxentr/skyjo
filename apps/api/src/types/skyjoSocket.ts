@@ -2,7 +2,7 @@ import type {
   ClientToServerEvents,
   ServerToClientEvents,
   SocketData,
-} from "@skyjo/shared/types/socket"
+} from "@skyjo/shared/types"
 import type { Socket } from "socket.io"
 
 export type SkyjoSocket = Socket<

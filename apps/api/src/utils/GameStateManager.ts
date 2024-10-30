@@ -5,7 +5,7 @@ import type {
   SkyjoSettingsToJson,
   SkyjoToJson,
 } from "@skyjo/core"
-import type { SkyjoOperation } from "@skyjo/shared/types/operation"
+import type { SkyjoOperation } from "@skyjo/shared/types"
 
 export class GameStateManager {
   private previousState: SkyjoToJson

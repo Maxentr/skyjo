@@ -11,7 +11,7 @@ import { Logger } from "@skyjo/logger"
 import type {
   ClientToServerEvents,
   ServerToClientEvents,
-} from "@skyjo/shared/types/socket"
+} from "@skyjo/shared/types"
 import { Server } from "socket.io"
 import customParser from "socket.io-msgpack-parser"
 

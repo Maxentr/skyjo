@@ -12,7 +12,7 @@ import {
   SkyjoSettings,
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
-import type { LastGame } from "@skyjo/shared/validations/reconnect"
+import type { LastGame } from "@skyjo/shared/validations"
 import { TEST_SOCKET_ID, TEST_UNKNOWN_GAME_ID } from "@tests/constants-test.js"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
