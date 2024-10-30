@@ -104,10 +104,12 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   //#region listeners
   //#region game
   const onGameReceive = (game: SkyjoToJson) => {
+    console.log("onGameReceive", game)
     setGame(game)
   }
 
   const onGameUpdate = (operations: SkyjoOperation[]) => {
+    console.log("onGameUpdate", operations)
     setGame((prev) => {
       if (!prev) return prev
       const prevState = structuredClone(prev)
