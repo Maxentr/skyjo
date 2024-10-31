@@ -9,7 +9,6 @@ vi.spyOn(process, "env", "get").mockReturnValue({
   GMAIL_APP_PASSWORD: "e",
   SEQ_URL: "e",
   SEQ_API_KEY: "e",
-  DATABASE_URL: "e",
-  REGION: "LOCAL",
+  REDIS_URL: "e",
   npm_package_version: "-99",
 })
