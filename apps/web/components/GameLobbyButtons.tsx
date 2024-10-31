@@ -46,6 +46,7 @@ const GameLobbyButtons = ({
   const lastGame = getLastGameIfPossible()
 
   const handleButtons = async (type: GameLobbyButtonAction) => {
+    Howler.ctx.resume()
     if (socket === null) return
     setLoading(true)
 
