@@ -43,7 +43,6 @@ export class SkyjoPlayer implements SkyjoPlayerInterface {
   scores: SkyjoPlayerScores = []
   hasPlayedLastTurn = false
   wantsReplay: boolean = false
-  disconnectionTimeout: NodeJS.Timeout | null = null
 
   constructor(
     playerToCreate: CreatePlayer = {

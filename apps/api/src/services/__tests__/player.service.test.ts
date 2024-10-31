@@ -244,16 +244,22 @@ describe("PlayerService", () => {
       )
       expect(game.players.length).toBe(3)
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
       vi.runAllTimers()
 
-      expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
-      )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.PLAYING,
-      )
-      expect(game.players.length).toBe(3)
+      const updateGameSpy = vi.spyOn(service["redis"], "updateGame")
+
+      // getting game with changes
+      updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
+        expect(player.connectionStatus).toBe<ConnectionStatus>(
+          CoreConstants.CONNECTION_STATUS.DISCONNECTED,
+        )
+        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+        expect(game.roundStatus).toBe<RoundStatus>(
+          CoreConstants.ROUND_STATUS.PLAYING,
+        )
+        expect(game.players.length).toBe(3)
+      })
 
       vi.useRealTimers()
     })
@@ -315,16 +321,22 @@ describe("PlayerService", () => {
       )
       expect(game.players.length).toBe(3)
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
       vi.runAllTimers()
 
-      expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
-      )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.PLAYING,
-      )
-      expect(game.players.length).toBe(3)
+      const updateGameSpy = vi.spyOn(service["redis"], "updateGame")
+
+      // getting game with changes
+      updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
+        expect(player.connectionStatus).toBe<ConnectionStatus>(
+          CoreConstants.CONNECTION_STATUS.DISCONNECTED,
+        )
+        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+        expect(game.roundStatus).toBe<RoundStatus>(
+          CoreConstants.ROUND_STATUS.PLAYING,
+        )
+        expect(game.players.length).toBe(3)
+      })
 
       vi.useRealTimers()
     })
@@ -387,17 +399,23 @@ describe("PlayerService", () => {
       expect(game.players.length).toBe(3)
       expect(game.turn).toBe(1)
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
       vi.runAllTimers()
 
-      expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
-      )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.PLAYING,
-      )
-      expect(game.players.length).toBe(3)
-      expect(game.turn).toBe(2)
+      const updateGameSpy = vi.spyOn(service["redis"], "updateGame")
+
+      // getting game with changes
+      updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
+        expect(player.connectionStatus).toBe<ConnectionStatus>(
+          CoreConstants.CONNECTION_STATUS.DISCONNECTED,
+        )
+        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+        expect(game.roundStatus).toBe<RoundStatus>(
+          CoreConstants.ROUND_STATUS.PLAYING,
+        )
+        expect(game.players.length).toBe(3)
+        expect(game.turn).toBe(2)
+      })
 
       vi.useRealTimers()
     })
@@ -441,13 +459,19 @@ describe("PlayerService", () => {
       expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
       expect(game.players.length).toBe(2)
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
       vi.runAllTimers()
 
-      expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
-      )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.STOPPED)
-      expect(game.players.length).toBe(2)
+      const updateGameSpy = vi.spyOn(service["redis"], "updateGame")
+
+      // getting game with changes
+      updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
+        expect(player.connectionStatus).toBe<ConnectionStatus>(
+          CoreConstants.CONNECTION_STATUS.DISCONNECTED,
+        )
+        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.STOPPED)
+        expect(game.players.length).toBe(2)
+      })
 
       vi.useRealTimers()
     })
@@ -500,17 +524,23 @@ describe("PlayerService", () => {
       )
       expect(game.players.length).toBe(3)
 
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
       vi.runAllTimers()
 
-      expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.DISCONNECTED,
-      )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
-      )
-      expect(game.roundNumber).toBe(2)
-      expect(game.players.length).toBe(3)
+      const updateGameSpy = vi.spyOn(service["redis"], "updateGame")
+
+      // getting game with changes
+      updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
+        expect(player.connectionStatus).toBe<ConnectionStatus>(
+          CoreConstants.CONNECTION_STATUS.DISCONNECTED,
+        )
+        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+        expect(game.roundStatus).toBe<RoundStatus>(
+          CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        )
+        expect(game.roundNumber).toBe(2)
+        expect(game.players.length).toBe(3)
+      })
 
       vi.useRealTimers()
     })
@@ -737,8 +767,8 @@ describe("PlayerService", () => {
       opponent2.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
 
       player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
-      player.disconnectionTimeout = setTimeout(() => {
-        throw new Error("test")
+      setTimeout(() => {
+        service["updateGameAfterTimeoutExpired"](socket)
       }, 100000)
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))

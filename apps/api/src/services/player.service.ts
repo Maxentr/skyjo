@@ -1,11 +1,7 @@
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import { GameStateManager } from "@/utils/GameStateManager.js"
 import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
-import {
-  Constants as CoreConstants,
-  type Skyjo,
-  type SkyjoPlayer,
-} from "@skyjo/core"
+import { Constants as CoreConstants, type SkyjoPlayer } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
 import type { ServerChatMessage } from "@skyjo/shared/types"
@@ -68,7 +64,7 @@ export class PlayerService extends BaseService {
         await Promise.all(promises)
       } else {
         this.startDisconnectionTimeout(player, timeout, () =>
-          this.updateGameAfterTimeoutExpired(socket, game),
+          this.updateGameAfterTimeoutExpired(socket),
         )
       }
 
@@ -166,9 +162,8 @@ export class PlayerService extends BaseService {
       ? CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
       : CoreConstants.CONNECTION_STATUS.LEAVE
 
-    player.disconnectionTimeout = setTimeout(
+    setTimeout(
       socketErrorHandlerWrapper(async () => {
-        player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
         await callback()
       }),
       connectionLost
@@ -177,11 +172,20 @@ export class PlayerService extends BaseService {
     )
   }
 
-  private async updateGameAfterTimeoutExpired(
-    socket: SkyjoSocket,
-    game: Skyjo,
-  ) {
+  private async updateGameAfterTimeoutExpired(socket: SkyjoSocket) {
+    const game = await this.redis.getGame(socket.data.gameCode)
     const stateManager = new GameStateManager(game)
+
+    const player = game.getPlayerById(socket.data.playerId)!
+
+    if (
+      !player ||
+      player.connectionStatus === CoreConstants.CONNECTION_STATUS.CONNECTED
+    ) {
+      return
+    }
+
+    player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
 
     if (!game.haveAtLeastMinPlayersConnected()) {
       game.status = CoreConstants.GAME_STATUS.STOPPED
@@ -245,7 +249,6 @@ export class PlayerService extends BaseService {
 
     const stateManager = new GameStateManager(game)
 
-    if (player.disconnectionTimeout) clearTimeout(player.disconnectionTimeout)
     player.socketId = socket.id
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
 
