@@ -1,1 +1,0 @@
-ALTER TABLE "players" RENAME COLUMN "want_replay" TO "wants_replay";

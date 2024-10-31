@@ -1,8 +1,0 @@
-{
-  "extends": "@skyjo/ts-config/base-package.json",
-  "include": ["src"],
-  "compilerOptions": {
-    "rootDir": "./",
-    "outDir": "./dist"
-  }
-}
