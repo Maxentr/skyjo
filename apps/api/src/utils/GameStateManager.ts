@@ -5,7 +5,11 @@ import type {
   SkyjoSettingsToJson,
   SkyjoToJson,
 } from "@skyjo/core"
-import type { SkyjoOperation } from "@skyjo/shared/types"
+import type {
+  PlayerUpdate,
+  SkyjoOperation,
+  SkyjoUpdate,
+} from "@skyjo/shared/types"
 
 export class GameStateManager {
   private previousState: SkyjoToJson
@@ -33,32 +37,20 @@ export class GameStateManager {
   private createStateOperations(
     oldState: SkyjoToJson,
     newState: SkyjoToJson,
-  ): SkyjoOperation[] {
-    const ops: SkyjoOperation[] = []
+  ): SkyjoOperation {
+    let ops: SkyjoOperation = {}
 
-    const basicOps = this.compareBasicFields(oldState, newState)
-    ops.push(...basicOps)
+    const basicFieldsChanges = this.compareBasicFields(oldState, newState)
+    if (basicFieldsChanges) ops.game = basicFieldsChanges
 
-    const settingsOps = this.compareSettings(
+    const settingsChanges = this.compareSettings(
       oldState.settings,
       newState.settings,
     )
-    ops.push(...settingsOps)
+    if (settingsChanges) ops.settings = settingsChanges
 
-    oldState.players.forEach((oldPlayer) => {
-      const newPlayer = newState.players.find((p) => p.id === oldPlayer.id)
-      if (!newPlayer) {
-        ops.push(["player:remove", oldPlayer.id])
-        return
-      }
-      const playerOps = this.comparePlayer(oldPlayer, newPlayer)
-
-      ops.push(...playerOps)
-    })
-
-    newState.players.slice(oldState.players.length).forEach((newPlayer) => {
-      ops.push(["player:add", newPlayer])
-    })
+    const playerOps = this.createPlayerOperations(oldState, newState)
+    if (Object.keys(playerOps).length > 0) ops = { ...ops, ...playerOps }
 
     return ops
   }
@@ -66,45 +58,29 @@ export class GameStateManager {
   private compareBasicFields(
     oldState: SkyjoToJson,
     newState: SkyjoToJson,
-  ): SkyjoOperation[] {
-    const ops: SkyjoOperation[] = []
+  ): SkyjoUpdate | undefined {
+    let gameChanges: SkyjoUpdate = {}
 
-    if (oldState.status !== newState.status) {
-      ops.push(["status", newState.status])
-    }
-    if (oldState.adminId !== newState.adminId) {
-      ops.push(["adminId", newState.adminId])
-    }
-    if (oldState.turn !== newState.turn) {
-      ops.push(["turn", newState.turn])
-    }
-    if (oldState.roundStatus !== newState.roundStatus) {
-      ops.push(["roundStatus", newState.roundStatus])
-    }
-    if (oldState.turnStatus !== newState.turnStatus) {
-      ops.push(["turnStatus", newState.turnStatus])
-    }
-    if (oldState.lastTurnStatus !== newState.lastTurnStatus) {
-      ops.push(["lastTurnStatus", newState.lastTurnStatus])
-    }
-    if (oldState.selectedCardValue !== newState.selectedCardValue) {
-      ops.push(["selectedCardValue", newState.selectedCardValue])
-    }
-    if (oldState.lastDiscardCardValue !== newState.lastDiscardCardValue) {
-      ops.push(["lastDiscardCardValue", newState.lastDiscardCardValue])
-    }
-    if (oldState.updatedAt !== newState.updatedAt) {
-      ops.push(["updatedAt", newState.updatedAt])
-    }
+    const keys = Object.keys(oldState) as Array<keyof SkyjoToJson>
+    keys.forEach((key) => {
+      if (key === "settings" || key === "players") return
+      else if (oldState[key] !== newState[key]) {
+        gameChanges = {
+          ...gameChanges,
+          [key]: newState[key],
+        }
+      }
+    })
 
-    return ops
+    if (Object.keys(gameChanges).length > 0) {
+      return gameChanges
+    }
   }
 
   private compareSettings(
     oldSettings: SkyjoSettingsToJson,
     newSettings: SkyjoSettingsToJson,
-  ): SkyjoOperation[] {
-    const ops: SkyjoOperation[] = []
+  ): Partial<SkyjoSettingsToJson> | undefined {
     let settingsChanges: Partial<SkyjoSettingsToJson> = {}
 
     const keys = Object.keys(oldSettings) as Array<keyof SkyjoSettingsToJson>
@@ -121,8 +97,35 @@ export class GameStateManager {
     })
 
     if (Object.keys(settingsChanges).length > 0) {
-      ops.push(["settings", settingsChanges])
+      return settingsChanges
     }
+  }
+
+  private createPlayerOperations(
+    oldState: SkyjoToJson,
+    newState: SkyjoToJson,
+  ): Omit<SkyjoOperation, "game" | "settings"> {
+    const ops: Omit<SkyjoOperation, "game" | "settings"> = {}
+
+    oldState.players.forEach((oldPlayer) => {
+      const newPlayer = newState.players.find((p) => p.id === oldPlayer.id)
+      if (!newPlayer) {
+        ops.removePlayers ??= []
+        ops.removePlayers.push(oldPlayer.id)
+        return
+      }
+      const playerChanges = this.comparePlayer(oldPlayer, newPlayer)
+
+      if (playerChanges) {
+        ops.updatePlayers ??= []
+        ops.updatePlayers.push(playerChanges)
+      }
+    })
+
+    newState.players.slice(oldState.players.length).forEach((newPlayer) => {
+      ops.addPlayers ??= []
+      ops.addPlayers.push(newPlayer)
+    })
 
     return ops
   }
@@ -130,45 +133,26 @@ export class GameStateManager {
   private comparePlayer(
     oldPlayer: SkyjoPlayerToJson,
     newPlayer: SkyjoPlayerToJson,
-  ): SkyjoOperation[] {
-    const ops: SkyjoOperation[] = []
+  ): PlayerUpdate | undefined {
     const playerId = oldPlayer.id
+    let playerChanges: Partial<SkyjoPlayerToJson> = {}
 
-    if (oldPlayer.socketId !== newPlayer.socketId) {
-      ops.push(["player:socketId", { playerId, value: newPlayer.socketId }])
-    }
+    const keys = Object.keys(oldPlayer) as Array<keyof SkyjoPlayerToJson>
+    keys.forEach((key) => {
+      if (
+        newPlayer[key] !== undefined &&
+        !isDeepStrictEqual(oldPlayer[key], newPlayer[key])
+      ) {
+        playerChanges = {
+          ...playerChanges,
+          [key]: newPlayer[key],
+        }
+      }
+    })
 
-    if (oldPlayer.score !== newPlayer.score) {
-      ops.push(["player:score", { playerId, value: newPlayer.score }])
+    if (Object.keys(playerChanges).length > 0) {
+      return { ...playerChanges, id: playerId }
     }
-
-    if (!isDeepStrictEqual(oldPlayer.scores, newPlayer.scores)) {
-      ops.push(["player:scores", { playerId, value: newPlayer.scores }])
-    }
-
-    if (oldPlayer.connectionStatus !== newPlayer.connectionStatus) {
-      ops.push([
-        "player:connectionStatus",
-        {
-          playerId,
-          value: newPlayer.connectionStatus,
-        },
-      ])
-    }
-    if (oldPlayer.wantsReplay !== newPlayer.wantsReplay) {
-      ops.push([
-        "player:wantsReplay",
-        {
-          playerId,
-          value: newPlayer.wantsReplay,
-        },
-      ])
-    }
-    if (!isDeepStrictEqual(oldPlayer.cards, newPlayer.cards)) {
-      ops.push(["player:cards", { playerId, value: newPlayer.cards }])
-    }
-
-    return ops
   }
   //#endregion
 }

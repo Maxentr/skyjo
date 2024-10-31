@@ -19,5 +19,5 @@ export interface ClientToServerGameEvents {
 
 export interface ServerToClientGameEvents {
   game: (game: SkyjoToJson) => void
-  "game:update": (operations: SkyjoOperation[]) => void
+  "game:update": (operations: SkyjoOperation) => void
 }
