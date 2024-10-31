@@ -1,4 +1,4 @@
-export interface SkyjoSettingsToJson {
+export type SkyjoSettingsToJson = {
   private: boolean
   maxPlayers: number
 

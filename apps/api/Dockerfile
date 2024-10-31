@@ -1,4 +1,4 @@
-ARG PROJECT=api
+ARG PROJECT=@skyjo/api
 
 FROM node:22.6-alpine AS base
 RUN apk update && apk add --no-cache libc6-compat && yarn global add pnpm turbo
@@ -26,7 +26,7 @@ FROM base AS runner
 ARG PROJECT
 WORKDIR /app
 COPY --from=builder /app .
-WORKDIR /app/apps/${PROJECT}
+WORKDIR /app/apps/api
 ENV NODE_ENV=production
 
 CMD ["pnpm", "run", "prod"]

@@ -1,13 +1,9 @@
 "use client"
 
 import { useToast } from "@/components/ui/use-toast"
-import { Constants as CoreConstants } from "@skyjo/core"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
-import {
-  ClientToServerEvents,
-  ServerToClientEvents,
-} from "@skyjo/shared/types/socket"
-import { LastGame } from "@skyjo/shared/validations/reconnect"
+import { ClientToServerEvents, ServerToClientEvents } from "@skyjo/shared/types"
+import { LastGame } from "@skyjo/shared/validations"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import { useTranslations } from "next-intl"
@@ -24,23 +20,10 @@ import customParser from "socket.io-msgpack-parser"
 
 dayjs.extend(utc)
 
-const initSocket = (url: string) => {
-  console.log("Connecting to", url)
-  const socket = io(url, {
-    autoConnect: true,
-    reconnectionDelay: 1000,
-    reconnectionDelayMax: 2000,
-    parser: customParser,
-  })
-
-  return socket
-}
-
 export type SkyjoSocket = Socket<ServerToClientEvents, ClientToServerEvents>
 
 type SocketContext = {
   socket: SkyjoSocket | null
-  createSocket: () => void
   getLastGameIfPossible: () => LastGame | null
   saveLastGame: () => void
 }
@@ -53,13 +36,31 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   const [socket, setSocket] = useState<SkyjoSocket | null>(null)
 
   useEffect(() => {
-    if (socket === null) return
+    if (socket !== null) return
 
-    initGameListeners()
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      throw new Error("NEXT_PUBLIC_API_URL is not set")
+    }
+
+    const newSocket = io(process.env.NEXT_PUBLIC_API_URL, {
+      autoConnect: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 2000,
+      parser: customParser,
+    })
+
+    setSocket(newSocket)
 
     return () => {
-      destroyGameListeners()
+      newSocket.disconnect()
     }
+  }, [])
+
+  useEffect(() => {
+    if (socket === null) return
+    initGameListeners()
+
+    return () => destroyGameListeners()
   }, [socket])
 
   //#region reconnection
@@ -109,19 +110,13 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   }
   //#endregion reconnection
 
-  const createSocket = async () => {
-    if (!process.env.NEXT_PUBLIC_API_URL)
-      throw new Error("NEXT_PUBLIC_API_URL is not set")
-
-    setSocket(initSocket(process.env.NEXT_PUBLIC_API_URL))
-  }
-
   //#region listeners
   const onConnect = () => {
     if (socket!.recovered) console.log("Socket reconnected")
     else console.log("Socket connected")
   }
 
+  // biome-ignore lint/suspicious/noExplicitAny: details is typed as Socket.DisconnectDescription but it's not exported
   const onConnectionLost = (reason: Socket.DisconnectReason, details?: any) => {
     // the reason of the disconnection, for example "transport error"
     console.log(reason)
@@ -137,7 +132,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
 
     console.log("Socket disconnected", reason, details)
     toast({
-      description: t(CoreConstants.CONNECTION_STATUS.CONNECTION_LOST),
+      description: t("connection-lost"),
       variant: "destructive",
       duration: 5000,
     })
@@ -164,7 +159,6 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   const value = useMemo(
     () => ({
       socket,
-      createSocket,
       saveLastGame,
       getLastGameIfPossible,
     }),

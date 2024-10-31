@@ -8,13 +8,10 @@ import { useRouter } from "@/navigation"
 import {
   Constants as CoreConstants,
   CreatePlayer,
-  SkyjoToJson,
+  GameStatus,
 } from "@skyjo/core"
 import { Constants as ErrorConstants } from "@skyjo/error"
-import {
-  ErrorJoinMessage,
-  ErrorReconnectMessage,
-} from "@skyjo/shared/types/socket"
+import { ErrorJoinMessage, ErrorReconnectMessage } from "@skyjo/shared/types"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 
@@ -90,21 +87,24 @@ const GameLobbyButtons = ({
       })
     })
 
-    socket.once("join", (game: SkyjoToJson, playerId: string) => {
-      clearTimeout(timeout)
+    socket.once(
+      "game:join",
+      (code: string, status: GameStatus, playerId: string) => {
+        clearTimeout(timeout)
 
-      localStorage.setItem(
-        "lastGame",
-        JSON.stringify({
-          gameCode: game.code,
-          playerId,
-        }),
-      )
+        localStorage.setItem(
+          "lastGame",
+          JSON.stringify({
+            gameCode: code,
+            playerId,
+          }),
+        )
 
-      if (game.status === CoreConstants.GAME_STATUS.LOBBY)
-        router.replace(`/game/${game.code}/lobby`)
-      else router.replace(`/game/${game.code}`)
-    })
+        if (status === CoreConstants.GAME_STATUS.LOBBY)
+          router.replace(`/game/${code}/lobby`)
+        else router.replace(`/game/${code}`)
+      },
+    )
   }
 
   const handleReconnection = () => {

@@ -8,7 +8,7 @@ import {
   ServerChatMessage,
   SystemChatMessage,
   UserChatMessage,
-} from "@skyjo/shared/types/chat"
+} from "@skyjo/shared/types"
 import { Howl } from "howler"
 import { useTranslations } from "next-intl"
 import {

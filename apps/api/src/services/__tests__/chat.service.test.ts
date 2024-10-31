@@ -1,5 +1,4 @@
-import { mockBaseService, mockSocket } from "@/services/__tests__/_mock.js"
-import { BaseService } from "@/services/base.service.js"
+import { mockSocket } from "@/services/__tests__/_mock.js"
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import {
   Constants as CoreConstants,
@@ -8,8 +7,8 @@ import {
   SkyjoSettings,
 } from "@skyjo/core"
 import { Constants as ErrorConstants } from "@skyjo/error"
-import { TEST_SOCKET_ID, TEST_UNKNOWN_GAME_ID } from "@tests/constants-test.js"
-import { beforeEach, describe, expect, it } from "vitest"
+import { TEST_SOCKET_ID } from "@tests/constants-test.js"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ChatService } from "../chat.service.js"
 import "@skyjo/error/test/expect-extend"
 
@@ -18,7 +17,6 @@ describe("ChatService", () => {
   let socket: SkyjoSocket
 
   beforeEach(() => {
-    mockBaseService()
     service = new ChatService()
 
     socket = mockSocket()
@@ -29,16 +27,6 @@ describe("ChatService", () => {
   })
 
   describe("on message", () => {
-    it("should throw if game does not exist", async () => {
-      socket.data.gameCode = TEST_UNKNOWN_GAME_ID
-
-      await expect(
-        service.onMessage(socket, { username: "player1", message: "Hello!" }),
-      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
-
-      expect(socket.emit).not.toHaveBeenCalled()
-    })
-
     it("should throw if player is not in the game", async () => {
       const opponent = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
@@ -46,9 +34,10 @@ describe("ChatService", () => {
       )
       const game = new Skyjo(opponent.id, new SkyjoSettings(false))
       game.addPlayer(opponent)
-      BaseService["games"].push(game)
 
       socket.data.gameCode = game.code
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
         service.onMessage(socket, { username: "player2", message: "Hello!" }),
@@ -64,7 +53,6 @@ describe("ChatService", () => {
       )
       const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
-      BaseService["games"].push(game)
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
 
@@ -73,6 +61,8 @@ describe("ChatService", () => {
         "socketId132312",
       )
       game.addPlayer(opponent)
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await service.onMessage(socket, {
         username: "player2",

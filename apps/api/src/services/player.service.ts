@@ -1,4 +1,5 @@
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
+import { GameStateManager } from "@/utils/GameStateManager.js"
 import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
 import {
   Constants as CoreConstants,
@@ -7,13 +8,15 @@ import {
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
-import type { LastGame } from "@skyjo/shared/validations/reconnect"
+import type { ServerChatMessage } from "@skyjo/shared/types"
+import type { LastGame } from "@skyjo/shared/validations"
 import { BaseService } from "./base.service.js"
 
 export class PlayerService extends BaseService {
   async onLeave(socket: SkyjoSocket, timeout: boolean = false) {
     try {
-      const game = await this.getGame(socket.data.gameCode)
+      const game = await this.redis.getGame(socket.data.gameCode)
+      const stateManager = new GameStateManager(game)
 
       const player = game.getPlayerById(socket.data.playerId)
       if (!player) {
@@ -36,7 +39,7 @@ export class PlayerService extends BaseService {
         ? CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
         : CoreConstants.CONNECTION_STATUS.LEAVE
 
-      await BaseService.playerDb.updatePlayer(player)
+      await this.redis.updateGame(game)
 
       if (game.isAdmin(player.id)) await this.changeAdmin(game)
 
@@ -46,23 +49,22 @@ export class PlayerService extends BaseService {
         game.status === CoreConstants.GAME_STATUS.STOPPED
       ) {
         game.removePlayer(player.id)
-        await BaseService.playerDb.removePlayer(game.id, player.id)
 
         game.restartGameIfAllPlayersWantReplay()
 
         const promises: Promise<void>[] = []
 
         if (game.getConnectedPlayers().length === 0) {
-          const removeGame = this.removeGame(game.code)
-          promises.push(removeGame)
+          await this.redis.removeGame(game.code)
         } else {
-          const updateGame = BaseService.gameDb.updateGame(game)
+          const updateGame = this.redis.updateGame(game)
           promises.push(updateGame)
         }
 
-        const broadcast = this.broadcastGame(socket, game)
-        promises.push(broadcast)
-
+        this.sendGameUpdateToSocketAndRoom(socket, {
+          room: game.code,
+          stateManager,
+        })
         await Promise.all(promises)
       } else {
         this.startDisconnectionTimeout(player, timeout, () =>
@@ -70,11 +72,17 @@ export class PlayerService extends BaseService {
         )
       }
 
-      socket.to(game.code).emit("message:server", {
+      const message: ServerChatMessage = {
         id: crypto.randomUUID(),
         username: player.name,
         message: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT,
         type: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT,
+      }
+
+      this.sendToRoom(socket, {
+        room: game.code,
+        event: "message:server",
+        data: [message],
       })
 
       await socket.leave(game.code)
@@ -92,7 +100,7 @@ export class PlayerService extends BaseService {
   }
 
   async onReconnect(socket: SkyjoSocket, reconnectData: LastGame) {
-    const isPlayerInGame = await BaseService.gameDb.isPlayerInGame(
+    const isPlayerInGame = await this.redis.isPlayerInGame(
       reconnectData.gameCode,
       reconnectData.playerId,
     )
@@ -111,7 +119,8 @@ export class PlayerService extends BaseService {
       )
     }
 
-    const canReconnect = await BaseService.playerDb.canReconnect(
+    const canReconnect = await this.redis.canReconnectPlayer(
+      reconnectData.gameCode,
       reconnectData.playerId,
     )
     if (!canReconnect) {
@@ -126,7 +135,11 @@ export class PlayerService extends BaseService {
       })
     }
 
-    await BaseService.playerDb.updateSocketId(reconnectData.playerId, socket.id)
+    await this.redis.updatePlayerSocketId(
+      reconnectData.gameCode,
+      reconnectData.playerId,
+      socket.id,
+    )
 
     await this.reconnectPlayer(
       socket,
@@ -152,7 +165,6 @@ export class PlayerService extends BaseService {
     player.connectionStatus = connectionLost
       ? CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
       : CoreConstants.CONNECTION_STATUS.LEAVE
-    BaseService.playerDb.updateDisconnectionDate(player, new Date())
 
     player.disconnectionTimeout = setTimeout(
       socketErrorHandlerWrapper(async () => {
@@ -169,13 +181,16 @@ export class PlayerService extends BaseService {
     socket: SkyjoSocket,
     game: Skyjo,
   ) {
+    const stateManager = new GameStateManager(game)
+
     if (!game.haveAtLeastMinPlayersConnected()) {
       game.status = CoreConstants.GAME_STATUS.STOPPED
 
-      const removeGame = this.removeGame(game.code)
-      const broadcast = this.broadcastGame(socket, game)
-
-      await Promise.all([removeGame, broadcast])
+      this.sendGameUpdateToSocketAndRoom(socket, {
+        room: game.code,
+        stateManager,
+      })
+      await this.redis.removeGame(game.code)
       return
     }
 
@@ -197,10 +212,11 @@ export class PlayerService extends BaseService {
       this.restartRound(socket, game)
     }
 
-    const updateGame = BaseService.gameDb.updateGame(game)
-    const broadcast = this.broadcastGame(socket, game)
-
-    await Promise.all([updateGame, broadcast])
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
+    await this.redis.updateGame(game)
   }
 
   private async reconnectPlayer(
@@ -208,7 +224,7 @@ export class PlayerService extends BaseService {
     gameCode: string,
     playerId: string,
   ) {
-    const game = await this.getGame(gameCode)
+    const game = await this.redis.getGame(gameCode)
 
     const player = game.getPlayerById(playerId)
 
@@ -227,14 +243,19 @@ export class PlayerService extends BaseService {
         },
       )
 
+    const stateManager = new GameStateManager(game)
+
     if (player.disconnectionTimeout) clearTimeout(player.disconnectionTimeout)
     player.socketId = socket.id
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
 
-    const updatePlayer = BaseService.playerDb.reconnectPlayer(player)
-    const joinGame = this.joinGame(socket, game, player, true)
+    this.sendGameUpdateToRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
 
-    await Promise.all([updatePlayer, joinGame])
+    await this.redis.updateGame(game)
+    await this.joinGame(socket, game, player, true)
   }
   //#endregion
 }

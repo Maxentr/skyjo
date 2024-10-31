@@ -1,7 +1,17 @@
-import type { SkyjoPopulate } from "@/types/skyjo.js"
+import type { SkyjoToDb } from "@/types/skyjo.js"
 import type { SkyjoSettingsToJson } from "@/types/skyjoSettings.js"
-import type { ChangeSettings } from "@/validations/changeSettings.js"
 import { Constants } from "../constants.js"
+
+type UpdateSettings = {
+  private: boolean
+  allowSkyjoForColumn: boolean
+  allowSkyjoForRow: boolean
+  initialTurnedCount: number
+  cardPerRow: number
+  cardPerColumn: number
+  scoreToEndGame: number
+  multiplierForFirstPlayer: number
+}
 
 export interface SkyjoSettingsInterface {
   private: boolean
@@ -12,6 +22,8 @@ export interface SkyjoSettingsInterface {
   cardPerRow: number
   cardPerColumn: number
 
+  updateSettings(settings: UpdateSettings): void
+  preventInvalidSettings(): void
   toJson(): SkyjoSettingsToJson
 }
 
@@ -34,21 +46,21 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     this.private = isPrivate
   }
 
-  populate(game: SkyjoPopulate) {
-    this.private = game.private
-    this.maxPlayers = game.maxPlayers
-    this.allowSkyjoForColumn = game.allowSkyjoForColumn
-    this.allowSkyjoForRow = game.allowSkyjoForRow
-    this.initialTurnedCount = game.initialTurnedCount
-    this.cardPerRow = game.cardPerRow
-    this.cardPerColumn = game.cardPerColumn
-    this.scoreToEndGame = game.scoreToEndGame
-    this.multiplierForFirstPlayer = game.multiplierForFirstPlayer
+  populate(settings: SkyjoToDb["settings"]) {
+    this.private = settings.private
+    this.maxPlayers = settings.maxPlayers
+    this.allowSkyjoForColumn = settings.allowSkyjoForColumn
+    this.allowSkyjoForRow = settings.allowSkyjoForRow
+    this.initialTurnedCount = settings.initialTurnedCount
+    this.cardPerRow = settings.cardPerRow
+    this.cardPerColumn = settings.cardPerColumn
+    this.scoreToEndGame = settings.scoreToEndGame
+    this.multiplierForFirstPlayer = settings.multiplierForFirstPlayer
 
     return this
   }
 
-  changeSettings(settings: ChangeSettings) {
+  updateSettings(settings: UpdateSettings) {
     this.private = settings.private
     this.allowSkyjoForColumn = settings.allowSkyjoForColumn
     this.allowSkyjoForRow = settings.allowSkyjoForRow
@@ -57,6 +69,18 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     this.cardPerColumn = settings.cardPerColumn
     this.scoreToEndGame = settings.scoreToEndGame
     this.multiplierForFirstPlayer = settings.multiplierForFirstPlayer
+
+    this.preventInvalidSettings()
+  }
+
+  preventInvalidSettings() {
+    if (this.cardPerColumn * this.cardPerRow <= this.initialTurnedCount) {
+      this.initialTurnedCount = this.cardPerColumn * this.cardPerRow - 1
+    }
+
+    if (this.cardPerColumn === 1 && this.cardPerRow === 1) {
+      this.cardPerColumn = 2
+    }
   }
 
   toJson() {

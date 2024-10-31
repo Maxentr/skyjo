@@ -1,5 +1,5 @@
 import { useSkyjo } from "@/contexts/SkyjoContext"
-import type { ChatMessage } from "@skyjo/shared/types/chat"
+import type { ChatMessage } from "@skyjo/shared/types"
 import { cva } from "class-variance-authority"
 import { m } from "framer-motion"
 import { useTranslations } from "next-intl"

@@ -1,5 +1,4 @@
-import type { SkyjoPopulate, SkyjoToJson } from "@/types/skyjo.js"
-import type { SkyjoPlayerPopulate } from "@/types/skyjoPlayer.js"
+import type { SkyjoToDb, SkyjoToJson } from "@/types/skyjo.js"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import {
   Constants,
@@ -25,6 +24,7 @@ interface SkyjoInterface {
   firstToFinishPlayerId: string | null
   turnStatus: TurnStatus
   lastTurnStatus: LastTurnStatus
+  roundStatus: RoundStatus
 
   start(): void
   checkAllPlayersRevealedCards(count: number): void
@@ -36,6 +36,7 @@ interface SkyjoInterface {
   nextTurn(): void
   resetRound(): void
   toJson(): SkyjoToJson
+  serializeGame(): SkyjoToDb
 }
 
 export class Skyjo implements SkyjoInterface {
@@ -72,10 +73,7 @@ export class Skyjo implements SkyjoInterface {
     this.updatedAt = now
   }
 
-  populate(
-    game: SkyjoPopulate,
-    { players }: { players: SkyjoPlayerPopulate[] },
-  ) {
+  populate(game: SkyjoToDb) {
     this.id = game.id
     this.code = game.code
     this.status = game.status
@@ -94,9 +92,11 @@ export class Skyjo implements SkyjoInterface {
     this.createdAt = game.createdAt
     this.updatedAt = game.updatedAt
 
-    this.players = players.map((player) => new SkyjoPlayer().populate(player))
+    this.players = game.players.map((player) =>
+      new SkyjoPlayer().populate(player),
+    )
 
-    this.settings = new SkyjoSettings().populate(game)
+    this.settings.populate(game.settings)
 
     return this
   }
@@ -221,6 +221,7 @@ export class Skyjo implements SkyjoInterface {
     const player = this.getCurrentPlayer()
     const oldCardValue = player.cards[column][row].value
     player.replaceCard(column, row, this.selectedCardValue!)
+    this.selectedCardValue = null
     this.discardCard(oldCardValue)
     this.lastTurnStatus = Constants.LAST_TURN_STATUS.REPLACE
   }
@@ -228,6 +229,10 @@ export class Skyjo implements SkyjoInterface {
   turnCard(player: SkyjoPlayer, column: number, row: number) {
     player.turnCard(column, row)
     this.lastTurnStatus = Constants.LAST_TURN_STATUS.TURN
+  }
+
+  getLastDiscardCardValue() {
+    return this.discardPile[this.discardPile.length - 1]
   }
 
   nextTurn() {
@@ -294,18 +299,68 @@ export class Skyjo implements SkyjoInterface {
   toJson() {
     return {
       code: this.code,
-      status: this.status,
-      turn: this.turn,
       adminId: this.adminId,
-      players: this.players.map((player) => player.toJson(this.adminId)),
-      selectedCardValue: this.selectedCardValue,
+      status: this.status,
+      players: this.players.map((player) => player.toJson()),
+      turn: this.turn,
       lastDiscardCardValue: this.discardPile[this.discardPile.length - 1],
+      selectedCardValue: this.selectedCardValue,
       roundStatus: this.roundStatus,
       turnStatus: this.turnStatus,
       lastTurnStatus: this.lastTurnStatus,
       settings: this.settings.toJson(),
       updatedAt: this.updatedAt,
     } satisfies SkyjoToJson
+  }
+
+  serializeGame() {
+    return {
+      id: this.id,
+      code: this.code,
+      adminId: this.adminId,
+      isFull: this.isFull(),
+      status: this.status,
+      players: this.players.map((player) => ({
+        id: player.id,
+        name: player.name,
+        socketId: player.socketId,
+        avatar: player.avatar,
+        score: player.score,
+        wantsReplay: player.wantsReplay,
+        connectionStatus: player.connectionStatus,
+        scores: player.scores,
+        hasPlayedLastTurn: player.hasPlayedLastTurn,
+        cards: player.cards.map((column) =>
+          column.map((card) => ({
+            id: card.id,
+            value: card.value,
+            isVisible: card.isVisible,
+          })),
+        ),
+      })),
+      turn: this.turn,
+      discardPile: this.discardPile,
+      drawPile: this.drawPile,
+      settings: {
+        private: this.settings.private,
+        maxPlayers: this.settings.maxPlayers,
+        allowSkyjoForColumn: this.settings.allowSkyjoForColumn,
+        allowSkyjoForRow: this.settings.allowSkyjoForRow,
+        initialTurnedCount: this.settings.initialTurnedCount,
+        cardPerRow: this.settings.cardPerRow,
+        cardPerColumn: this.settings.cardPerColumn,
+        scoreToEndGame: this.settings.scoreToEndGame,
+        multiplierForFirstPlayer: this.settings.multiplierForFirstPlayer,
+      },
+      selectedCardValue: this.selectedCardValue,
+      roundNumber: this.roundNumber,
+      roundStatus: this.roundStatus,
+      turnStatus: this.turnStatus,
+      lastTurnStatus: this.lastTurnStatus,
+      firstToFinishPlayerId: this.firstToFinishPlayerId,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    } satisfies SkyjoToDb
   }
 
   //#region private methods

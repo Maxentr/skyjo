@@ -3,7 +3,7 @@ import { SkyjoCard } from "../../class/SkyjoCard.js"
 import { SkyjoPlayer } from "../../class/SkyjoPlayer.js"
 import { SkyjoSettings } from "../../class/SkyjoSettings.js"
 import { Constants } from "../../constants.js"
-import type { SkyjoPlayerPopulate } from "../../types/skyjoPlayer.js"
+import type { SkyjoToDb } from "../../types/skyjo.js"
 
 let nbColumns: number
 let nbRows: number
@@ -34,12 +34,13 @@ describe("SkyjoPlayer", () => {
 
   //#region Player class
   it("should populate the class without cards", () => {
-    const dbPlayer: SkyjoPlayerPopulate = {
+    const dbPlayer: SkyjoToDb["players"][number] = {
       id: crypto.randomUUID(),
       name: "name",
       avatar: Constants.AVATARS.BEE,
       socketId: TEST_SOCKET_ID,
       connectionStatus: Constants.CONNECTION_STATUS.CONNECTED,
+      hasPlayedLastTurn: false,
       score: 10,
       scores: [5, 5],
       wantsReplay: true,
@@ -54,15 +55,17 @@ describe("SkyjoPlayer", () => {
     expect(player.score).toBe(dbPlayer.score)
     expect(player.wantsReplay).toBe(dbPlayer.wantsReplay)
     expect(player.cards).toStrictEqual(dbPlayer.cards)
+    expect(player.hasPlayedLastTurn).toBe(dbPlayer.hasPlayedLastTurn)
   })
 
   it("should populate the class with cards", () => {
-    const dbPlayer: SkyjoPlayerPopulate = {
+    const dbPlayer: SkyjoToDb["players"][number] = {
       id: crypto.randomUUID(),
       name: "name",
       avatar: Constants.AVATARS.BEE,
       socketId: TEST_SOCKET_ID,
       connectionStatus: Constants.CONNECTION_STATUS.CONNECTED,
+      hasPlayedLastTurn: false,
       score: 10,
       scores: [5, 5],
       wantsReplay: true,
@@ -395,7 +398,7 @@ describe("SkyjoPlayer", () => {
   })
 
   describe("toJson", () => {
-    it("should return json with isAdmin as false", () => {
+    it("should return json", () => {
       const playerToJson = player.toJson()
 
       expect(playerToJson).toStrictEqual({
@@ -406,32 +409,9 @@ describe("SkyjoPlayer", () => {
         cards: player.cards.map((column) =>
           column.map((card) => card.toJson()),
         ),
-        currentScore: 0,
         score: 0,
         scores: [],
         wantsReplay: false,
-        isAdmin: false,
-        connectionStatus: Constants.CONNECTION_STATUS.CONNECTED,
-      })
-    })
-
-    it("should return json with isAdmin as true", () => {
-      const adminId = player.id
-      const playerToJson = player.toJson(adminId)
-
-      expect(playerToJson).toStrictEqual({
-        id: adminId,
-        name: "username",
-        socketId: TEST_SOCKET_ID,
-        avatar: Constants.AVATARS.BEE,
-        cards: player.cards.map((column) =>
-          column.map((card) => card.toJson()),
-        ),
-        currentScore: 0,
-        score: 0,
-        scores: [],
-        wantsReplay: false,
-        isAdmin: true,
         connectionStatus: Constants.CONNECTION_STATUS.CONNECTED,
       })
     })

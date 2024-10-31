@@ -3,16 +3,18 @@
 import { useToast } from "@/components/ui/use-toast"
 import { useChat } from "@/contexts/ChatContext"
 import { useSocket } from "@/contexts/SocketContext"
-import { getCurrentUser, getOpponents } from "@/lib/skyjo"
+import { getCurrentUser, getOpponents, isAdmin } from "@/lib/skyjo"
 import { useRouter } from "@/navigation"
 import { Opponents } from "@/types/opponents"
 import {
-  ChangeSettings,
   Constants as CoreConstants,
   PlayPickCard,
   SkyjoPlayerToJson,
   SkyjoToJson,
 } from "@skyjo/core"
+import type { SkyjoOperation } from "@skyjo/shared/types"
+import { applyOperations } from "@skyjo/shared/utils"
+import { UpdateGameSettings } from "@skyjo/shared/validations"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import {
@@ -32,7 +34,11 @@ type SkyjoContext = {
   player: SkyjoPlayerToJson
   opponents: Opponents
   actions: {
-    changeSettings: (settings: ChangeSettings) => void
+    updateSingleSettings: <T extends keyof UpdateGameSettings>(
+      key: T,
+      value: UpdateGameSettings[T],
+    ) => void
+    updateSettings: (settings: UpdateGameSettings) => void
     resetSettings: () => void
     startGame: () => void
     playRevealCard: (column: number, row: number) => void
@@ -62,11 +68,12 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const player = getCurrentUser(game?.players, socket?.id ?? "")
   const opponents = getOpponents(game?.players, socket?.id ?? "")
 
+  const admin = isAdmin(game, player?.id)
+
   useEffect(() => {
     if (!gameCode || !socket) return
 
     initGameListeners()
-
     // get game
     socket.emit("get")
 
@@ -95,11 +102,21 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   //#endregion
 
   //#region listeners
-  const onGameUpdate = async (game: SkyjoToJson) => {
-    console.log("game updated", game)
+  //#region game
+  const onGameReceive = (game: SkyjoToJson) => {
+    console.log("onGameReceive", game)
     setGame(game)
   }
 
+  const onGameUpdate = (operations: SkyjoOperation) => {
+    console.log("onGameUpdate", operations)
+    setGame((prev) => {
+      if (!prev) return prev
+      const prevState = structuredClone(prev)
+      const newState = applyOperations(prevState, operations)
+      return newState
+    })
+  }
   const onLeave = () => {
     setGame(undefined)
     setChat([])
@@ -107,44 +124,74 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   }
 
   const initGameListeners = () => {
-    socket!.on("game", onGameUpdate)
+    socket!.on("game", onGameReceive)
+    socket!.on("game:update", onGameUpdate)
     socket!.on("leave:success", onLeave)
   }
+
   const destroyGameListeners = () => {
-    socket!.off("game", onGameUpdate)
+    socket!.off("game", onGameReceive)
+    socket!.off("game:update", onGameUpdate)
     socket!.off("leave:success", onLeave)
   }
   //#endregion
 
   //#region actions
-  const changeSettings = (settings: ChangeSettings) => {
-    if (!player?.isAdmin) return
+  const updateSingleSettings = <T extends keyof UpdateGameSettings>(
+    key: T,
+    value: UpdateGameSettings[T],
+  ) => {
+    if (!admin) return
 
-    if (
-      settings.cardPerColumn * settings.cardPerRow <=
-      settings.initialTurnedCount
-    ) {
-      settings.initialTurnedCount =
-        settings.cardPerColumn * settings.cardPerRow - 1
+    switch (key) {
+      case "private":
+        socket!.emit(`game:settings:private`, value as boolean)
+        break
+      case "allowSkyjoForColumn":
+        socket!.emit(`game:settings:allow-skyjo-for-column`, value as boolean)
+        break
+      case "allowSkyjoForRow":
+        socket!.emit(`game:settings:allow-skyjo-for-row`, value as boolean)
+        break
+      case "initialTurnedCount":
+        socket!.emit(`game:settings:initial-turned-count`, value as number)
+        break
+      case "cardPerColumn":
+        socket!.emit(`game:settings:card-per-column`, value as number)
+        break
+      case "cardPerRow":
+        socket!.emit(`game:settings:card-per-row`, value as number)
+        break
+      case "scoreToEndGame":
+        socket!.emit(`game:settings:score-to-end-game`, value as number)
+        break
+      case "multiplierForFirstPlayer":
+        socket!.emit(
+          `game:settings:multiplier-for-first-player`,
+          value as number,
+        )
+        break
+      default:
+        throw new Error(`Unknown settings: ${key}`)
     }
+  }
 
-    if (settings.cardPerColumn === 1 && settings.cardPerRow === 1) {
-      settings.cardPerColumn = 2
-    }
+  const updateSettings = (settings: UpdateGameSettings) => {
+    if (!admin) return
 
-    socket!.emit("settings", settings)
+    socket!.emit("game:settings", settings)
   }
 
   const resetSettings = () => {
-    if (!player?.isAdmin) return
+    if (!admin) return
 
-    socket!.emit("settings", {
+    socket!.emit("game:settings", {
       private: game?.settings.private ?? false,
     })
   }
 
   const startGame = () => {
-    if (!player?.isAdmin) return
+    if (!admin) return
 
     socket!.emit("start")
   }
@@ -191,7 +238,8 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
 
   const actions = {
     sendMessage,
-    changeSettings,
+    updateSingleSettings,
+    updateSettings,
     resetSettings,
     startGame,
     playRevealCard,

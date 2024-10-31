@@ -15,7 +15,7 @@ export class Logger {
     defaultMeta: {
       app: ENV.APP_NAME,
       environment: ENV.NODE_ENV,
-      version: ENV.npm_package_version ?? "unknown",
+      version: process.env.npm_package_version ?? "unknown",
     },
     transports: [
       new transports.Console({

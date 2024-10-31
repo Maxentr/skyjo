@@ -3,6 +3,7 @@
 import { ToastAction } from "@/components/ui/toast"
 import { ToastReturn, useToast } from "@/components/ui/use-toast"
 import { useSkyjo } from "@/contexts/SkyjoContext"
+import { isAdmin } from "@/lib/skyjo"
 import { useTranslations } from "next-intl"
 import { useEffect } from "react"
 
@@ -18,7 +19,7 @@ const InactivityCheck = () => {
   const t = useTranslations("pages.InactivityCheck")
   const { toast } = useToast()
 
-  const isAdmin = player?.isAdmin ?? false
+  const admin = isAdmin(game, player?.id)
 
   let timer: NodeJS.Timeout | null = null
   let warningTimer: NodeJS.Timeout | null = null
@@ -64,7 +65,7 @@ const InactivityCheck = () => {
   }
 
   useEffect(() => {
-    if (!isAdmin) return
+    if (!admin) return
 
     if (warningToast) warningToast.dismiss()
     clearTimers()
@@ -74,7 +75,7 @@ const InactivityCheck = () => {
     createTimers()
 
     return clearTimers
-  }, [isAdmin, game.updatedAt, game.settings, opponents])
+  }, [admin, game.updatedAt, game.settings, opponents])
 
   return null
 }

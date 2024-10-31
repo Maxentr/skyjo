@@ -15,32 +15,32 @@ export class Constants {
   } as const
 
   static readonly GAME_STATUS = {
-    LOBBY: "lobby",
-    PLAYING: "playing",
-    FINISHED: "finished",
-    STOPPED: "stopped",
+    LOBBY: 1,
+    PLAYING: 2,
+    FINISHED: 3,
+    STOPPED: 4,
   } as const
 
   static readonly ROUND_STATUS = {
-    WAITING_PLAYERS_TO_TURN_INITIAL_CARDS: "waitingPlayersToTurnInitialCards",
-    PLAYING: "playing",
-    LAST_LAP: "lastLap",
-    OVER: "over",
+    WAITING_PLAYERS_TO_TURN_INITIAL_CARDS: 1,
+    PLAYING: 2,
+    LAST_LAP: 3,
+    OVER: 4,
   } as const
 
   static readonly TURN_STATUS = {
-    CHOOSE_A_PILE: "chooseAPile",
-    THROW_OR_REPLACE: "throwOrReplace",
-    TURN_A_CARD: "turnACard",
-    REPLACE_A_CARD: "replaceACard",
+    CHOOSE_A_PILE: 1,
+    THROW_OR_REPLACE: 2,
+    TURN_A_CARD: 3,
+    REPLACE_A_CARD: 4,
   } as const
 
   static readonly LAST_TURN_STATUS = {
-    PICK_FROM_DRAW_PILE: "pickFromDrawPile",
-    PICK_FROM_DISCARD_PILE: "pickFromDiscardPile",
-    THROW: "throw",
-    REPLACE: "replace",
-    TURN: "turn",
+    PICK_FROM_DRAW_PILE: 1,
+    PICK_FROM_DISCARD_PILE: 2,
+    THROW: 3,
+    REPLACE: 4,
+    TURN: 5,
   } as const
 
   static readonly AVATARS = {
@@ -58,10 +58,10 @@ export class Constants {
   } as const
 
   static readonly CONNECTION_STATUS = {
-    CONNECTED: "connected",
-    CONNECTION_LOST: "connection-lost",
-    LEAVE: "leave",
-    DISCONNECTED: "disconnected",
+    CONNECTED: 1,
+    CONNECTION_LOST: 2,
+    LEAVE: 3,
+    DISCONNECTED: 4,
   } as const
 
   static readonly USER_MESSAGE_TYPE = "message" as const

@@ -6,12 +6,11 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "prod": "turbo run prod",
     "biome:check": "turbo run biome:check",
     "test": "turbo run test",
     "test:coverage": "turbo run test:coverage",
-    "test:ui": "turbo run test:ui",
-    "db:generate": "turbo run db:generate",
-    "db:migrate": "turbo run db:migrate"
+    "test:ui": "turbo run test:ui"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.3",

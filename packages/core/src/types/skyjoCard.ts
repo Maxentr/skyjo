@@ -1,10 +1,10 @@
-export interface SkyjoCardToJson {
+export type SkyjoCardToJson = {
   id: string
   value?: number
   isVisible: boolean
 }
 
-export interface SkyjoCardDb {
+export type SkyjoCardDb = {
   id: string
   value: number
   isVisible: boolean

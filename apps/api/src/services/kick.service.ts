@@ -1,4 +1,5 @@
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
+import { GameStateManager } from "@/utils/GameStateManager.js"
 import { Constants as CoreConstants, KickVote, type Skyjo } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { BaseService } from "./base.service.js"
@@ -7,12 +8,12 @@ export class KickService extends BaseService {
   private readonly kickVotes: Map<string, KickVote> = new Map()
 
   async onInitiateKickVote(socket: SkyjoSocket, targetId: string) {
-    const game = await this.getGame(socket.data.gameCode)
+    const game = await this.redis.getGame(socket.data.gameCode)
     await this.initiateKickVote(socket, game, targetId)
   }
 
   async onVoteToKick(socket: SkyjoSocket, vote: boolean) {
-    const game = await this.getGame(socket.data.gameCode)
+    const game = await this.redis.getGame(socket.data.gameCode)
 
     const player = game.getPlayerById(socket.data.playerId)
     if (!player) {
@@ -132,7 +133,12 @@ export class KickService extends BaseService {
 
     this.kickVotes.set(game.id, kickVote)
 
-    this.broadcastKickVote(socket, game.code, "kick:vote", kickVote)
+    this.sendToSocketAndRoom(socket, {
+      room: game.code,
+      event: "kick:vote",
+      data: [kickVote.toJson()],
+    })
+
     await this.checkKickVoteStatus(socket, game, kickVote)
 
     // Add timeout for vote expiration
@@ -158,15 +164,18 @@ export class KickService extends BaseService {
       if (kickVote.hasReachedRequiredVotes()) {
         await this.kickPlayer(socket, game, kickVote)
       } else {
-        await this.broadcastKickVote(
-          socket,
-          game.code,
-          "kick:vote-failed",
-          kickVote,
-        )
+        this.sendToSocketAndRoom(socket, {
+          room: game.code,
+          event: "kick:vote-failed",
+          data: [kickVote.toJson()],
+        })
       }
     } else {
-      await this.broadcastKickVote(socket, game.code, "kick:vote", kickVote)
+      this.sendToSocketAndRoom(socket, {
+        room: game.code,
+        event: "kick:vote",
+        data: [kickVote.toJson()],
+      })
     }
   }
 
@@ -175,6 +184,8 @@ export class KickService extends BaseService {
     game: Skyjo,
     kickVote: KickVote,
   ) {
+    const stateManager = new GameStateManager(game)
+
     const playerToKick = game.getPlayerById(kickVote.targetId)
     if (!playerToKick) {
       throw new CError(
@@ -194,7 +205,7 @@ export class KickService extends BaseService {
     }
 
     playerToKick.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
-    await BaseService.playerDb.updatePlayer(playerToKick)
+    await this.redis.updatePlayer(game.code, playerToKick.toJson())
 
     if (game.isAdmin(playerToKick.id)) await this.changeAdmin(game)
 
@@ -204,30 +215,20 @@ export class KickService extends BaseService {
       game.status === CoreConstants.GAME_STATUS.STOPPED
     ) {
       game.removePlayer(playerToKick.id)
-      await BaseService.playerDb.removePlayer(game.id, playerToKick.id)
+      await this.redis.removePlayer(game.code, playerToKick.id)
     }
 
-    await this.broadcastKickVote(
-      socket,
-      game.code,
-      "kick:vote-success",
-      kickVote,
-    )
+    this.sendToSocketAndRoom(socket, {
+      room: game.code,
+      event: "kick:vote-success",
+      data: [kickVote.toJson()],
+    })
 
-    const updateGame = BaseService.gameDb.updateGame(game)
-    const broadcast = this.broadcastGame(socket, game)
-
-    await Promise.all([updateGame, broadcast])
-  }
-
-  private async broadcastKickVote(
-    socket: SkyjoSocket,
-    gameCode: string,
-    event: "kick:vote" | "kick:vote-success" | "kick:vote-failed",
-    kickVote: KickVote,
-  ) {
-    socket.to(gameCode).emit(event, kickVote.toJson())
-    socket.emit(event, kickVote.toJson())
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
+    await this.redis.updateGame(game)
   }
   //#endregion
 }

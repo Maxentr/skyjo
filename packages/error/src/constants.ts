@@ -1,6 +1,7 @@
 export class Constants {
   static readonly ERROR = {
     GAME_NOT_FOUND: "game-not-found",
+    GAME_ALREADY_EXISTS: "game-already-exists",
     PLAYER_NOT_FOUND: "player-not-found",
     NOT_ALLOWED: "not-allowed",
     INVALID_TURN_STATE: "invalid-turn-state",
@@ -11,6 +12,7 @@ export class Constants {
     KICK_VOTE_IN_PROGRESS: "kick-vote-in-progress",
     NO_KICK_VOTE_IN_PROGRESS: "no-kick-vote-in-progress",
     PLAYER_ALREADY_VOTED: "player-already-voted",
+    UNKNOWN_OPERATION: "unknown-operation",
   } as const
 }
 export type Error = (typeof Constants.ERROR)[keyof typeof Constants.ERROR]

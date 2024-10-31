@@ -7,6 +7,9 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"]
     },
+    "prod": {
+      "cache": false
+    },
     "test": {
       "dependsOn": ["^build"],
       "cache": false,
@@ -28,8 +31,6 @@
     },
     "biome:check": {
       "cache": false
-    },
-    "db:generate": {},
-    "db:migrate": {}
+    }
   }
 }
