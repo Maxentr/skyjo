@@ -11,8 +11,7 @@ import {
   GameStatus,
 } from "@skyjo/core"
 import { Constants as ErrorConstants } from "@skyjo/error"
-import { ErrorJoinMessage } from "@skyjo/shared/types"
-import { ErrorReconnectMessage } from "@skyjo/shared/types"
+import { ErrorJoinMessage, ErrorReconnectMessage } from "@skyjo/shared/types"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 
