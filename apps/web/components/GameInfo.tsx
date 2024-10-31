@@ -32,7 +32,18 @@ const GameInfo = () => {
       }
     }
 
-    return t(`turn.${game.turnStatus}`)
+    if (game.turnStatus === CoreConstants.TURN_STATUS.CHOOSE_A_PILE) {
+      return t("turn.chooseAPile")
+    }
+    if (game.turnStatus === CoreConstants.TURN_STATUS.THROW_OR_REPLACE) {
+      return t("turn.throwOrReplace")
+    }
+    if (game.turnStatus === CoreConstants.TURN_STATUS.TURN_A_CARD) {
+      return t("turn.turnACard")
+    }
+    if (game.turnStatus === CoreConstants.TURN_STATUS.REPLACE_A_CARD) {
+      return t("turn.replaceACard")
+    }
   }
 
   return (

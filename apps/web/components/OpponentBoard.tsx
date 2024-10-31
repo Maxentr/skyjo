@@ -60,7 +60,7 @@ const OpponentBoard = ({
                 <AlertTriangleIcon size={16} className="text-yellow-700" />
               </TooltipTrigger>
               <TooltipContent>
-                <p>{to(CoreConstants.CONNECTION_STATUS.CONNECTION_LOST)}</p>
+                <p>{to("connection-lost")}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

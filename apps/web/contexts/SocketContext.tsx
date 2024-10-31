@@ -1,7 +1,6 @@
 "use client"
 
 import { useToast } from "@/components/ui/use-toast"
-import { Constants as CoreConstants } from "@skyjo/core"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
 import { ClientToServerEvents, ServerToClientEvents } from "@skyjo/shared/types"
 import { LastGame } from "@skyjo/shared/validations"
@@ -133,7 +132,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
 
     console.log("Socket disconnected", reason, details)
     toast({
-      description: t(CoreConstants.CONNECTION_STATUS.CONNECTION_LOST),
+      description: t("connection-lost"),
       variant: "destructive",
       duration: 5000,
     })

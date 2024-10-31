@@ -108,7 +108,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     setGame(game)
   }
 
-  const onGameUpdate = (operations: SkyjoOperation[]) => {
+  const onGameUpdate = (operations: SkyjoOperation) => {
     console.log("onGameUpdate", operations)
     setGame((prev) => {
       if (!prev) return prev
