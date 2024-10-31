@@ -30,7 +30,6 @@ export const applyOperations = (
   const keys = Object.keys(operations) as (keyof SkyjoOperation)[]
   keys.forEach((key) => {
     const data = operations[key]
-
     if (!data) return
 
     actions[key](gameUpdated, data)
@@ -64,6 +63,7 @@ const addPlayers = (game: SkyjoToJson, players: SkyjoPlayerToJson[]) => {
 const updatePlayers = (game: SkyjoToJson, operations: PlayerUpdate[]) => {
   operations.forEach(({ id, ...rest }) => {
     const playerIndex = game.players.findIndex((p) => p.id === id)
+    if (playerIndex === -1) return
 
     game.players[playerIndex] = Object.assign(game.players[playerIndex], rest)
   })
