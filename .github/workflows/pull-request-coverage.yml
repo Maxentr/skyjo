@@ -29,7 +29,7 @@ jobs:
       - name: "Test"
         run: pnpm test:coverage
 
-      - name: "Report API Coverage"
+      - name: "Report API coverage"
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
         with:
@@ -37,3 +37,12 @@ jobs:
           vite-config-path: "./apps/api/vitest.config.ts"
           json-summary-path: "./apps/api/tests/coverage/coverage-summary.json"
           json-final-path: "./apps/api/tests/coverage/coverage-final.json"
+
+      - name: "Report Core coverage"
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          name: "Core"
+          vite-config-path: "./packages/core/vitest.config.ts"
+          json-summary-path: "./packages/core/tests/coverage/coverage-summary.json"
+          json-final-path: "./packages/core/tests/coverage/coverage-final.json"
