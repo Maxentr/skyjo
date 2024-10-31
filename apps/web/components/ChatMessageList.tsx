@@ -9,7 +9,7 @@ function ChatMessageList() {
   return (
     <div
       id="messages-container"
-      className="w-full md:overflow-y-auto flex flex-grow flex-col-reverse my-2 gap-2 scrollbar-thin scrollbar-thumb-black scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full"
+      className="w-full md:overflow-y-auto flex flex-grow flex-col-reverse my-2 gap-2 scrollbar-thin scrollbar-thumb-black scrollbar-track-transparent scrollbar-thumb-rounded-full scrollbar-track-rounded-full break-words"
     >
       {unreadMessages.map((message) => (
         <ChatMessage key={message.id} {...message} />
