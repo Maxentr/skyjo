@@ -40,7 +40,7 @@ const DiscardPile = ({ isPlayerTurn }: DiscardPileProps) => {
           isVisible: false,
         }}
         onClick={onDiscard}
-        title={t(CoreConstants.LAST_TURN_STATUS.THROW)}
+        title={t("throw")}
         className="translate-y-1 animate-scale"
         disabled={false}
         flipAnimation={false}
