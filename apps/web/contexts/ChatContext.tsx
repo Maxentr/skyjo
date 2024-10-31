@@ -95,7 +95,10 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
   }
 
   const onServerMessageReceived = (message: ServerChatMessage) => {
-    if (message.type === "player-joined") {
+    if (
+      message.type === "player-joined" ||
+      message.type === "player-reconnect"
+    ) {
       playerJoinedSound.play()
     } else if (message.type === "player-left") {
       playerLeftSound.play()
