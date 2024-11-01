@@ -523,12 +523,15 @@
       "bee": "abeille",
       "crab": "crabe",
       "dog": "chien",
+      "eagle": "aigle",
       "elephant": "éléphant",
       "fox": "renard",
       "frog": "grenouille",
+      "jellyfish": "méduse",
       "koala": "koala",
       "octopus": "pieuvre",
       "penguin": "pingouin",
+      "toucan": "toucan",
       "turtle": "tortue",
       "whale": "baleine"
     }

@@ -520,17 +520,20 @@
       "player-unmuted": "{username} ya no está silenciado"
     },
     "avatar": {
-      "turtle": "tortuga",
-      "whale": "ballena",
       "bee": "abeja",
       "crab": "cangrejo",
       "dog": "perro",
+      "eagle": "águila",
+      "elephant": "elefante",
+      "fox": "zorro",
+      "frog": "rana",
+      "jellyfish": "medusa",
       "koala": "koala",
       "octopus": "pulpo",
       "penguin": "pingüino",
-      "elephant": "elefante",
-      "fox": "zorro",
-      "frog": "rana"
+      "toucan": "tucán",
+      "turtle": "tortuga",
+      "whale": "ballena"
     }
   },
   "contexts": {

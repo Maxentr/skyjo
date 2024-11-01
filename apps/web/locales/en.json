@@ -523,12 +523,15 @@
       "bee": "bee",
       "crab": "crab",
       "dog": "dog",
+      "eagle": "eagle",
       "elephant": "elephant",
       "fox": "fox",
       "frog": "frog",
+      "jellyfish": "jellyfish",
       "koala": "koala",
       "octopus": "octopus",
       "penguin": "penguin",
+      "toucan": "toucan",
       "turtle": "turtle",
       "whale": "whale"
     }
