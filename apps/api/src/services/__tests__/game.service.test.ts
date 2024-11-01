@@ -1018,12 +1018,15 @@ describe("GameService", () => {
       )
       expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
 
+      const updateGameSpy = vi.spyOn(service["redis"], "updateGame")
       vi.runAllTimers()
 
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
-      )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
+        expect(game.roundStatus).toBe<RoundStatus>(
+          CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        )
+        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      })
 
       vi.useRealTimers()
     })
