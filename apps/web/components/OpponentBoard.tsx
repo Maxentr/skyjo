@@ -34,7 +34,7 @@ const OpponentBoard = ({
       )}
     >
       <Image
-        src={`/avatars/${opponent.avatar}.png`}
+        src={`/avatars/${opponent.avatar}.svg`}
         width={32}
         height={32}
         alt={ta(opponent.avatar)}

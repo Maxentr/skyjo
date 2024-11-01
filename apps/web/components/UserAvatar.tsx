@@ -84,7 +84,7 @@ const UserAvatar = ({
         className={containerVariants({ size })}
       >
         <Image
-          src={`/avatars/${player.avatar}.png`}
+          src={`/avatars/${player.avatar}.svg`}
           width={size === "small" ? 40 : 100}
           height={size === "small" ? 40 : 100}
           alt={tAvatar(player.avatar)}

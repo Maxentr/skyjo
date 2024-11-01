@@ -46,7 +46,7 @@ const SelectAvatar = ({ containerClassName }: SelectAvatarProps) => {
         >
           {avatar ? (
             <Image
-              src={`/avatars/${avatar}.png`}
+              src={`/avatars/${avatar}.svg`}
               width={100}
               height={100}
               alt={tAvatar(avatar)}

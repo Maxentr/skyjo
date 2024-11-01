@@ -34,7 +34,7 @@ const PlayerBoard = ({ player, isPlayerTurn }: PlayerBoardProps) => {
         showSelectionAnimation={showSelectionAnimation}
       />
       <Image
-        src={`/avatars/${player.avatar}.png`}
+        src={`/avatars/${player.avatar}.svg`}
         width={32}
         height={32}
         alt={ta(player.avatar)}
