@@ -63,7 +63,13 @@ const Footer = () => {
       </div>
       <div className="container flex flex-col gap-2">
         <p className="text-center text-black dark:text-dark-font text-sm">
-          {t("disclaimer")}
+          {t("disclaimer.not-affiliated")}
+        </p>
+        <p className="text-center text-black dark:text-dark-font text-sm">
+          {t("disclaimer.rights-owned")}
+        </p>
+        <p className="text-center text-black dark:text-dark-font text-sm">
+          {t("attribution.avatars")}
         </p>
       </div>
     </footer>

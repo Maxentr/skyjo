@@ -254,7 +254,13 @@
       "home": "Home",
       "release-notes": "Release notes",
       "privacy-policy": "Privacy policy",
-      "disclaimer": "This website is not affiliated with the creators or distributors of Skyjo. All rights to the Skyjo name and game mechanics are owned by Alexander Bernhardt and Magilano"
+      "disclaimer": {
+        "not-affiliated": "This website is not affiliated with the creators or distributors of Skyjo",
+        "rights-owned": "All rights to the Skyjo name and game mechanics are owned by Alexander Bernhardt and Magilano"
+      },
+      "attribution": {
+        "avatars": "Avatars created by Freepik - Flaticon"
+      }
     },
     "GameLobbyButtons": {
       "reconnect-game-button": "Reconnect to the game",

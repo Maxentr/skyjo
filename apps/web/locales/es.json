@@ -419,7 +419,13 @@
       "buy-game": "Comprar el juego",
       "explanation": "¿Qué es Skyjo?",
       "home": "Inicio",
-      "disclaimer": "Esta página web no está afiliada a los creadores o distribuidores de Skyjo. Todos los derechos sobre el nombre Skyjo y la mecánica del juego son propiedad de Alexander Bernhardt y Magilano"
+      "disclaimer": {
+        "not-affiliated": "Esta página web no está afiliada a los creadores o distribuidores de Skyjo",
+        "rights-owned": "Todos los derechos sobre el nombre Skyjo y la mecánica del juego son propiedad de Alexander Bernhardt y Magilano"
+      },
+      "attribution": {
+        "avatars": "Avatars creados por Freepik - Flaticon"
+      }
     },
     "GameStoppedDialog": {
       "description": "La partida se ha detenido porque no hay suficientes jugadores",
