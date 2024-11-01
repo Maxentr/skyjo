@@ -112,7 +112,7 @@ const GameLobbyButtons = ({
     if (socket === null) return
 
     delete lastGame?.maxDateToReconnect
-    socket.emit("reconnect", lastGame!)
+    socket.emit("reconnect", lastGame)
 
     socket.once("error:reconnect", (message: ErrorReconnectMessage) => {
       setLoading(false)
