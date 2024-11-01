@@ -6,6 +6,7 @@ import { ClientToServerEvents, ServerToClientEvents } from "@skyjo/shared/types"
 import { LastGame } from "@skyjo/shared/validations"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
+import { WifiIcon, WifiOffIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import {
   PropsWithChildren,
@@ -112,32 +113,35 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
 
   //#region listeners
   const onConnect = () => {
-    if (socket!.recovered) console.log("Socket reconnected")
-    else console.log("Socket connected")
+    if (socket!.recovered) {
+      console.log("Socket reconnected")
+      toast({
+        title: (
+          <span className="flex items-center gap-2 font-medium">
+            <WifiIcon className="w-5 h-5 text-emerald-600" />
+            {t("reconnection")}
+          </span>
+        ),
+        duration: 2000,
+      })
+    } else console.log("Socket connected")
   }
 
-  // biome-ignore lint/suspicious/noExplicitAny: details is typed as Socket.DisconnectDescription but it's not exported
-  const onConnectionLost = (reason: Socket.DisconnectReason, details?: any) => {
-    // the reason of the disconnection, for example "transport error"
-    console.log(reason)
-
-    // the low-level reason of the disconnection, for example "xhr post error"
-    console.log(details?.message)
-
-    // some additional description, for example the status code of the HTTP response
-    console.log(details?.description)
-
-    // some additional context, for example the XMLHttpRequest object
-    console.log(details?.context)
-
-    console.log("Socket disconnected", reason, details)
-    toast({
-      description: t("connection-lost"),
-      variant: "destructive",
-      duration: 5000,
-    })
-
+  const onConnectionLost = (reason: Socket.DisconnectReason) => {
     if (reason === "ping timeout") saveLastGame()
+
+    if (socket?.active) {
+      toast({
+        title: (
+          <span className="flex items-center gap-2 font-medium">
+            <WifiOffIcon className="w-5 h-5" />
+            {t("connection-lost")}
+          </span>
+        ),
+        variant: "warn",
+        duration: 5000,
+      })
+    }
   }
 
   const onConnectionError = (err: unknown) => {

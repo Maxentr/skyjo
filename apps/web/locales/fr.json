@@ -544,7 +544,8 @@
   },
   "contexts": {
     "SocketContext": {
-      "connection-lost": "Connexion au serveur perdue. Essayez de recharger la page pour se reconnecter"
+      "connection-lost": "Connexion perdue. Tentative de reconnexion...",
+      "reconnection": "Reconnexion réussie"
     }
   }
 }
