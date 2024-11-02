@@ -1,6 +1,6 @@
 {
   "name": "skyjo",
-  "version": "1.33.0",
+  "version": "1.33.1",
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
