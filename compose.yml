@@ -41,6 +41,9 @@ services:
     networks:
       - internal
       - external
+    environment:
+      - RIPROXYENABLE=t
+      - RIPROXYPATH=${RIPROXYPATH:-/rdsins/}
     volumes:
       - redisinsight-data:/data
 
