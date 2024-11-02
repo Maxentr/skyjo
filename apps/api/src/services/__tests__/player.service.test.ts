@@ -547,22 +547,7 @@ describe("PlayerService", () => {
   })
 
   describe("on reconnect", () => {
-    it("should throw if player is not in a game", async () => {
-      const lastGame: LastGame = {
-        gameCode: TEST_UNKNOWN_GAME_ID,
-        playerId: TEST_SOCKET_ID,
-      }
-
-      service["redis"].isPlayerInGame = vi.fn(() => Promise.resolve(false))
-
-      await expect(service.onReconnect(socket, lastGame)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.PLAYER_NOT_FOUND,
-      )
-
-      expect(socket.emit).not.toHaveBeenCalled()
-    })
-
-    it("should throw if player is in the game but cannot reconnect", async () => {
+    it("should throw if player cannot reconnect", async () => {
       const player = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
@@ -594,7 +579,6 @@ describe("PlayerService", () => {
         playerId: player.id,
       }
 
-      service["redis"].isPlayerInGame = vi.fn(() => Promise.resolve(true))
       service["redis"].canReconnectPlayer = vi.fn(() => Promise.resolve(false))
 
       await expect(service.onReconnect(socket, lastGame)).toThrowCErrorWithCode(
@@ -641,7 +625,6 @@ describe("PlayerService", () => {
         playerId: player.id,
       }
 
-      service["redis"].isPlayerInGame = vi.fn(() => Promise.resolve(true))
       service["redis"].canReconnectPlayer = vi.fn(() => Promise.resolve(true))
 
       await service.onReconnect(socket, lastGame)
@@ -683,7 +666,6 @@ describe("PlayerService", () => {
       }
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
-      service["redis"].isPlayerInGame = vi.fn(() => Promise.resolve(true))
       service["redis"].canReconnectPlayer = vi.fn(() => Promise.resolve(true))
 
       await service.onReconnect(socket, lastGame)

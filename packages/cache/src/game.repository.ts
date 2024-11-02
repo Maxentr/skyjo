@@ -53,17 +53,6 @@ export class GameRepository extends RedisClient {
     return this.deserializeGame(game as SkyjoToDb)
   }
 
-  async isPlayerInGame(gameCode: string, playerId: string) {
-    const client = await RedisClient.getClient()
-
-    const key = this.getGameKey(gameCode)
-    const player = await client.json.get(key, {
-      path: `$.players[?(@.id == '${playerId}')]`,
-    })
-
-    return player !== null
-  }
-
   async canReconnectPlayer(gameCode: string, playerId: string) {
     const client = await RedisClient.getClient()
 

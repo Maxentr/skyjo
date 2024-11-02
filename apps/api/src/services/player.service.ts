@@ -9,6 +9,8 @@ import type { LastGame } from "@skyjo/shared/validations"
 import { BaseService } from "./base.service.js"
 
 export class PlayerService extends BaseService {
+  private disconnectTimeouts: Record<string, NodeJS.Timeout> = {}
+
   async onLeave(socket: SkyjoSocket, timeout: boolean = false) {
     try {
       const game = await this.redis.getGame(socket.data.gameCode)
@@ -96,25 +98,6 @@ export class PlayerService extends BaseService {
   }
 
   async onReconnect(socket: SkyjoSocket, reconnectData: LastGame) {
-    const isPlayerInGame = await this.redis.isPlayerInGame(
-      reconnectData.gameCode,
-      reconnectData.playerId,
-    )
-    if (!isPlayerInGame) {
-      throw new CError(
-        `Player try to reconnect but he has not been found in the game.`,
-        {
-          code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
-          level: "warn",
-          meta: {
-            socket,
-            gameCode: reconnectData.gameCode,
-            playerId: reconnectData.playerId,
-          },
-        },
-      )
-    }
-
     const canReconnect = await this.redis.canReconnectPlayer(
       reconnectData.gameCode,
       reconnectData.playerId,
@@ -162,7 +145,7 @@ export class PlayerService extends BaseService {
       ? CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
       : CoreConstants.CONNECTION_STATUS.LEAVE
 
-    setTimeout(
+    this.disconnectTimeouts[player.id] = setTimeout(
       socketErrorHandlerWrapper(async () => {
         await callback()
       }),
@@ -246,6 +229,9 @@ export class PlayerService extends BaseService {
           },
         },
       )
+
+    clearTimeout(this.disconnectTimeouts[player.id])
+    delete this.disconnectTimeouts[player.id]
 
     const stateManager = new GameStateManager(game)
 
