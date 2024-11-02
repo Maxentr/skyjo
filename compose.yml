@@ -34,19 +34,6 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     restart: always
 
-  redisinsight:
-    image: redis/redisinsight:latest
-    ports:
-      - 5540:5540
-    networks:
-      - internal
-      - external
-    environment:
-      - RIPROXYENABLE=t
-      - RIPROXYPATH=${RIPROXYPATH:-/rdsins/}
-    volumes:
-      - redisinsight-data:/data
-
 networks:
   internal:
     internal: true
@@ -54,4 +41,3 @@ networks:
 
 volumes:
   redis-data:
-  redisinsight-data:
