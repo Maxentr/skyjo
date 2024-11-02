@@ -27,6 +27,7 @@ type SocketContext = {
   socket: SkyjoSocket | null
   getLastGameIfPossible: () => LastGame | null
   saveLastGame: () => void
+  clearLastGame: () => void
 }
 const SocketContext = createContext<SocketContext | undefined>(undefined)
 
@@ -109,6 +110,10 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
 
     return canReconnect ? lastGame : null
   }
+
+  const clearLastGame = () => {
+    localStorage.removeItem("lastGame")
+  }
   //#endregion reconnection
 
   //#region listeners
@@ -165,6 +170,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
       socket,
       saveLastGame,
       getLastGameIfPossible,
+      clearLastGame,
     }),
     [socket],
   )

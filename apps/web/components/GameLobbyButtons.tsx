@@ -37,13 +37,15 @@ const GameLobbyButtons = ({
 
   const t = useTranslations("components.GameLobbyButtons")
   const { username } = useUser()
-  const { socket, getLastGameIfPossible } = useSocket()
+  const { socket, getLastGameIfPossible, clearLastGame } = useSocket()
   const { toast } = useToast()
   const router = useRouter()
 
   const [loading, setLoading] = useState(false)
 
   const lastGame = getLastGameIfPossible()
+
+  let timeout: NodeJS.Timeout
 
   const handleButtons = async (type: GameLobbyButtonAction) => {
     Howler.ctx.resume()
@@ -53,19 +55,19 @@ const GameLobbyButtons = ({
     const player = await beforeButtonAction(type)
     if (!player) return
 
-    if (type === "reconnect") {
-      handleReconnection()
-    } else if (type === "join")
-      socket.emit("join", { gameCode: gameCode!, player })
-    else socket.emit(type, player)
-
-    const timeout = setTimeout(() => {
+    timeout = setTimeout(() => {
       toast({
         description: t("timeout.description"),
         variant: "destructive",
         duration: 5000,
       })
     }, 10000)
+
+    if (type === "reconnect") {
+      handleReconnection()
+    } else if (type === "join")
+      socket.emit("join", { gameCode: gameCode!, player })
+    else socket.emit(type, player)
 
     socket.once("error:join", (message: ErrorJoinMessage) => {
       clearTimeout(timeout)
@@ -116,12 +118,15 @@ const GameLobbyButtons = ({
 
     socket.once("error:reconnect", (message: ErrorReconnectMessage) => {
       setLoading(false)
+      clearTimeout(timeout)
 
       const descriptionObject: Record<ErrorReconnectMessage, string> = {
         [ErrorConstants.ERROR.CANNOT_RECONNECT]: t(
           "cannot-reconnect.description",
         ),
       }
+
+      clearLastGame()
 
       toast({
         description: descriptionObject[message],
