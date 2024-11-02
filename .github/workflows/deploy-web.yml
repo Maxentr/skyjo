@@ -26,7 +26,7 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
       - name: Build Project
-        run: pnpm build --filter web
+        run: pnpm build --filter @skyjo/web
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
