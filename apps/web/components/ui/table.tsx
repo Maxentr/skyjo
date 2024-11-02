@@ -24,7 +24,7 @@ const TableHeader = React.forwardRef<
   <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
-const MotionTableHeader = m(TableHeader)
+const MotionTableHeader = m.create(TableHeader)
 
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
@@ -67,7 +67,7 @@ const TableRow = React.forwardRef<
   />
 ))
 TableRow.displayName = "TableRow"
-const MotionTableRow = m(TableRow)
+const MotionTableRow = m.create(TableRow)
 
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
