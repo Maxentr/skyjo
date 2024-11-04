@@ -49,7 +49,7 @@ const ChatMobileView = ({
         <DrawerHeader className="p-3 pb-0">
           <DrawerTitle className="text-center">{t("title")}</DrawerTitle>
         </DrawerHeader>
-        <div className="px-4 py-0 h-[50svh] flex flex-col">
+        <div className="px-4 my-2 h-[50svh] flex flex-col overflow-y-auto">
           <ChatMessageList />
         </div>
         <DrawerFooter className="p-4 pt-0">
