@@ -54,6 +54,13 @@ const playerRouter = (socket: SkyjoSocket) => {
       }
     }),
   )
+
+  socket.on(
+    "recover",
+    socketErrorHandlerWrapper(async () => {
+      await instance.onRecover(socket)
+    }),
+  )
 }
 
 export { playerRouter }

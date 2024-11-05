@@ -677,6 +677,23 @@ describe("PlayerService", () => {
   })
 
   describe("onRecover", () => {
+    it("should throw if game not found and send the error to the client", async () => {
+      service["redis"].getGame = vi.fn(() =>
+        Promise.reject(
+          new CError("", { code: ErrorConstants.ERROR.GAME_NOT_FOUND }),
+        ),
+      )
+
+      await expect(service.onRecover(socket)).not.toThrowCErrorWithCode(
+        ErrorConstants.ERROR.GAME_NOT_FOUND,
+      )
+
+      expect(socket.emit).toHaveBeenCalledWith(
+        "error:recover",
+        ErrorConstants.ERROR.GAME_NOT_FOUND,
+      )
+    })
+
     it("should throw if player not found", async () => {
       vi.useFakeTimers()
 

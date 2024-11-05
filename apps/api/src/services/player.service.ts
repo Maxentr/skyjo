@@ -128,11 +128,22 @@ export class PlayerService extends BaseService {
   }
 
   async onRecover(socket: SkyjoSocket) {
-    await this.reconnectPlayer(
-      socket,
-      socket.data.gameCode,
-      socket.data.playerId,
-    )
+    try {
+      await this.reconnectPlayer(
+        socket,
+        socket.data.gameCode,
+        socket.data.playerId,
+      )
+    } catch (error) {
+      if (
+        error instanceof CError &&
+        error.code === ErrorConstants.ERROR.GAME_NOT_FOUND
+      )
+        socket.emit("error:recover", error.code)
+      else {
+        throw error
+      }
+    }
   }
 
   //#region private methods
