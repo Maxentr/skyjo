@@ -544,6 +544,12 @@
   },
   "contexts": {
     "SocketContext": {
+      "recover-error": {
+        "game-not-found": {
+          "title": "Partie non trouvée",
+          "description": "La partie à laquelle vous essayez de vous reconnecter n'existe plus"
+        }
+      },
       "connection-lost": "Connexion perdue. Tentative de reconnexion...",
       "reconnection": "Reconnexion réussie"
     }

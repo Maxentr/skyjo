@@ -1,8 +1,13 @@
 "use client"
 
 import { useToast } from "@/components/ui/use-toast"
+import { useRouter } from "@/navigation"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
-import { ClientToServerEvents, ServerToClientEvents } from "@skyjo/shared/types"
+import {
+  ClientToServerEvents,
+  ErrorRecoverMessage,
+  ServerToClientEvents,
+} from "@skyjo/shared/types"
 import { LastGame } from "@skyjo/shared/validations"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
@@ -34,6 +39,7 @@ const SocketContext = createContext<SocketContext | undefined>(undefined)
 const SocketProvider = ({ children }: PropsWithChildren) => {
   const { toast } = useToast()
   const t = useTranslations("contexts.SocketContext")
+  const router = useRouter()
 
   const [socket, setSocket] = useState<SkyjoSocket | null>(null)
 
@@ -153,15 +159,30 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
     console.error("Socket error", err)
   }
 
+  const onRecoverError = (message: ErrorRecoverMessage) => {
+    console.log("onRecoverError", message)
+    if (message === "game-not-found") {
+      router.replace("/")
+      toast({
+        title: t("recover-error.game-not-found.title"),
+        description: t("recover-error.game-not-found.description"),
+        duration: 5000,
+        variant: "warn",
+      })
+    }
+  }
+
   const initGameListeners = () => {
     socket!.on("connect", onConnect)
     socket!.on("disconnect", onConnectionLost)
     socket!.on("connect_error", onConnectionError)
+    socket!.on("error:recover", onRecoverError)
   }
   const destroyGameListeners = () => {
     socket!.off("connect", onConnect)
     socket!.off("disconnect", onConnectionLost)
     socket!.off("connect_error", onConnectionError)
+    socket!.off("error:recover", onRecoverError)
   }
   //#endregion
 
@@ -172,7 +193,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
       getLastGameIfPossible,
       clearLastGame,
     }),
-    [socket],
+    [socket, socket?.recovered],
   )
 
   return (

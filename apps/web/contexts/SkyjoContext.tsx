@@ -81,6 +81,13 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   }, [socket, gameCode])
 
   //#region reconnection
+
+  useEffect(() => {
+    if (socket?.recovered) {
+      socket.emit("recover")
+    }
+  }, [socket?.recovered])
+
   const gameStatusRef = useRef(game?.status)
 
   useEffect(() => {

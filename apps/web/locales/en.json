@@ -544,6 +544,12 @@
   },
   "contexts": {
     "SocketContext": {
+      "recover-error": {
+        "game-not-found": {
+          "title": "Game not found",
+          "description": "The game you were trying to reconnect to no longer exists"
+        }
+      },
       "connection-lost": "Connection lost. Attempting to reconnect...",
       "reconnection": "Reconnection successful"
     }
