@@ -80,7 +80,7 @@ const ResultsPage = () => {
           <h1 className="text-black dark:text-dark-font text-2xl font-semibold mb-4">
             {t("title")}
           </h1>
-          <Table className="border border-black dark:border-dark-border bg-container dark:bg-dark-container lg:w-2/3 mx-auto">
+          <Table className="border-[1.5px] border-black dark:border-dark-border bg-container dark:bg-dark-container lg:w-2/3 mx-auto">
             {allRowsVisible && (
               <MotionTableHeader
                 initial={{ opacity: 0 }}
@@ -105,7 +105,6 @@ const ResultsPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.5 }}
-                  className="border-b"
                 >
                   <TableCell className="w-8">
                     {player.connectionStatus ===

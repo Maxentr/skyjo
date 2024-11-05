@@ -21,7 +21,11 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  <thead
+    ref={ref}
+    className={cn("[&_tr]:border-b-[1.5px]", className)}
+    {...props}
+  />
 ))
 TableHeader.displayName = "TableHeader"
 const MotionTableHeader = m.create(TableHeader)
@@ -60,7 +64,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "group/table border-b border-black dark:border-dark-border transition-colors data-[state=selected]:bg-gray-100",
+      "group/table border-b-[1.5px] border-black dark:border-dark-border transition-colors data-[state=selected]:bg-gray-100",
       className,
     )}
     {...props}
