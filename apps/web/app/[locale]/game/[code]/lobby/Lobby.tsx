@@ -145,7 +145,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   onCheckedChange={(checked) =>
                     actions.updateSingleSettings("allowSkyjoForColumn", checked)
                   }
-                  disabled={!isAdmin}
+                  disabled={!admin}
                   title={t("settings.allow-skyjo-for-column")}
                 />
                 <Label htmlFor="skyjo-for-column">
@@ -159,7 +159,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   onCheckedChange={(checked) =>
                     actions.updateSingleSettings("allowSkyjoForRow", checked)
                   }
-                  disabled={!isAdmin}
+                  disabled={!admin}
                   title={t("settings.allow-skyjo-for-row")}
                 />
                 <Label htmlFor="skyjo-for-row">
@@ -194,7 +194,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     actions.updateSingleSettings("cardPerRow", value)
                   }
                   title={t("settings.nb-rows.title")}
-                  disabled={!isAdmin}
+                  disabled={!admin}
                 />
               </div>
               <div className="flex flex-col gap-1">
