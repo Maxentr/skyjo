@@ -6,6 +6,13 @@ import { ENV } from "../env.js"
 export class Logger {
   private static readonly winstonLogger = createLogger({
     level: "debug",
+    levels: {
+      crit: 1,
+      error: 2,
+      warn: 3,
+      info: 4,
+      debug: 5,
+    },
     format: format.combine(
       format.json(),
       format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
