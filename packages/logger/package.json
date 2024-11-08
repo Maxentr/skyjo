@@ -18,14 +18,14 @@
   },
   "dependencies": {
     "@skyjo/error": "workspace:*",
-    "winston": "^3.15.0",
+    "winston": "^3.16.0",
     "@datalust/winston-seq": "^2.0.0",
     "dotenv": "^16.4.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@skyjo/ts-config": "workspace:*",
-    "@types/node": "^20.16.11",
+    "@types/node": "^22.9.0",
     "typescript": "^5.6.3"
   }
 }

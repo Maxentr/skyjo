@@ -1,5 +1,5 @@
 import tsconfigPaths from "vite-tsconfig-paths"
-import { defineConfig } from "vitest/config"
+import { coverageConfigDefaults, defineConfig } from "vitest/config"
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
@@ -10,7 +10,11 @@ export default defineConfig({
       reportOnFailure: true,
       provider: "istanbul",
       reportsDirectory: "tests/coverage",
-      exclude: ["src/validations/*", "src/constants.ts"],
+      exclude: [
+        "./src/validations/**",
+        "./src/constants.ts",
+        ...coverageConfigDefaults.exclude,
+      ],
       thresholds: {
         lines: 90,
         branches: 90,

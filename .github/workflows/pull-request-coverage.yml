@@ -18,10 +18,12 @@ jobs:
       - name: "Install Node"
         uses: actions/setup-node@v4
         with:
-          node-version: 22.6.0
+          node-version: 22.9.0
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
+        with:
+          version: 9.12.3
 
       - name: Install dependencies
         run: pnpm install

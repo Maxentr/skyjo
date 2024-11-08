@@ -1,6 +1,6 @@
 // vitest.config.ts
 import tsconfigPaths from "vite-tsconfig-paths"
-import { defineConfig } from "vitest/config"
+import { coverageConfigDefaults, defineConfig } from "vitest/config"
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
@@ -26,6 +26,7 @@ export default defineConfig({
         "src/utils/mailer.ts",
         "src/db/*.ts",
         "src/routers/*.ts",
+        ...coverageConfigDefaults.exclude,
       ],
       thresholds: {
         lines: 90,

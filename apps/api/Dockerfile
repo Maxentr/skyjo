@@ -1,6 +1,6 @@
 ARG PROJECT=@skyjo/api
 
-FROM node:22.6-alpine AS base
+FROM node:22.9-alpine AS base
 RUN apk update && apk add --no-cache libc6-compat && yarn global add pnpm turbo
 
 FROM base AS pruner
