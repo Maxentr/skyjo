@@ -13,7 +13,6 @@ import { Logger } from "@skyjo/logger"
 import type { GameSettings } from "@skyjo/shared/validations"
 
 export class LobbyService extends BaseService {
-  private readonly MAX_GAME_INACTIVE_TIME = 300000 // 5 minutes
   private readonly BASE_NEW_GAME_CHANCE = 0.05 // 5%
   private readonly MAX_NEW_GAME_CHANCE = 0.2 // 20%
   private readonly IDEAL_LOBBY_GAME_COUNT = 3 // Number of lobby wanted at the same time
