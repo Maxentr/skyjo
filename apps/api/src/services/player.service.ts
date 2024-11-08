@@ -1,10 +1,14 @@
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import { GameStateManager } from "@/utils/GameStateManager.js"
 import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
-import { Constants as CoreConstants, type SkyjoPlayer } from "@skyjo/core"
+import {
+  Constants as CoreConstants,
+  type ServerMessageType,
+  Skyjo,
+  type SkyjoPlayer,
+} from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
-import type { ServerChatMessage } from "@skyjo/shared/types"
 import type { LastGame } from "@skyjo/shared/validations"
 import { BaseService } from "./base.service.js"
 
@@ -41,11 +45,7 @@ export class PlayerService extends BaseService {
 
       if (game.isAdmin(player.id)) await this.changeAdmin(game)
 
-      if (
-        game.status === CoreConstants.GAME_STATUS.LOBBY ||
-        game.status === CoreConstants.GAME_STATUS.FINISHED ||
-        game.status === CoreConstants.GAME_STATUS.STOPPED
-      ) {
+      if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
         game.removePlayer(player.id)
 
         game.restartGameIfAllPlayersWantReplay()
@@ -70,18 +70,7 @@ export class PlayerService extends BaseService {
         )
       }
 
-      const message: ServerChatMessage = {
-        id: crypto.randomUUID(),
-        username: player.name,
-        message: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT,
-        type: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT,
-      }
-
-      this.sendToRoom(socket, {
-        room: game.code,
-        event: "message:server",
-        data: [message],
-      })
+      this.sendLeaveMessageToRoom(socket, game, player, timeout)
 
       await socket.leave(game.code)
     } catch (error) {
@@ -147,6 +136,37 @@ export class PlayerService extends BaseService {
   }
 
   //#region private methods
+  private sendLeaveMessageToRoom(
+    socket: SkyjoSocket,
+    game: Skyjo,
+    player: SkyjoPlayer,
+    timeout: boolean,
+  ) {
+    let message: ServerMessageType
+
+    if (game.status === CoreConstants.GAME_STATUS.PLAYING) {
+      message = timeout
+        ? CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_TIMEOUT_CAN_RECONNECT
+        : CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT_CAN_RECONNECT
+    } else {
+      message = timeout
+        ? CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_TIMEOUT
+        : CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT
+    }
+
+    this.sendToRoom(socket, {
+      room: game.code,
+      event: "message:server",
+      data: [
+        {
+          id: crypto.randomUUID(),
+          username: player.name,
+          message,
+          type: message,
+        },
+      ],
+    })
+  }
   private startDisconnectionTimeout(
     player: SkyjoPlayer,
     connectionLost: boolean,
@@ -214,6 +234,22 @@ export class PlayerService extends BaseService {
       room: game.code,
       stateManager,
     })
+
+    const message =
+      CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_RECONNECTION_EXPIRED
+    this.sendToRoom(socket, {
+      room: game.code,
+      event: "message:server",
+      data: [
+        {
+          id: crypto.randomUUID(),
+          username: player.name,
+          message,
+          type: message,
+        },
+      ],
+    })
+
     await this.redis.updateGame(game)
   }
 

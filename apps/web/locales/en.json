@@ -518,6 +518,10 @@
     "chat": {
       "player-joined": "{username} joined the game",
       "player-left": "{username} left the game",
+      "player-left-can-reconnect": "{username} left the game and has {time} seconds to reconnect",
+      "player-timeout": "{username} lost connection",
+      "player-timeout-can-reconnect": "{username} lost connection and has {time} seconds to reconnect",
+      "player-reconnection-expired": "{username} has been removed from the game because the reconnection time has expired",
       "player-reconnect": "{username} reconnected to the game",
       "argument-required": "One or more arguments are required for command: {command}",
       "player-already-muted": "{username} is already muted",
