@@ -501,7 +501,7 @@
   "utils": {
     "skyjo": {
       "waiting": "En attente de joueurs",
-      "turn-cards": "Tourner {number} carte{number, plural, =1 {} other {s}}",
+      "turn-cards": "Tournez {number} carte{number, plural, =1 {} other {s}}",
       "waiting-opponents-to-turn-cards": "En attente que {nbOpponents, plural, =1 {l'adversaire} other {les adversaires}} tourne{nbOpponents, plural, =1 {} other {nt}} {number} carte{number, plural, =1 {} other {s}}",
       "turn": {
         "chooseAPile": "Choisissez une pile",
