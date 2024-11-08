@@ -2,7 +2,7 @@
 
 import CopyLink from "@/components/CopyLink"
 import MenuDropdown from "@/components/MenuDropdown"
-import UserAvatar from "@/components/UserAvatar"
+import { UserAvatar } from "@/components/UserAvatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"

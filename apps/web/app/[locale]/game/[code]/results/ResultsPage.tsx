@@ -1,6 +1,6 @@
 "use client"
 
-import UserAvatar from "@/components/UserAvatar"
+import { UserAvatar } from "@/components/UserAvatar"
 import { Button } from "@/components/ui/button"
 import {
   MotionTableHeader,

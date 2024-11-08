@@ -1,4 +1,6 @@
 import { CardTable } from "@/components/CardTable"
+import { UserContextMenu } from "@/components/UserContextMenu"
+import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu"
 import {
   Tooltip,
   TooltipContent,
@@ -33,39 +35,44 @@ const OpponentBoard = ({
         className,
       )}
     >
-      <Image
-        src={`/avatars/${opponent.avatar}.svg`}
-        width={32}
-        height={32}
-        alt={ta(opponent.avatar)}
-        title={ta(opponent.avatar)}
-        className={cn(
-          "select-none dark:opacity-75",
-          isPlayerTurn && "animate-bounce",
-        )}
-        priority
-      />
-      <p
-        className={cn(
-          "text-center select-none text-sm text-black dark:text-dark-font mb-2 flex flex-row items-center gap-1",
-          isPlayerTurn && "font-semibold",
-        )}
-      >
-        {opponent.name}
-        {opponent.connectionStatus ===
-          CoreConstants.CONNECTION_STATUS.CONNECTION_LOST && (
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger className="relative">
-                <AlertTriangleIcon size={16} className="text-yellow-700" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{to("connection-lost")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-      </p>
+      <ContextMenu>
+        <ContextMenuTrigger className="flex flex-col items-center">
+          <Image
+            src={`/avatars/${opponent.avatar}.svg`}
+            width={32}
+            height={32}
+            alt={ta(opponent.avatar)}
+            title={ta(opponent.avatar)}
+            className={cn(
+              "select-none dark:opacity-75",
+              isPlayerTurn && "animate-bounce",
+            )}
+            priority
+          />
+          <p
+            className={cn(
+              "text-center select-none text-sm text-black dark:text-dark-font mb-2 flex flex-row items-center gap-1",
+              isPlayerTurn && "font-semibold",
+            )}
+          >
+            {opponent.name}
+            {opponent.connectionStatus ===
+              CoreConstants.CONNECTION_STATUS.CONNECTION_LOST && (
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger className="relative">
+                    <AlertTriangleIcon size={16} className="text-yellow-700" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{to("connection-lost")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </p>
+        </ContextMenuTrigger>
+        <UserContextMenu player={opponent} />
+      </ContextMenu>
       <CardTable cards={opponent.cards} cardDisabled={true} />
     </div>
   )

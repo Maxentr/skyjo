@@ -1,5 +1,5 @@
 import OpponentBoard from "@/components/OpponentBoard"
-import UserAvatar from "@/components/UserAvatar"
+import { UserAvatar } from "@/components/UserAvatar"
 import { useSettings } from "@/contexts/SettingsContext"
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import {
