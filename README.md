@@ -55,12 +55,13 @@ This project is set up as a monorepo using [Turborepo](https://turbo.build/repo)
    ```bash
    pnpm install
    ```
-2. Start the Seq container:
+2. Copy `.env.example` to `.env` in the root, `apps/api/`, and `apps/web/` directories, and fill out the required variables
+3. Start the Seq container:
    ```bash
    docker compose up seq
    ```
-3. Go to `localhost:5341` in your browser and enable authentication, create an account, generate an API key
-4. Copy `.env.example` to `.env` in the root, `apps/api/`, and `apps/web/` directories, and fill out the required variables
+4. Go to `localhost:5341` in your browser and enable authentication, create an account, generate an API key
+5. Update the `SEQ_API_KEY` in `apps/api/.env` files with the generated API key
 
 ## How to run the project
 
