@@ -13,7 +13,7 @@ services:
       - external
     env_file:
       - .env
-      - .env.api
+      - ./apps/api/.env
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
@@ -28,11 +28,27 @@ services:
       - 6379:6379
     networks:
       - internal
+      # - external
     env_file:
       - .env
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     restart: always
+
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5341:80"
+    networks:
+      - internal
+      - external
+    env_file:
+      - .env
+    environment:
+      - ACCEPT_EULA=Y
+    restart: unless-stopped
+    volumes:
+      - seq-data:/data
 
 networks:
   internal:
@@ -41,3 +57,4 @@ networks:
 
 volumes:
   redis-data:
+  seq-data:
