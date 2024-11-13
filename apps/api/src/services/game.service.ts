@@ -110,6 +110,7 @@ export class GameService extends BaseService {
       room: game.code,
       stateManager,
     })
+    await this.redis.updateGame(game)
   }
 
   async onDiscardCard(socket: SkyjoSocket) {
@@ -146,6 +147,7 @@ export class GameService extends BaseService {
       room: game.code,
       stateManager,
     })
+    await this.redis.updateGame(game)
   }
 
   async onReplay(socket: SkyjoSocket) {
