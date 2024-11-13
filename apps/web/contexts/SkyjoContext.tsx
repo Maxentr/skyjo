@@ -69,13 +69,15 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const opponents = getOpponents(game?.players, socket?.id ?? "")
 
   const admin = isAdmin(game, player?.id)
+  const stateVersion = game?.stateVersion ?? -99
 
   useEffect(() => {
     if (!gameCode || !socket) return
 
     initGameListeners()
-    // get game
-    socket.emit("get")
+
+    // first time we get the game, we don't have a state version
+    socket.emit("get", game?.stateVersion ?? null)
 
     return destroyGameListeners
   }, [socket, gameCode])
@@ -111,7 +113,6 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   //#region listeners
   //#region game
   const onGameReceive = (game: SkyjoToJson) => {
-    console.log("onGameReceive", game)
     setGame(game)
   }
 
@@ -204,38 +205,54 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   }
 
   const playRevealCard = (column: number, row: number) => {
-    socket!.emit("play:reveal-card", {
-      column: column,
-      row: row,
-    })
+    socket!.emit(
+      "play:reveal-card",
+      {
+        column: column,
+        row: row,
+      },
+      stateVersion,
+    )
   }
 
   const pickCardFromPile = (pile: PlayPickCard["pile"]) => {
-    socket!.emit("play:pick-card", {
-      pile,
-    })
+    socket!.emit(
+      "play:pick-card",
+      {
+        pile,
+      },
+      stateVersion,
+    )
   }
 
   const replaceCard = (column: number, row: number) => {
-    socket!.emit("play:replace-card", {
-      column: column,
-      row: row,
-    })
+    socket!.emit(
+      "play:replace-card",
+      {
+        column: column,
+        row: row,
+      },
+      stateVersion,
+    )
   }
 
   const discardSelectedCard = () => {
-    socket!.emit("play:discard-selected-card")
+    socket!.emit("play:discard-selected-card", stateVersion)
   }
 
   const turnCard = (column: number, row: number) => {
-    socket!.emit("play:turn-card", {
-      column: column,
-      row: row,
-    })
+    socket!.emit(
+      "play:turn-card",
+      {
+        column: column,
+        row: row,
+      },
+      stateVersion,
+    )
   }
 
   const replay = () => {
-    socket!.emit("replay")
+    socket!.emit("replay", stateVersion)
   }
 
   const leave = () => {

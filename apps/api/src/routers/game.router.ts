@@ -9,6 +9,7 @@ import {
   playReplaceCard,
   playRevealCard,
   playTurnCard,
+  stateVersionSchema,
 } from "@skyjo/core"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
@@ -17,54 +18,76 @@ const instance = new GameService()
 const gameRouter = (socket: SkyjoSocket) => {
   socket.on(
     "get",
-    socketErrorHandlerWrapper(async () => {
-      await instance.onGet(socket)
+    socketErrorHandlerWrapper(async (clientStateVersion: number) => {
+      const stateVersion = stateVersionSchema
+        .nullable()
+        .parse(clientStateVersion)
+
+      await instance.onGet(socket, stateVersion)
     }),
   )
 
   socket.on(
     "play:reveal-card",
-    socketErrorHandlerWrapper(async (data: PlayRevealCard) => {
-      const turnCardData = playRevealCard.parse(data)
-      await instance.onRevealCard(socket, turnCardData)
-    }),
+    socketErrorHandlerWrapper(
+      async (data: PlayRevealCard, clientStateVersion: number) => {
+        const turnCardData = playRevealCard.parse(data)
+        const stateVersion = stateVersionSchema.parse(clientStateVersion)
+
+        await instance.onRevealCard(socket, turnCardData, stateVersion)
+      },
+    ),
   )
 
   socket.on(
     "play:pick-card",
-    socketErrorHandlerWrapper(async (data: PlayPickCard) => {
-      const playData = playPickCard.parse(data)
-      await instance.onPickCard(socket, playData)
-    }),
+    socketErrorHandlerWrapper(
+      async (data: PlayPickCard, clientStateVersion: number) => {
+        const playData = playPickCard.parse(data)
+        const stateVersion = stateVersionSchema.parse(clientStateVersion)
+
+        await instance.onPickCard(socket, playData, stateVersion)
+      },
+    ),
   )
 
   socket.on(
     "play:replace-card",
-    socketErrorHandlerWrapper(async (data: PlayReplaceCard) => {
-      const playData = playReplaceCard.parse(data)
-      await instance.onReplaceCard(socket, playData)
-    }),
+    socketErrorHandlerWrapper(
+      async (data: PlayReplaceCard, clientStateVersion: number) => {
+        const playData = playReplaceCard.parse(data)
+        const stateVersion = stateVersionSchema.parse(clientStateVersion)
+
+        await instance.onReplaceCard(socket, playData, stateVersion)
+      },
+    ),
   )
 
   socket.on(
     "play:discard-selected-card",
-    socketErrorHandlerWrapper(async () => {
-      await instance.onDiscardCard(socket)
+    socketErrorHandlerWrapper(async (clientStateVersion: number) => {
+      const stateVersion = stateVersionSchema.parse(clientStateVersion)
+
+      await instance.onDiscardCard(socket, stateVersion)
     }),
   )
 
   socket.on(
     "play:turn-card",
-    socketErrorHandlerWrapper(async (data: PlayTurnCard) => {
-      const playData = playTurnCard.parse(data)
-      await instance.onTurnCard(socket, playData)
-    }),
+    socketErrorHandlerWrapper(
+      async (data: PlayTurnCard, clientStateVersion: number) => {
+        const playData = playTurnCard.parse(data)
+        const stateVersion = stateVersionSchema.parse(clientStateVersion)
+
+        await instance.onTurnCard(socket, playData, stateVersion)
+      },
+    ),
   )
 
   socket.on(
     "replay",
-    socketErrorHandlerWrapper(async () => {
-      await instance.onReplay(socket)
+    socketErrorHandlerWrapper(async (clientStateVersion: number) => {
+      await instance.onReplay(socket, clientStateVersion)
     }),
   )
 }

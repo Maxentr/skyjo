@@ -40,14 +40,15 @@ describe("GameService", () => {
         ),
       )
 
-      await expect(service.onGet(socket)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.GAME_NOT_FOUND,
-      )
+      const stateVersionOfNonExistingGame = 12
+      await expect(
+        service.onGet(socket, stateVersionOfNonExistingGame),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.GAME_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
-    it("should get the game", async () => {
+    it("should not get the game if the client state version is sync with the server", async () => {
       const player = new SkyjoPlayer(
         { username: "player", avatar: CoreConstants.AVATARS.BEE },
         "socketId132312",
@@ -58,7 +59,51 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(newGame))
 
-      await service.onGet(socket)
+      await service.onGet(socket, newGame.stateVersion)
+
+      expect(socket.emit).not.toHaveBeenNthCalledWith(
+        1,
+        "game",
+        newGame.toJson(),
+      )
+    })
+
+    it("should not get the game if the client state version is ahead of the server", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player", avatar: CoreConstants.AVATARS.BEE },
+        "socketId132312",
+      )
+      const newGame = new Skyjo(player.id, new SkyjoSettings(false))
+      newGame.addPlayer(player)
+      socket.data.gameCode = newGame.code
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(newGame))
+
+      const aheadStateVersion = newGame.stateVersion + 1
+
+      await expect(
+        service.onGet(socket, aheadStateVersion),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.STATE_VERSION_AHEAD)
+
+      expect(socket.emit).toHaveBeenNthCalledWith(1, "game", newGame.toJson())
+    })
+
+    it("should get the game if the client state version is behind the server", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player", avatar: CoreConstants.AVATARS.BEE },
+        "socketId132312",
+      )
+      const newGame = new Skyjo(player.id, new SkyjoSettings(false))
+      newGame.addPlayer(player)
+      socket.data.gameCode = newGame.code
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(newGame))
+
+      const behindStateVersion = newGame.stateVersion - 1
+
+      await expect(
+        service.onGet(socket, behindStateVersion),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.STATE_VERSION_BEHIND)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", newGame.toJson())
     })
@@ -83,7 +128,7 @@ describe("GameService", () => {
       game.addPlayer(opponent)
 
       await expect(
-        service.onRevealCard(socket, { column: 0, row: 0 }),
+        service.onRevealCard(socket, { column: 0, row: 0 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
@@ -109,7 +154,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onRevealCard(socket, { column: 0, row: 0 }),
+        service.onRevealCard(socket, { column: 0, row: 0 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -137,7 +182,11 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onRevealCard(socket, { column: 0, row: 2 })
+      await service.onRevealCard(
+        socket,
+        { column: 0, row: 2 },
+        game.stateVersion,
+      )
 
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
       expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
@@ -168,7 +217,11 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onRevealCard(socket, { column: 0, row: 2 })
+      await service.onRevealCard(
+        socket,
+        { column: 0, row: 2 },
+        game.stateVersion,
+      )
 
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
       expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
@@ -208,7 +261,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onPickCard(socket, { pile: "draw" }),
+        service.onPickCard(socket, { pile: "draw" }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
@@ -234,7 +287,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onPickCard(socket, { pile: "draw" }),
+        service.onPickCard(socket, { pile: "draw" }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -269,7 +322,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onPickCard(socket, { pile: "draw" }),
+        service.onPickCard(socket, { pile: "draw" }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -304,7 +357,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onPickCard(socket, { pile: "draw" }),
+        service.onPickCard(socket, { pile: "draw" }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.INVALID_TURN_STATE)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -338,7 +391,7 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onPickCard(socket, { pile: "draw" })
+      await service.onPickCard(socket, { pile: "draw" }, game.stateVersion)
 
       expect(game.selectedCardValue).not.toBeNull()
       expect(game.turnStatus).toBe<TurnStatus>(
@@ -374,7 +427,7 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onPickCard(socket, { pile: "discard" })
+      await service.onPickCard(socket, { pile: "discard" }, game.stateVersion)
 
       expect(socket.emit).toHaveBeenCalledOnce()
       expect(game.selectedCardValue).not.toBeNull()
@@ -414,7 +467,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onReplaceCard(socket, { column: 0, row: 2 }),
+        service.onReplaceCard(socket, { column: 0, row: 2 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
@@ -440,7 +493,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onReplaceCard(socket, { column: 0, row: 0 }),
+        service.onReplaceCard(socket, { column: 0, row: 0 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -476,7 +529,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onReplaceCard(socket, { column: 0, row: 2 }),
+        service.onReplaceCard(socket, { column: 0, row: 2 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -511,7 +564,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onReplaceCard(socket, { column: 0, row: 2 }),
+        service.onReplaceCard(socket, { column: 0, row: 2 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.INVALID_TURN_STATE)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -546,7 +599,11 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onReplaceCard(socket, { column: 0, row: 2 })
+      await service.onReplaceCard(
+        socket,
+        { column: 0, row: 2 },
+        game.stateVersion,
+      )
 
       expect(socket.emit).toHaveBeenCalledTimes(2)
       expect(game.selectedCardValue).toBeNull()
@@ -586,9 +643,9 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await expect(service.onDiscardCard(socket)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.PLAYER_NOT_FOUND,
-      )
+      await expect(
+        service.onDiscardCard(socket, game.stateVersion),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
@@ -612,9 +669,9 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await expect(service.onDiscardCard(socket)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.NOT_ALLOWED,
-      )
+      await expect(
+        service.onDiscardCard(socket, game.stateVersion),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
     })
@@ -648,9 +705,9 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await expect(service.onDiscardCard(socket)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.NOT_ALLOWED,
-      )
+      await expect(
+        service.onDiscardCard(socket, game.stateVersion),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
     })
@@ -684,9 +741,9 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await expect(service.onDiscardCard(socket)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.INVALID_TURN_STATE,
-      )
+      await expect(
+        service.onDiscardCard(socket, game.stateVersion),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.INVALID_TURN_STATE)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
     })
@@ -720,7 +777,7 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onDiscardCard(socket)
+      await service.onDiscardCard(socket, game.stateVersion)
 
       expect(game.selectedCardValue).toBeNull()
       expect(game.turn).toBe(0)
@@ -760,7 +817,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onTurnCard(socket, { column: 0, row: 2 }),
+        service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.PLAYER_NOT_FOUND)
 
       expect(socket.emit).not.toHaveBeenCalled()
@@ -786,7 +843,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onTurnCard(socket, { column: 0, row: 0 }),
+        service.onTurnCard(socket, { column: 0, row: 0 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -822,7 +879,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onTurnCard(socket, { column: 0, row: 2 }),
+        service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -857,7 +914,7 @@ describe("GameService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await expect(
-        service.onTurnCard(socket, { column: 0, row: 2 }),
+        service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.INVALID_TURN_STATE)
 
       expect(socket.emit).toHaveBeenNthCalledWith(1, "game", game?.toJson())
@@ -891,7 +948,7 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onTurnCard(socket, { column: 0, row: 2 })
+      await service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion)
 
       expect(player.cards[0][2].isVisible).toBeTruthy()
       expect(game.turn).toBe(1)
@@ -944,7 +1001,7 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onTurnCard(socket, { column: 0, row: 2 })
+      await service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion)
 
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.OVER,
@@ -1011,7 +1068,7 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onTurnCard(socket, { column: 0, row: 2 })
+      await service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion)
 
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.OVER,
@@ -1062,9 +1119,9 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await expect(service.onReplay(socket)).toThrowCErrorWithCode(
-        ErrorConstants.ERROR.NOT_ALLOWED,
-      )
+      await expect(
+        service.onReplay(socket, game.stateVersion),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
       expect(socket.emit).not.toHaveBeenCalled()
     })
@@ -1097,7 +1154,7 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onReplay(socket)
+      await service.onReplay(socket, game.stateVersion)
 
       expect(socket.emit).toHaveBeenCalledOnce()
       expect(player.wantsReplay).toBeTruthy()
@@ -1134,7 +1191,7 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onReplay(socket)
+      await service.onReplay(socket, game.stateVersion)
 
       expect(socket.emit).toHaveBeenCalledOnce()
       game.players.forEach((player) => {

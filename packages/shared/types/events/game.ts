@@ -8,13 +8,13 @@ import type {
 } from "@skyjo/core"
 
 export interface ClientToServerGameEvents {
-  get: () => void
-  "play:reveal-card": (data: PlayRevealCard) => void
-  "play:pick-card": (data: PlayPickCard) => void
-  "play:replace-card": (data: PlayReplaceCard) => void
-  "play:discard-selected-card": () => void
-  "play:turn-card": (data: PlayTurnCard) => void
-  replay: () => void
+  get: (stateVersion: number | null) => void
+  "play:reveal-card": (data: PlayRevealCard, stateVersion: number) => void
+  "play:pick-card": (data: PlayPickCard, stateVersion: number) => void
+  "play:replace-card": (data: PlayReplaceCard, stateVersion: number) => void
+  "play:discard-selected-card": (stateVersion: number) => void
+  "play:turn-card": (data: PlayTurnCard, stateVersion: number) => void
+  replay: (stateVersion: number) => void
 }
 
 export interface ServerToClientGameEvents {

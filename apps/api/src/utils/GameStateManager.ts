@@ -21,12 +21,14 @@ export class GameStateManager {
     this.game = game
   }
 
-  getChanges() {
+  getChanges(): SkyjoOperation | null {
     const currentState = this.game.toJson()
     const operations = this.createStateOperations(
       this.previousState,
       currentState,
     )
+
+    if (Object.keys(operations).length === 0) return null
 
     this.previousState = structuredClone(currentState)
 
@@ -51,6 +53,12 @@ export class GameStateManager {
 
     const playerOps = this.createPlayerOperations(oldState, newState)
     if (Object.keys(playerOps).length > 0) ops = { ...ops, ...playerOps }
+
+    // Increment state version if there are any changes
+    if (Object.keys(ops).length > 0) {
+      this.game.stateVersion++
+      ops.game = { ...ops.game, stateVersion: this.game.stateVersion }
+    }
 
     return ops
   }

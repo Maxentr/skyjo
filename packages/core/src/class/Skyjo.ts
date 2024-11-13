@@ -26,6 +26,10 @@ interface SkyjoInterface {
   lastTurnStatus: LastTurnStatus
   roundStatus: RoundStatus
 
+  stateVersion: number
+  createdAt: Date
+  updatedAt: Date
+
   start(): void
   checkAllPlayersRevealedCards(count: number): void
   drawCard(): void
@@ -60,6 +64,7 @@ export class Skyjo implements SkyjoInterface {
 
   createdAt: Date
   updatedAt: Date
+  stateVersion: number = 0
 
   constructor(
     adminPlayerId: string,
@@ -89,6 +94,7 @@ export class Skyjo implements SkyjoInterface {
 
     this.firstToFinishPlayerId = game.firstToFinishPlayerId
 
+    this.stateVersion = game.stateVersion
     this.createdAt = game.createdAt
     this.updatedAt = game.updatedAt
 
@@ -285,6 +291,7 @@ export class Skyjo implements SkyjoInterface {
     if (this.getConnectedPlayers().every((player) => player.wantsReplay)) {
       this.resetRound()
       this.status = Constants.GAME_STATUS.LOBBY
+      this.stateVersion = 0
       this.updatedAt = new Date()
       this.turn = 0
     }
@@ -309,6 +316,7 @@ export class Skyjo implements SkyjoInterface {
       turnStatus: this.turnStatus,
       lastTurnStatus: this.lastTurnStatus,
       settings: this.settings.toJson(),
+      stateVersion: this.stateVersion,
       updatedAt: this.updatedAt,
     } satisfies SkyjoToJson
   }
@@ -360,6 +368,7 @@ export class Skyjo implements SkyjoInterface {
       firstToFinishPlayerId: this.firstToFinishPlayerId,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      stateVersion: this.stateVersion,
     } satisfies SkyjoToDb
   }
 

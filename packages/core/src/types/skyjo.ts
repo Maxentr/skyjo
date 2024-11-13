@@ -21,6 +21,7 @@ export type SkyjoToJson = {
   turnStatus: TurnStatus
   lastDiscardCardValue?: number
   lastTurnStatus: LastTurnStatus
+  stateVersion: number
   updatedAt: Date
 }
 
@@ -68,6 +69,7 @@ export type SkyjoToDb = {
   turnStatus: TurnStatus
   lastTurnStatus: LastTurnStatus
   firstToFinishPlayerId: string | null
+  stateVersion: number
   createdAt: Date
   updatedAt: Date
 }

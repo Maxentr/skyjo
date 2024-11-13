@@ -60,6 +60,7 @@ export abstract class BaseService {
     },
   ) {
     const operations = params.stateManager.getChanges()
+    if (!operations) return
 
     this.sendToRoom(socket, {
       room: params.room,
@@ -76,6 +77,7 @@ export abstract class BaseService {
     },
   ) {
     const operations = params.stateManager.getChanges()
+    if (!operations) return
 
     this.sendToSocketAndRoom(socket, {
       room: params.room,
@@ -150,11 +152,11 @@ export abstract class BaseService {
       const stateManager = new GameStateManager(game)
       game.startNewRound()
 
-      await this.redis.updateGame(game)
       this.sendGameUpdateToSocketAndRoom(socket, {
         room: game.code,
         stateManager,
       })
+      await this.redis.updateGame(game)
     }, Constants.NEW_ROUND_DELAY)
   }
 }

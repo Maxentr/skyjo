@@ -12,13 +12,19 @@ import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { BaseService } from "./base.service.js"
 
 export class GameService extends BaseService {
-  async onGet(socket: SkyjoSocket) {
-    const game = await this.redis.getGame(socket.data.gameCode)
-
-    socket.emit("game", game.toJson())
+  async onGet(socket: SkyjoSocket, clientStateVersion: number | null) {
+    // TODO add trycatch and send error get if game not found to redirect the client to the homepage with a toast to explain the error
+    // Leave the checkStateVersion check if client really needs to get the game
+    await this.checkStateVersion(socket, clientStateVersion)
   }
 
-  async onRevealCard(socket: SkyjoSocket, turnData: PlayRevealCard) {
+  async onRevealCard(
+    socket: SkyjoSocket,
+    turnData: PlayRevealCard,
+    clientStateVersion: number,
+  ) {
+    await this.checkStateVersion(socket, clientStateVersion)
+
     const { column, row } = turnData
     const gameCode = socket.data.gameCode
 
@@ -74,7 +80,13 @@ export class GameService extends BaseService {
     await this.redis.updateGame(game)
   }
 
-  async onPickCard(socket: SkyjoSocket, { pile }: PlayPickCard) {
+  async onPickCard(
+    socket: SkyjoSocket,
+    { pile }: PlayPickCard,
+    clientStateVersion: number,
+  ) {
+    await this.checkStateVersion(socket, clientStateVersion)
+
     const { game } = await this.checkPlayAuthorization(socket, [
       CoreConstants.TURN_STATUS.CHOOSE_A_PILE,
     ])
@@ -90,7 +102,13 @@ export class GameService extends BaseService {
     await this.redis.updateGame(game)
   }
 
-  async onReplaceCard(socket: SkyjoSocket, { column, row }: PlayReplaceCard) {
+  async onReplaceCard(
+    socket: SkyjoSocket,
+    { column, row }: PlayReplaceCard,
+    clientStateVersion: number,
+  ) {
+    await this.checkStateVersion(socket, clientStateVersion)
+
     const { game } = await this.checkPlayAuthorization(socket, [
       CoreConstants.TURN_STATUS.REPLACE_A_CARD,
       CoreConstants.TURN_STATUS.THROW_OR_REPLACE,
@@ -113,7 +131,9 @@ export class GameService extends BaseService {
     await this.redis.updateGame(game)
   }
 
-  async onDiscardCard(socket: SkyjoSocket) {
+  async onDiscardCard(socket: SkyjoSocket, clientStateVersion: number) {
+    await this.checkStateVersion(socket, clientStateVersion)
+
     const { game } = await this.checkPlayAuthorization(socket, [
       CoreConstants.TURN_STATUS.THROW_OR_REPLACE,
     ])
@@ -128,7 +148,13 @@ export class GameService extends BaseService {
     await this.redis.updateGame(game)
   }
 
-  async onTurnCard(socket: SkyjoSocket, { column, row }: PlayTurnCard) {
+  async onTurnCard(
+    socket: SkyjoSocket,
+    { column, row }: PlayTurnCard,
+    clientStateVersion: number,
+  ) {
+    await this.checkStateVersion(socket, clientStateVersion)
+
     const { game, player } = await this.checkPlayAuthorization(socket, [
       CoreConstants.TURN_STATUS.TURN_A_CARD,
     ])
@@ -150,18 +176,23 @@ export class GameService extends BaseService {
     await this.redis.updateGame(game)
   }
 
-  async onReplay(socket: SkyjoSocket) {
+  async onReplay(socket: SkyjoSocket, clientStateVersion: number) {
+    await this.checkStateVersion(socket, clientStateVersion)
+
     const game = await this.redis.getGame(socket.data.gameCode)
     if (game.status !== CoreConstants.GAME_STATUS.FINISHED) {
-      throw new CError(`Player try to replay but the game is not finished.`, {
-        code: ErrorConstants.ERROR.NOT_ALLOWED,
-        meta: {
-          game,
-          socket,
-          gameCode: game.code,
-          playerId: socket.data.playerId,
+      throw new CError(
+        `Player try to replay but the game is not finished. This error should never happen.`,
+        {
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
+          meta: {
+            game,
+            socket,
+            gameCode: game.code,
+            playerId: socket.data.playerId,
+          },
         },
-      })
+      )
     }
     const stateManager = new GameStateManager(game)
 
@@ -177,12 +208,58 @@ export class GameService extends BaseService {
   }
 
   //#region private methods
+  protected async checkStateVersion(
+    socket: SkyjoSocket,
+    clientStateVersion: number | null,
+  ) {
+    const game = await this.redis.getGame(socket.data.gameCode)
+
+    if (clientStateVersion === null) {
+      await this.sendGameToSocket(socket, game)
+      return
+    }
+
+    if (clientStateVersion > game.stateVersion) {
+      await this.sendGameToSocket(socket, game)
+      throw new CError(
+        "Client state version is ahead of server. This should never happen. Sent full state update",
+        {
+          code: ErrorConstants.ERROR.STATE_VERSION_AHEAD,
+          meta: {
+            clientStateVersion,
+            serverStateVersion: game.stateVersion,
+            gameCode: game.code,
+            playerId: socket.data.playerId,
+          },
+        },
+      )
+    }
+
+    if (clientStateVersion < game.stateVersion) {
+      await this.sendGameToSocket(socket, game)
+      throw new CError(
+        "Client state is behind server, sent full state update",
+        {
+          code: ErrorConstants.ERROR.STATE_VERSION_BEHIND,
+          level: "warn",
+          meta: {
+            clientStateVersion,
+            serverStateVersion: game.stateVersion,
+            gameCode: game.code,
+            playerId: socket.data.playerId,
+          },
+        },
+      )
+    }
+  }
+
   private async checkPlayAuthorization(
     socket: SkyjoSocket,
     allowedStates: TurnStatus[],
   ) {
     const game = await this.redis.getGame(socket.data.gameCode)
 
+    // TODO remove this condition in 1.36.0 if game sync works and this error never happens in last versions
     if (
       game.status !== CoreConstants.GAME_STATUS.PLAYING ||
       (game.roundStatus !== CoreConstants.ROUND_STATUS.PLAYING &&
@@ -190,10 +267,10 @@ export class GameService extends BaseService {
     ) {
       await this.sendGameToSocket(socket, game)
       throw new CError(
-        `Player try to play but the game is not in playing state. Sent game to the player to fix the issue.`,
+        `Player try to play but the game is not in playing state. This should not happen since the game sync was normally checked before. Sent game to the player to fix the issue.`,
         {
           code: ErrorConstants.ERROR.NOT_ALLOWED,
-          level: "warn",
+          level: "error",
           meta: {
             game,
             socket,
@@ -217,13 +294,14 @@ export class GameService extends BaseService {
       })
     }
 
+    // TODO remove this condition in 1.36.0 if game sync works and this error never happens in last versions
     if (!game.checkTurn(player.id)) {
       await this.sendGameToSocket(socket, game)
       throw new CError(
-        `Player try to play but it's not his turn. Sent game to the player to fix the issue.`,
+        `Player try to play but it's not his turn. This should not happen since the game sync was normally checked before. Sent game to the player to fix the issue.`,
         {
           code: ErrorConstants.ERROR.NOT_ALLOWED,
-          level: "warn",
+          level: "error",
           meta: {
             game,
             socket,
@@ -235,13 +313,14 @@ export class GameService extends BaseService {
       )
     }
 
+    // TODO remove this condition in 1.36.0 if game sync works and this error never happens in last versions
     if (allowedStates.length > 0 && !allowedStates.includes(game.turnStatus)) {
       await this.sendGameToSocket(socket, game)
       throw new CError(
-        `Player try to play but the game is not in the allowed turn state. Sent game to the player to fix the issue.`,
+        `Player try to play but the game is not in the allowed turn state. This should not happen since the game sync was normally checked before. Sent game to the player to fix the issue.`,
         {
           code: ErrorConstants.ERROR.INVALID_TURN_STATE,
-          level: "warn",
+          level: "error",
           meta: {
             game,
             socket,

@@ -13,6 +13,8 @@ export class Constants {
     NO_KICK_VOTE_IN_PROGRESS: "no-kick-vote-in-progress",
     PLAYER_ALREADY_VOTED: "player-already-voted",
     UNKNOWN_OPERATION: "unknown-operation",
+    STATE_VERSION_AHEAD: "state-version-ahead",
+    STATE_VERSION_BEHIND: "state-version-behind",
   } as const
 }
 export type Error = (typeof Constants.ERROR)[keyof typeof Constants.ERROR]

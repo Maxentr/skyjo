@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+export const stateVersionSchema = z.number()
+
 export const playGeneralWithCardIndex = z.object({
   column: z.number().int().min(0).max(3),
   row: z.number().int().min(0).max(2),

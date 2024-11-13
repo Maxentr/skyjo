@@ -74,6 +74,7 @@ describe("Skyjo", () => {
           multiplierForFirstPlayer: 2,
         },
 
+        stateVersion: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       }
@@ -136,6 +137,7 @@ describe("Skyjo", () => {
           multiplierForFirstPlayer: 2,
         },
 
+        stateVersion: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       }
@@ -968,6 +970,7 @@ describe("Skyjo", () => {
         turn: 0,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
         settings: skyjo.settings.toJson(),
+        stateVersion: skyjo.stateVersion,
         updatedAt: skyjo.updatedAt,
       })
     })
@@ -1042,6 +1045,7 @@ describe("Skyjo", () => {
           private: false,
           scoreToEndGame: 100,
         },
+        stateVersion: skyjo.stateVersion,
         createdAt: skyjo.createdAt,
         updatedAt: skyjo.updatedAt,
       })
