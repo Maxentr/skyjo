@@ -39,7 +39,12 @@ export class Logger {
       new SeqTransport({
         serverUrl: ENV.SEQ_URL,
         apiKey: ENV.SEQ_API_KEY,
-        onError: (e) => console.error(e),
+        onError: (e) => {
+          console.error(
+            `Cannot connect to Seq server with given url: ${ENV.SEQ_URL}`,
+          )
+          console.error(e)
+        },
         handleExceptions: true,
         handleRejections: true,
       }),
