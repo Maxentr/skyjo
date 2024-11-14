@@ -4,27 +4,24 @@ import { cva } from "class-variance-authority"
 import { m } from "framer-motion"
 import { useTranslations } from "next-intl"
 
-const chatMessageClasses = cva(
-  "font-inter text-sm text-wrap break-words w-full",
-  {
-    variants: {
-      type: {
-        message: "text-black dark:text-dark-font",
-        "player-joined": " text-green-600 ",
-        "player-reconnect": " text-green-600 ",
-        "player-left": " text-red-600 ",
-        "player-left-can-reconnect": " text-amber-600 ",
-        "player-timeout": " text-red-600 ",
-        "player-timeout-can-reconnect": " text-amber-600 ",
-        "player-reconnection-expired": " text-red-600 ",
-        "system-message": " text-blue-500 ",
-        "success-system-message": " text-green-600 ",
-        "warn-system-message": " text-orange-500 ",
-        "error-system-message": " text-red-600 ",
-      },
+const chatMessageClasses = cva("text-sm text-wrap break-words md:break-all", {
+  variants: {
+    type: {
+      message: "text-black dark:text-dark-font",
+      "player-joined": " text-green-600 ",
+      "player-reconnect": " text-green-600 ",
+      "player-left": " text-red-600 ",
+      "player-left-can-reconnect": " text-amber-600 ",
+      "player-timeout": " text-red-600 ",
+      "player-timeout-can-reconnect": " text-amber-600 ",
+      "player-reconnection-expired": " text-red-600 ",
+      "system-message": " text-blue-500 ",
+      "success-system-message": " text-green-600 ",
+      "warn-system-message": " text-orange-500 ",
+      "error-system-message": " text-red-600 ",
     },
   },
-)
+})
 type ChatMessageProps = Readonly<ChatMessage> & {
   username?: string
 }

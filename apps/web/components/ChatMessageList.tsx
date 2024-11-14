@@ -17,7 +17,7 @@ function ChatMessageList() {
       {unreadMessages.length > 0 && (
         <div className="sticky top-0 flex flex-row items-center bg-white dark:bg-dark-input">
           <hr className="flex-grow border-red-500 dark:border-red-600" />
-          <p className="font-inter text-sm text-red-500 dark:text-red-600 px-2">
+          <p className="text-sm text-red-500 dark:text-red-600 px-2">
             {t("unread-messages", { count: unreadMessages.length })}
           </p>
           <hr className="flex-grow border-red-500 dark:border-red-600" />
