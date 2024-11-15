@@ -440,9 +440,9 @@
         "chat-notification-size": {
           "label": "Taille des notifications du chat",
           "values": {
-            "small": "Petit",
-            "normal": "Normal",
-            "big": "Grand"
+            "small": "Petite",
+            "normal": "Normale",
+            "big": "Grande"
           }
         }
       }
