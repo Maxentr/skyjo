@@ -463,6 +463,12 @@ export class Skyjo implements SkyjoInterface {
         const aMax = Math.max(...a.arrayScore)
         const bMax = Math.max(...b.arrayScore)
 
+        // if the max value is the same, we randomize the result
+        if (aMax === bMax) {
+          const random = Math.floor(Math.random() * 2)
+          return random === 0 ? a : b
+        }
+
         return aMax > bMax ? a : b
       }
 
