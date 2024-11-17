@@ -12,7 +12,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useSkyjo } from "@/contexts/SkyjoContext"
-import { getConnectedPlayers } from "@/lib/skyjo"
 import { cn, getRedirectionUrl } from "@/lib/utils"
 import { useRouter } from "@/navigation"
 import { Constants as CoreConstants, SkyjoPlayerToJson } from "@skyjo/core"
@@ -43,8 +42,7 @@ const ResultsPage = () => {
 
   const allRowsVisible = visibleRows.length >= sortedConnectedPlayers.length
 
-  const connectedPlayers = getConnectedPlayers(game.players)
-  const hasMoreThanOneConnectedPlayer = connectedPlayers.length > 1
+  const hasMoreThanOneConnectedPlayer = sortedConnectedPlayers.length > 1
 
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -155,7 +153,7 @@ const ResultsPage = () => {
                     {t("player-want-to-replay")}
                   </p>
                   <div className="flex flex-row gap-1">
-                    {connectedPlayers.map((player) =>
+                    {sortedConnectedPlayers.map((player) =>
                       player.wantsReplay ? (
                         <CheckCircle2Icon
                           key={player.id}

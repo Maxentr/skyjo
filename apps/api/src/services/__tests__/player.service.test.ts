@@ -172,23 +172,48 @@ describe("PlayerService", () => {
       expect(game.players.length).toBe(3)
     })
 
-    it("should disconnect the player and remove the game if there is no more player", async () => {
+    it("should disconnect the player but not remove it if the game is finished", async () => {
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+      const game = new Skyjo(opponent.id, new SkyjoSettings(false))
+      game.addPlayer(opponent)
+
       const player = new SkyjoPlayer(
-        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        { username: "player2", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
       )
-      const game = new Skyjo(player.id, new SkyjoSettings(false))
       game.addPlayer(player)
       socket.data.gameCode = game.code
       socket.data.playerId = player.id
+
+      game.start()
+
+      player.cards[0][0] = new SkyjoCard(11)
+      player.cards[0][1] = new SkyjoCard(11)
+
+      opponent.cards[0][0] = new SkyjoCard(12)
+      opponent.cards[0][1] = new SkyjoCard(12)
+
+      opponent.turnCard(0, 0)
+      opponent.turnCard(0, 1)
+
+      game.roundStatus = CoreConstants.ROUND_STATUS.OVER
+      game.status = CoreConstants.GAME_STATUS.FINISHED
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await service.onLeave(socket)
 
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.LOBBY)
-      expect(game.players.length).toBe(0)
-      expect(service["redis"].removeGame).toHaveBeenCalledOnce()
+      expect(player.connectionStatus).toBe<ConnectionStatus>(
+        CoreConstants.CONNECTION_STATUS.LEAVE,
+      )
+      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.FINISHED)
+      expect(game.roundStatus).toBe<RoundStatus>(
+        CoreConstants.ROUND_STATUS.OVER,
+      )
+      expect(game.players.length).toBe(2)
     })
 
     it("should disconnect the player after timeout expired and start the game because everyone turned the number of cards to start", async () => {

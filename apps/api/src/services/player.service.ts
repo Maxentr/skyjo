@@ -46,7 +46,8 @@ export class PlayerService extends BaseService {
       if (game.isAdmin(player.id)) await this.changeAdmin(game)
 
       if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
-        game.removePlayer(player.id)
+        if (game.status !== CoreConstants.GAME_STATUS.FINISHED)
+          game.removePlayer(player.id)
 
         game.restartGameIfAllPlayersWantReplay()
 
