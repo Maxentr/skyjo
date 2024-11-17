@@ -2,7 +2,7 @@
   "head": {
     "keywords": "Skyjo,Skyjo en línea,juego multijugador,jugar con amigos,juegos en línea gratis,jugar Skyjo en línea",
     "title": "Jugar a Skyjo en línea con amigos | Skyjo Online",
-    "description": "¡Juega gratis a Skyjo en línea con tus amigos! Un emocionante juego multijugador donde competirás para ver quién puede ganar"
+    "description": "¡Juega gratis a Skyjo en línea con tus amigos! ¡Un emocionante juego multijugador donde competirás para ver quién puede ganar!"
   },
   "pages": {
     "Index": {
@@ -523,7 +523,11 @@
       "player-already-muted": "{username} ya está silenciado",
       "player-muted": "{username} está silenciado",
       "player-not-muted": "{username} no está silenciado",
-      "player-unmuted": "{username} ya no está silenciado"
+      "player-unmuted": "{username} ya no está silenciado",
+      "player-left-can-reconnect": "{username} abandonó el juego y tiene {time} segundos para reconectarse",
+      "player-timeout": "{username} perdió la conexión",
+      "player-timeout-can-reconnect": "{username} perdió la conexión y tiene {time} segundos para reconectarse",
+      "player-reconnection-expired": "{username} ha sido eliminado del juego porque el tiempo de reconexión ha expirado"
     },
     "avatar": {
       "bee": "abeja",
@@ -539,12 +543,13 @@
       "penguin": "pingüino",
       "toucan": "tucán",
       "turtle": "tortuga",
-      "whale": "ballena"
+      "whale": "ballena",
+      "owl": "búho"
     }
   },
   "contexts": {
     "SocketContext": {
-      "connection-lost": "Se ha perdido la conexión con el servidor",
+      "connection-lost": "Conexión perdida. Intentando reconectarme...",
       "reconnection": "Reconexión exitosa",
       "recover-error": {
         "game-not-found": {
