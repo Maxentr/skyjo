@@ -81,7 +81,9 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "game:settings:private",
     socketErrorHandlerWrapper(async (data: UpdateGameSettingsPrivate) => {
-      const isPrivate = updateGameSettingsPrivateSchema.parse(data)
+      const isPrivate = updateGameSettingsPrivateSchema.parse(data, {
+        path: ["private"],
+      })
       await instance.onUpdateSingleSettings(socket, "private", isPrivate)
     }),
   )
@@ -89,8 +91,12 @@ const lobbyRouter = (socket: SkyjoSocket) => {
     "game:settings:allow-skyjo-for-column",
     socketErrorHandlerWrapper(
       async (data: UpdateGameSettingsAllowSkyjoForColumn) => {
-        const isAllowed =
-          updateGameSettingsAllowSkyjoForColumnSchema.parse(data)
+        const isAllowed = updateGameSettingsAllowSkyjoForColumnSchema.parse(
+          data,
+          {
+            path: ["allowSkyjoForColumn"],
+          },
+        )
 
         await instance.onUpdateSingleSettings(
           socket,
@@ -104,7 +110,9 @@ const lobbyRouter = (socket: SkyjoSocket) => {
     "game:settings:allow-skyjo-for-row",
     socketErrorHandlerWrapper(
       async (data: UpdateGameSettingsAllowSkyjoForRow) => {
-        const isAllowed = updateGameSettingsAllowSkyjoForRowSchema.parse(data)
+        const isAllowed = updateGameSettingsAllowSkyjoForRowSchema.parse(data, {
+          path: ["allowSkyjoForRow"],
+        })
         await instance.onUpdateSingleSettings(
           socket,
           "allowSkyjoForRow",
@@ -118,7 +126,9 @@ const lobbyRouter = (socket: SkyjoSocket) => {
     socketErrorHandlerWrapper(
       async (data: UpdateGameSettingsInitialTurnedCount) => {
         const initialTurnedCount =
-          updateGameSettingsInitialTurnedCountSchema.parse(data)
+          updateGameSettingsInitialTurnedCountSchema.parse(data, {
+            path: ["initialTurnedCount"],
+          })
         await instance.onUpdateSingleSettings(
           socket,
           "initialTurnedCount",
@@ -130,14 +140,18 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "game:settings:card-per-row",
     socketErrorHandlerWrapper(async (data: UpdateGameSettingsCardPerRow) => {
-      const cardPerRow = updateGameSettingsCardPerRowSchema.parse(data)
+      const cardPerRow = updateGameSettingsCardPerRowSchema.parse(data, {
+        path: ["cardPerRow"],
+      })
       await instance.onUpdateSingleSettings(socket, "cardPerRow", cardPerRow)
     }),
   )
   socket.on(
     "game:settings:card-per-column",
     socketErrorHandlerWrapper(async (data: UpdateGameSettingsCardPerColumn) => {
-      const cardPerColumn = updateGameSettingsCardPerColumnSchema.parse(data)
+      const cardPerColumn = updateGameSettingsCardPerColumnSchema.parse(data, {
+        path: ["cardPerColumn"],
+      })
       await instance.onUpdateSingleSettings(
         socket,
         "cardPerColumn",
@@ -149,8 +163,12 @@ const lobbyRouter = (socket: SkyjoSocket) => {
     "game:settings:score-to-end-game",
     socketErrorHandlerWrapper(
       async (data: UpdateGameSettingsScoreToEndGame) => {
-        const scoreToEndGame =
-          updateGameSettingsScoreToEndGameSchema.parse(data)
+        const scoreToEndGame = updateGameSettingsScoreToEndGameSchema.parse(
+          data,
+          {
+            path: ["scoreToEndGame"],
+          },
+        )
         await instance.onUpdateSingleSettings(
           socket,
           "scoreToEndGame",
@@ -164,7 +182,9 @@ const lobbyRouter = (socket: SkyjoSocket) => {
     socketErrorHandlerWrapper(
       async (data: UpdateGameSettingsMultiplierForFirstPlayer) => {
         const multiplierForFirstPlayer =
-          updateGameSettingsMultiplierForFirstPlayerSchema.parse(data)
+          updateGameSettingsMultiplierForFirstPlayerSchema.parse(data, {
+            path: ["multiplierForFirstPlayer"],
+          })
         await instance.onUpdateSingleSettings(
           socket,
           "multiplierForFirstPlayer",
