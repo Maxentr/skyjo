@@ -263,12 +263,16 @@ export class PlayerService extends BaseService {
 
     const player = game.getPlayerById(playerId)
 
-    if (!game || !player)
+    if (!game || !player) {
+      const errorCode = !player
+        ? ErrorConstants.ERROR.PLAYER_NOT_FOUND
+        : ErrorConstants.ERROR.GAME_NOT_FOUND
+
       throw new CError(
-        `Game or player not found in game when trying to reconnect. This error can only happen if socket.data is wrong in onRecover method.`,
+        `Game or player not found in game when trying to reconnect. This error can happen if the user reconnect but the game has been deleted or the player has been removed from the game.`,
         {
-          code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
-          level: "critical",
+          code: errorCode,
+          level: "warn",
           meta: {
             game,
             socket,
@@ -277,6 +281,7 @@ export class PlayerService extends BaseService {
           },
         },
       )
+    }
 
     clearTimeout(this.disconnectTimeouts[player.id])
     delete this.disconnectTimeouts[player.id]
