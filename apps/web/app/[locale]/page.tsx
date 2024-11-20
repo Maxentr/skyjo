@@ -55,6 +55,15 @@ const IndexServerPage = ({ searchParams }: IndexServerPageProps) => {
           <div className="hidden mdh:sm:flex absolute bottom-6 left-6 right-6 z-10 items-center justify-center">
             <MovingArrow href="#explanation" />
           </div>
+          {process.env.npm_package_version && (
+            <Link
+              href="https://github.com/maxentr/skyjo/releases/latest"
+              target="_blank"
+              className="absolute bottom-6 right-6 z-10 underline"
+            >
+              v{process.env.npm_package_version}
+            </Link>
+          )}
         </div>
         <section className="container bg-body dark:bg-dark-body my-8 max-w-4xl flex flex-col items-center">
           <h2
