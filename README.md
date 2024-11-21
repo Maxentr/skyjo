@@ -15,10 +15,16 @@ This repository contains the code of [skyjo.online](https://www.skyjo.online), t
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [What is Skyjo?](#what-is-skyjo)
 - [Project Structure](#project-structure)
+  - [Applications](#applications)
+  - [Packages](#packages)
 - [Installation guide](#installation-guide)
+  - [Prerequisites](#prerequisites)
+  - [Installation steps](#installation-steps)
 - [How to run the project](#how-to-run-the-project)
+  - [Running the API without docker](#running-the-api-without-docker)
 - [Localization](#localization)
 
 ## What is Skyjo?
@@ -78,8 +84,6 @@ Run the web client with:
    ```
 
 ### Running the API without docker
-
-In `compose.yml`, under the `redis` service, uncomment the `external` line in the `networks` section.
 
 In `apps/api/.env`, set:
 ```env
