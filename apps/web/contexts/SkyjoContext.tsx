@@ -26,6 +26,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { Socket } from "socket.io-client"
 
 dayjs.extend(utc)
 
@@ -94,6 +95,11 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
 
   useEffect(() => {
     gameStatusRef.current = game?.status
+
+    socket!.on("disconnect", onDisconnect)
+    return () => {
+      socket!.off("disconnect", onDisconnect)
+    }
   }, [game?.status])
 
   useEffect(() => {
@@ -129,6 +135,16 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     setGame(undefined)
     setChat([])
     router.replace("/")
+  }
+
+  const onDisconnect = (reason: Socket.DisconnectReason) => {
+    console.log("onDisconnect", reason === "ping timeout", game?.status)
+    if (
+      reason === "ping timeout" &&
+      game?.status === CoreConstants.GAME_STATUS.LOBBY
+    ) {
+      router.replace("/")
+    }
   }
 
   const initGameListeners = () => {
