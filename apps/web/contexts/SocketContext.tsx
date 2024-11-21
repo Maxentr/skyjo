@@ -53,7 +53,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
     const newSocket = io(process.env.NEXT_PUBLIC_API_URL, {
       autoConnect: true,
       reconnectionDelay: 1000,
-      reconnectionDelayMax: 2000,
+      reconnectionDelayMax: 5000,
       parser: customParser,
     })
 

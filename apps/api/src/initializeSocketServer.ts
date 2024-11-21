@@ -24,8 +24,9 @@ export const initializeSocketServer = (server: ServerType) => {
       cors: {
         origin: ENV.ORIGINS,
       },
-      pingInterval: 15000,
-      pingTimeout: 30000,
+      pingInterval: 20000,
+      pingTimeout: 40000,
+      upgradeTimeout: 20000,
       connectionStateRecovery: {
         maxDisconnectionDuration: 180000,
         skipMiddlewares: true,
