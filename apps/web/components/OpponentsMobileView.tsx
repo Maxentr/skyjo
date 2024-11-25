@@ -7,6 +7,7 @@ import {
   getNextPlayerIndex,
   isCurrentUserTurn,
 } from "@/lib/skyjo"
+import { cn } from "@/lib/utils"
 import { Constants as CoreConstants, SkyjoPlayerToJson } from "@skyjo/core"
 import { AnimatePresence, m } from "framer-motion"
 import { useTranslations } from "next-intl"
@@ -72,10 +73,18 @@ const OpponentsMobileView = () => {
                 {t("opponents-list.title")}
               </p>
               {flattenOpponents.map((opponent, index) => {
+                const isSelected = index === selectedOpponentIndex
+                const isPlayerWhoHasToPlay = isCurrentUserTurn(
+                  game,
+                  flattenOpponents[index],
+                )
+
                 return (
                   <OpponentItem
                     opponent={opponent}
                     index={index}
+                    isSelected={isSelected}
+                    isPlayerWhoHasToPlay={isPlayerWhoHasToPlay}
                     setSelectedOpponentIndex={setSelectedOpponentIndex}
                   />
                 )
@@ -108,11 +117,15 @@ const OpponentsMobileView = () => {
 type OpponentItemProps = {
   opponent: SkyjoPlayerToJson
   index: number
+  isSelected: boolean
+  isPlayerWhoHasToPlay: boolean
   setSelectedOpponentIndex: (index: number) => void
 }
 const OpponentItem = ({
   opponent,
   index,
+  isSelected,
+  isPlayerWhoHasToPlay,
   setSelectedOpponentIndex,
 }: OpponentItemProps) => {
   return (
@@ -122,8 +135,13 @@ const OpponentItem = ({
       animate={{ opacity: 1, scale: 1, x: 0 }}
       exit={{ display: "none", transition: { duration: 0 } }}
       onClick={() => setSelectedOpponentIndex(index)}
+      className={cn(isSelected && "font-semibold")}
     >
-      <UserAvatar player={opponent} size="small" />
+      <UserAvatar
+        player={opponent}
+        size="small"
+        animate={isPlayerWhoHasToPlay}
+      />
     </m.button>
   )
 }

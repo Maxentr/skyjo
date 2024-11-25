@@ -51,6 +51,7 @@ interface UserAvatarProps extends VariantProps<typeof containerVariants> {
   player: SkyjoPlayerToJson
   allowContextMenu?: boolean
   showName?: boolean
+  animate?: boolean
 }
 
 const UserAvatar = ({
@@ -58,6 +59,7 @@ const UserAvatar = ({
   size = "normal",
   allowContextMenu = true,
   showName = true,
+  animate = false,
 }: UserAvatarProps) => {
   const tAvatar = useTranslations("utils.avatar")
   const { player: currentPlayer } = useSkyjo()
@@ -78,7 +80,11 @@ const UserAvatar = ({
           height={size === "small" ? 40 : 100}
           alt={tAvatar(player.avatar)}
           title={tAvatar(player.avatar)}
-          className={cn(imageVariants({ size }), "dark:opacity-75")}
+          className={cn(
+            imageVariants({ size }),
+            "dark:opacity-75",
+            animate && "animate-small-bounce",
+          )}
           priority
         />
         {player.name && showName && (
