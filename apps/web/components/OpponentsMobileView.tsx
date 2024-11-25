@@ -7,7 +7,7 @@ import {
   getNextPlayerIndex,
   isCurrentUserTurn,
 } from "@/lib/skyjo"
-import { Constants as CoreConstants } from "@skyjo/core"
+import { Constants as CoreConstants, SkyjoPlayerToJson } from "@skyjo/core"
 import { AnimatePresence, m } from "framer-motion"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
@@ -49,14 +49,7 @@ const OpponentsMobileView = () => {
     }
 
     setNewSelectedOpponentIndex()
-  }, [
-    switchToPlayerWhoIsPlaying,
-    game.turn,
-    game,
-    player.id,
-    selectedOpponentIndex,
-    flattenOpponents,
-  ])
+  }, [switchToPlayerWhoIsPlaying, game.turn, game.players])
 
   useEffect(() => {
     if (game.status === CoreConstants.GAME_STATUS.PLAYING) {
@@ -68,30 +61,25 @@ const OpponentsMobileView = () => {
   if (flattenOpponents.length === 0) return null
 
   const selectedOpponent = flattenOpponents[selectedOpponentIndex]
-  const opponentsWithoutSelected = flattenOpponents.filter(
-    (_, index) => index !== selectedOpponentIndex,
-  )
 
   return (
     <AnimatePresence>
       <div className="flex lg:hidden flex-row grow">
         <div className="flex flex-col w-20 gap-2 max-h-52">
-          {opponentsWithoutSelected.length > 0 && (
+          {flattenOpponents.length > 1 && (
             <>
               <p className="text-nowrap text-black dark:text-dark-font">
                 {t("opponents-list.title")}
               </p>
-              {opponentsWithoutSelected.map((opponent, index) => (
-                <m.button
-                  key={opponent.id}
-                  initial={{ opacity: 0, scale: 0.8, x: 50 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  exit={{ display: "none", transition: { duration: 0 } }}
-                  onClick={() => setSelectedOpponentIndex(index)}
-                >
-                  <UserAvatar player={opponent} size="small" />
-                </m.button>
-              ))}
+              {flattenOpponents.map((opponent, index) => {
+                return (
+                  <OpponentItem
+                    opponent={opponent}
+                    index={index}
+                    setSelectedOpponentIndex={setSelectedOpponentIndex}
+                  />
+                )
+              })}
             </>
           )}
         </div>
@@ -114,6 +102,29 @@ const OpponentsMobileView = () => {
         <div className="w-10"></div>
       </div>
     </AnimatePresence>
+  )
+}
+
+type OpponentItemProps = {
+  opponent: SkyjoPlayerToJson
+  index: number
+  setSelectedOpponentIndex: (index: number) => void
+}
+const OpponentItem = ({
+  opponent,
+  index,
+  setSelectedOpponentIndex,
+}: OpponentItemProps) => {
+  return (
+    <m.button
+      key={opponent.id}
+      initial={{ opacity: 0, scale: 0.8, x: 50 }}
+      animate={{ opacity: 1, scale: 1, x: 0 }}
+      exit={{ display: "none", transition: { duration: 0 } }}
+      onClick={() => setSelectedOpponentIndex(index)}
+    >
+      <UserAvatar player={opponent} size="small" />
+    </m.button>
   )
 }
 
