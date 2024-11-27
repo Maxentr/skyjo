@@ -10,6 +10,7 @@ import Image from "next/image"
 const containerVariants = cva("flex flex-col items-center", {
   variants: {
     size: {
+      tiny: " gap-0",
       small: " gap-0",
       normal: " gap-2",
     },
@@ -23,6 +24,7 @@ const containerVariants = cva("flex flex-col items-center", {
 const imageVariants = cva("select-none", {
   variants: {
     size: {
+      tiny: "size-6",
       small: " size-8 sm:size-10",
       normal: " size-12 smh:sm:size-16 mdh:md:size-[6.25rem]",
     },
@@ -37,6 +39,7 @@ const textVariants = cva(
   {
     variants: {
       size: {
+        tiny: "text-xs w-20",
         small: "text-sm w-20",
         normal: "text-lg w-[6.25rem]",
       },

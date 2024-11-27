@@ -1,3 +1,4 @@
+import { Card } from "@/components/Card"
 import OpponentBoard from "@/components/OpponentBoard"
 import { UserAvatar } from "@/components/UserAvatar"
 import { useSettings } from "@/contexts/SettingsContext"
@@ -10,7 +11,6 @@ import {
 import { cn } from "@/lib/utils"
 import { Constants as CoreConstants, SkyjoPlayerToJson } from "@skyjo/core"
 import { AnimatePresence, m } from "framer-motion"
-import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 
 const OpponentsMobileView = () => {
@@ -18,7 +18,6 @@ const OpponentsMobileView = () => {
   const {
     settings: { switchToPlayerWhoIsPlaying },
   } = useSettings()
-  const t = useTranslations("components.OpponentsMobileView")
   const flattenOpponents = opponents.flat()
 
   const [selectedOpponentIndex, setSelectedOpponentIndex] = useState(
@@ -66,33 +65,13 @@ const OpponentsMobileView = () => {
   return (
     <AnimatePresence>
       <div className="flex lg:hidden flex-row grow">
-        <div className="flex flex-col w-20 gap-2 max-h-52">
-          {flattenOpponents.length > 1 && (
-            <>
-              <p className="text-nowrap text-black dark:text-dark-font">
-                {t("opponents-list.title")}
-              </p>
-              {flattenOpponents.map((opponent, index) => {
-                const isSelected = index === selectedOpponentIndex
-                const isPlayerWhoHasToPlay = isCurrentUserTurn(
-                  game,
-                  flattenOpponents[index],
-                )
-
-                return (
-                  <OpponentItem
-                    opponent={opponent}
-                    index={index}
-                    isSelected={isSelected}
-                    isPlayerWhoHasToPlay={isPlayerWhoHasToPlay}
-                    setSelectedOpponentIndex={setSelectedOpponentIndex}
-                  />
-                )
-              })}
-            </>
-          )}
-        </div>
-        <div className="flex grow justify-center items-center">
+        <OpponentList
+          opponents={flattenOpponents}
+          selectedOpponentIndex={selectedOpponentIndex}
+          setSelectedOpponentIndex={setSelectedOpponentIndex}
+        />
+        <div className="w-10" />
+        <div className="flex grow justify-center items-start">
           {selectedOpponent && (
             <m.div
               key={selectedOpponent.id}
@@ -108,9 +87,41 @@ const OpponentsMobileView = () => {
             </m.div>
           )}
         </div>
-        <div className="w-10"></div>
       </div>
     </AnimatePresence>
+  )
+}
+
+type OpponentListProps = {
+  opponents: SkyjoPlayerToJson[]
+  selectedOpponentIndex: number
+  setSelectedOpponentIndex: (index: number) => void
+}
+const OpponentList = ({
+  opponents,
+  selectedOpponentIndex,
+  setSelectedOpponentIndex,
+}: OpponentListProps) => {
+  const { game } = useSkyjo()
+
+  return (
+    <div className="absolute flex flex-col w-20 gap-4 h-[calc(100svh-2rem)] overflow-y-auto">
+      {opponents.length > 1 &&
+        opponents.map((opponent, index) => {
+          const isSelected = index === selectedOpponentIndex
+          const isPlayerWhoHasToPlay = isCurrentUserTurn(game, opponents[index])
+
+          return (
+            <OpponentItem
+              opponent={opponent}
+              index={index}
+              isSelected={isSelected}
+              isPlayerWhoHasToPlay={isPlayerWhoHasToPlay}
+              setSelectedOpponentIndex={setSelectedOpponentIndex}
+            />
+          )
+        })}
+    </div>
   )
 }
 
@@ -135,13 +146,32 @@ const OpponentItem = ({
       animate={{ opacity: 1, scale: 1, x: 0 }}
       exit={{ display: "none", transition: { duration: 0 } }}
       onClick={() => setSelectedOpponentIndex(index)}
-      className={cn(isSelected && "font-semibold")}
+      className={cn(
+        "flex flex-col items-center",
+        isSelected && "font-semibold",
+      )}
     >
       <UserAvatar
         player={opponent}
-        size="small"
+        size="tiny"
         animate={isPlayerWhoHasToPlay}
       />
+      {/* TODO: add a display settings to show or hide the cards */}
+      <div className="flex flex-row gap-0.5">
+        {opponent.cards.map((column) => (
+          <div className="flex flex-col gap-0.5">
+            {column.map((card) => (
+              <Card
+                key={card.id}
+                card={card}
+                size="preview"
+                flipAnimation={false}
+                exitAnimation={false}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
     </m.button>
   )
 }

@@ -14,6 +14,7 @@ const cardClass = cva(
   {
     variants: {
       size: {
+        preview: " h-3 w-2 border rounded-sm text-transparent",
         tiny: " h-12 w-8 border-[1.5px] rounded shadow-[0.75px_0.75px_0px_0px_rgba(0,0,0)] text-base",
         normal:
           " h-8 w-6 smh:h-12 smh:w-8 xlh:md:h-16 xlh:md:w-12 rounded smh:rounded xlh:md:rounded-md shadow-[0.75px_0.75px_0px_0px_rgba(0,0,0)] xlh:md:shadow-[1.5px_1.5px_0px_0px_rgba(0,0,0)] text-base xlh:md:text-2xl ",
@@ -39,16 +40,20 @@ const cardClass = cva(
   },
 )
 
-const throwIconClass = cva(" text-card-discard dark:text-dark-card-discard ", {
-  variants: {
-    size: {
-      tiny: "w-4 aspect-square",
-      small: " w-5 aspect-square",
-      normal: " w-5 md:w-6 aspect-square",
-      big: " w-8 aspect-square",
+const throwIconClass = cva(
+  "aspect-square text-card-discard dark:text-dark-card-discard ",
+  {
+    variants: {
+      size: {
+        preview: "w-0",
+        tiny: "w-4",
+        small: " w-5",
+        normal: " w-5 md:w-6",
+        big: " w-8",
+      },
     },
   },
-})
+)
 
 type CardValue =
   | "no-card"
