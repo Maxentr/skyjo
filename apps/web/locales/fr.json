@@ -414,36 +414,38 @@
     },
     "SettingsDialog": {
       "title": "Paramètres",
-      "sound": {
-        "title": "Son",
-        "audio": {
-          "label": "Activer le son"
-        },
-        "volume": {
-          "label": "Volume ({volume}%)"
-        }
-      },
       "general": {
         "title": "Général",
         "language": "Langue",
         "language-warn": "Changeable uniquement sur la page d'accueil",
-        "appearance": "Apparence",
-        "coming-soon": "Bientôt disponible"
+        "appearance": "Apparence"
       },
-      "mobile": {
-        "title": "Mobile",
-        "switch-to-player-who-is-playing": "Basculer sur le joueur qui joue"
-      },
-      "chat": {
-        "title": "Chat",
-        "chat-visibility": "Visibilité du chat",
-        "chat-notification-size": {
-          "label": "Taille des notifications du chat",
-          "values": {
-            "small": "Petite",
-            "normal": "Normale",
-            "big": "Grande"
+      "display": {
+        "title": "Affichage",
+        "mobile": {
+          "title": "Mobile",
+          "switch-to-player-who-is-playing": "Automatiquement basculer sur le joueur qui joue"
+        },
+        "chat": {
+          "title": "Chat",
+          "chat-visibility": "Visibilité du chat",
+          "chat-notification-size": {
+            "label": "Taille des notifications du chat",
+            "values": {
+              "small": "Petite",
+              "normal": "Normale",
+              "big": "Grande"
+            }
           }
+        }
+      },
+      "audio": {
+        "title": "Audio",
+        "toggle": {
+          "label": "Activer le son"
+        },
+        "volume": {
+          "label": "Volume ({volume}%)"
         }
       }
     },

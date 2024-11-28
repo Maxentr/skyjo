@@ -282,31 +282,32 @@
         "appearance": "Apariencia",
         "title": "General",
         "language": "Idioma",
-        "language-warn": "Cambiar solo en la página principal",
-        "coming-soon": "Próximamente"
+        "language-warn": "Cambiar solo en la página principal"
       },
-      "sound": {
+      "audio": {
         "title": "Sonido",
-        "audio": {
+        "toggle": {
           "label": "Activar el sonido"
         },
         "volume": {
           "label": "Volumen ({volume}%)"
         }
       },
-      "mobile": {
-        "title": "Móvil",
-        "switch-to-player-who-is-playing": "Cambiar al jugador que está jugando"
-      },
-      "chat": {
-        "title": "Chat",
-        "chat-visibility": "Visibilidad del chat",
-        "chat-notification-size": {
-          "label": "Tamaño de la notificación del chat",
-          "values": {
-            "small": "Pequeña",
-            "normal": "Normal",
-            "big": "Grande"
+      "display": {
+        "mobile": {
+          "title": "Móvil",
+          "switch-to-player-who-is-playing": "Cambiar al jugador que está jugando"
+        },
+        "chat": {
+          "title": "Chat",
+          "chat-visibility": "Visibilidad del chat",
+          "chat-notification-size": {
+            "label": "Tamaño de la notificación del chat",
+            "values": {
+              "small": "Pequeña",
+              "normal": "Normal",
+              "big": "Grande"
+            }
           }
         }
       },
