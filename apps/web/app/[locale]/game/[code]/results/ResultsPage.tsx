@@ -12,8 +12,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useSkyjo } from "@/contexts/SkyjoContext"
+import { useRouter } from "@/i18n/routing"
 import { cn, getRedirectionUrl } from "@/lib/utils"
-import { useRouter } from "@/navigation"
 import { Constants as CoreConstants, SkyjoPlayerToJson } from "@skyjo/core"
 import { AnimatePresence, m } from "framer-motion"
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react"

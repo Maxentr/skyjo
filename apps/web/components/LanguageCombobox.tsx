@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/popover"
 import { useSettings } from "@/contexts/SettingsContext"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
-import { Locales, locales } from "@/i18n"
-import { usePathname, useRouter } from "@/navigation"
+import { Locales, routing, usePathname, useRouter } from "@/i18n/routing"
 import { CheckIcon, ChevronsUpDown } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
@@ -38,7 +37,7 @@ type LocalListProps = {
 const LocaleList = ({ currentLocale, updateLocale, t }: LocalListProps) => {
   const translatedLocales = useMemo(
     () =>
-      locales.map((locale) => ({
+      routing.locales.map((locale) => ({
         locale,
         label: t(`locale.${locale}`),
       })),

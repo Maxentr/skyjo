@@ -16,9 +16,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useSkyjo } from "@/contexts/SkyjoContext"
+import { useRouter } from "@/i18n/routing"
 import { isAdmin } from "@/lib/skyjo"
 import { cn } from "@/lib/utils"
-import { useRouter } from "@/navigation"
 import { Constants as CoreConstants } from "@skyjo/core"
 import { GameSettings } from "@skyjo/shared/validations"
 import { m } from "framer-motion"

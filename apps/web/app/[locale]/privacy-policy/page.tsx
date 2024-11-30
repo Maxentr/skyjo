@@ -1,4 +1,4 @@
-import { Link } from "@/navigation"
+import { Link } from "@/i18n/routing"
 import dayjs from "dayjs"
 import { useTranslations } from "next-intl"
 

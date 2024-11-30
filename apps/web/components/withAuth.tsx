@@ -2,7 +2,7 @@
 
 import { useSocket } from "@/contexts/SocketContext"
 import { useUser } from "@/contexts/UserContext"
-import { useRouter } from "@/navigation"
+import { useRouter } from "@/i18n/routing"
 import { useParams } from "next/navigation"
 import React, { ComponentType, useEffect, useState } from "react"
 

@@ -1,13 +1,14 @@
 import MaintenancePage from "@/app/[locale]/MaintenancePage"
 import PostHogPageView from "@/app/[locale]/PostHogPageView"
 import Providers from "@/app/[locale]/providers"
-import { Locales } from "@/i18n"
+import { Locales, routing } from "@/i18n/routing"
 import { posthogServer } from "@/lib/posthog-server"
 import { getCurrentUrl } from "@/lib/utils"
 import { Metadata, Viewport } from "next"
 import { NextIntlClientProvider } from "next-intl"
 import { getMessages, getTranslations } from "next-intl/server"
 import { Fredoka } from "next/font/google"
+import { notFound } from "next/navigation"
 
 const fredoka = Fredoka({
   subsets: ["latin"],
@@ -141,6 +142,10 @@ export default async function LocaleLayout({
     "maintenance",
     "web-server",
   )
+
+  if (!routing.locales.includes(locale as Locales)) {
+    notFound()
+  }
 
   return (
     <html

@@ -1,6 +1,6 @@
 "use client"
 
-import { usePathname } from "@/navigation"
+import { usePathname } from "@/i18n/routing"
 import { useSearchParams } from "next/navigation"
 import { usePostHog } from "posthog-js/react"
 import { useEffect } from "react"

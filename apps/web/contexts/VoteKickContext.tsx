@@ -2,7 +2,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import { useSocket } from "@/contexts/SocketContext"
 import { useKickVoteToasts } from "@/hooks/useKickVoteToasts"
-import { useRouter } from "@/navigation"
+import { useRouter } from "@/i18n/routing"
 import { KickVoteToJson } from "@skyjo/core"
 import {
   PropsWithChildren,

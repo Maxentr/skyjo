@@ -3,8 +3,8 @@
 import { useToast } from "@/components/ui/use-toast"
 import { useChat } from "@/contexts/ChatContext"
 import { useSocket } from "@/contexts/SocketContext"
+import { useRouter } from "@/i18n/routing"
 import { getCurrentUser, getOpponents, isAdmin } from "@/lib/skyjo"
-import { useRouter } from "@/navigation"
 import { Opponents } from "@/types/opponents"
 import {
   Constants as CoreConstants,

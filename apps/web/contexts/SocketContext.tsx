@@ -1,7 +1,7 @@
 "use client"
 
 import { useToast } from "@/components/ui/use-toast"
-import { useRouter } from "@/navigation"
+import { useRouter } from "@/i18n/routing"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
 import {
   ClientToServerEvents,

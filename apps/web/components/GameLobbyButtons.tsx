@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { useSocket } from "@/contexts/SocketContext"
 import { useUser } from "@/contexts/UserContext"
-import { useRouter } from "@/navigation"
+import { useRouter } from "@/i18n/routing"
 import {
   Constants as CoreConstants,
   CreatePlayer,

@@ -1,7 +1,7 @@
 "use client"
 
 import SettingsDialog from "@/components/SettingsDialog"
-import { Locales } from "@/i18n"
+import { Locales } from "@/i18n/routing"
 import { Howler } from "howler"
 import { ThemeProvider } from "next-themes"
 import {

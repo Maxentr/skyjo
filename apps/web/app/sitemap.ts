@@ -1,5 +1,4 @@
-import { locales } from "@/i18n"
-import { DEFAULT_LOCALE } from "@/navigation"
+import { routing } from "@/i18n/routing"
 import { MetadataRoute } from "next"
 
 type Page = {
@@ -25,9 +24,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ]
 
   const sitemap = pages.map((page) => {
-    return locales.map((locale) => {
+    return routing.locales.map((locale) => {
       let url: string = ""
-      if (locale === DEFAULT_LOCALE) {
+      if (locale === routing.defaultLocale) {
         url = `${baseUrl}/${page.name}`
       } else if (page.name === "") {
         url = `${baseUrl}/${locale}`

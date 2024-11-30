@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer"
 import { Button } from "@/components/ui/button"
-import { Link } from "@/navigation"
+import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 

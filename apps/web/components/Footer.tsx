@@ -1,5 +1,5 @@
 import FeedbackLink from "@/components/FeedbackLink"
-import { Link } from "@/navigation"
+import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 
