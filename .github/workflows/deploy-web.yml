@@ -16,11 +16,11 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22.9.0
+          node-version: 22.10.1
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
-          version: 9.12.3
+          version: 9.14.2
       - name: Install Vercel CLI
         run: pnpm add --global vercel@latest
       - name: Install Dependencies
