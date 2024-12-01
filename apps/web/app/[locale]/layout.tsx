@@ -123,7 +123,10 @@ export async function generateMetadata(props: LocaleLayoutProps) {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#fefdf7",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fefdf7" },
+    { media: "(prefers-color-scheme: dark)", color: "#242424" },
+  ],
   minimumScale: 1,
   initialScale: 1,
   width: "device-width",
@@ -151,12 +154,7 @@ export default async function LocaleLayout(props: LocaleLayoutProps) {
   }
 
   return (
-    <html
-      lang={locale}
-      suppressHydrationWarning
-      style={fredoka.style}
-      className="dark"
-    >
+    <html lang={locale} suppressHydrationWarning style={fredoka.style}>
       <body className="bg-body dark:bg-dark-body antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           {isSiteUnderMaintenance ? (
