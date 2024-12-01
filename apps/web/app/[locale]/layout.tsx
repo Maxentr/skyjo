@@ -18,12 +18,12 @@ const fredoka = Fredoka({
 
 export type LocaleLayoutProps = Readonly<{
   children: React.ReactNode
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }>
 
-export async function generateMetadata({
-  params: { locale },
-}: LocaleLayoutProps) {
+export async function generateMetadata(props: LocaleLayoutProps) {
+  const { locale } = await props.params
+
   const t = await getTranslations({ locale, namespace: "head" })
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? ""
@@ -132,10 +132,13 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 }
 
-export default async function LocaleLayout({
-  children,
-  params: { locale },
-}: LocaleLayoutProps) {
+export default async function LocaleLayout(props: LocaleLayoutProps) {
+  const params = await props.params
+
+  const { locale } = params
+
+  const { children } = props
+
   const messages = await getMessages()
 
   const isSiteUnderMaintenance = await posthogServer.isFeatureEnabled(

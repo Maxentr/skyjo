@@ -13,13 +13,16 @@ import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
+import { use } from "react"
 
-type IndexServerPageProps = {
-  searchParams: {
-    gameCode?: string
-  }
+type SearchParams = {
+  gameCode?: string
 }
-const IndexServerPage = ({ searchParams }: IndexServerPageProps) => {
+type IndexServerPageProps = {
+  searchParams: Promise<SearchParams>
+}
+const IndexServerPage = (props: IndexServerPageProps) => {
+  const searchParams = use(props.searchParams)
   const t = useTranslations("pages.Index")
 
   const rulesLink = (chunks: React.ReactNode) => (

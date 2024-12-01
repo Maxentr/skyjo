@@ -5,15 +5,18 @@ import withAuth from "@/components/withAuth"
 import ChatProvider from "@/contexts/ChatContext"
 import SkyjoProvider from "@/contexts/SkyjoContext"
 import { VoteKickProvider } from "@/contexts/VoteKickContext"
-import { PropsWithChildren } from "react"
+import { PropsWithChildren, use } from "react"
 
-type GameLayoutProps = PropsWithChildren & {
-  params: {
-    code: string
-    locale: string
-  }
+type GameLayoutParams = {
+  code: string
+  locale: string
 }
-const GameLayout = ({ children, params }: GameLayoutProps) => {
+type GameLayoutProps = PropsWithChildren & {
+  params: Promise<GameLayoutParams>
+}
+const GameLayout = ({ children, params: paramsPromise }: GameLayoutProps) => {
+  const params = use<GameLayoutParams>(paramsPromise)
+
   return (
     <ChatProvider>
       <SkyjoProvider gameCode={params.code}>

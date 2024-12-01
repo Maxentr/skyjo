@@ -7,7 +7,7 @@ import { ClassValue } from "clsx"
 import { m, useAnimate, useAnimationControls } from "framer-motion"
 import { Trash2Icon } from "lucide-react"
 import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
+import { type JSX, useEffect, useState } from "react"
 
 const cardClass = cva(
   "text-black border-2 border-black flex justify-center items-center select-none focus-visible:outline-black focus-visible:-outline-offset-2",
