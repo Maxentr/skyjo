@@ -21,7 +21,6 @@
     "@skyjo/error": "workspace:*",
     "@skyjo/logger": "workspace:*",
     "@skyjo/shared": "workspace:*",
-    "dayjs": "^1.11.13",
     "hono": "^4.6.12",
     "nodemailer": "^6.9.16",
     "socket.io": "^4.8.1",

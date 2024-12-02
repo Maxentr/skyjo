@@ -47,9 +47,6 @@ importers:
       '@skyjo/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      dayjs:
-        specifier: ^1.11.13
-        version: 1.11.13
       hono:
         specifier: ^4.6.12
         version: 4.6.12
