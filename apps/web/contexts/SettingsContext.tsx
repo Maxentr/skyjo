@@ -70,8 +70,8 @@ const SettingsProvider = ({ children, locale }: SettingsProviderProps) => {
     // check all settings keys, if not present in settings, add them
     if (!settings) return
 
-    Object.keys(settings).forEach((key) => {
-      const k = key as SettingsKeys
+    Object.keys(DEFAULT_SETTINGS).forEach((defaultKey) => {
+      const k = defaultKey as SettingsKeys
 
       if (settings[k] === undefined)
         setSettings({ ...settings, [k]: DEFAULT_SETTINGS[k] })
