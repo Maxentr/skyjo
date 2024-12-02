@@ -14,7 +14,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ChatNotificationSize, useSettings } from "@/contexts/SettingsContext"
+import {
+  ChatNotificationSize,
+  GameBoardSize,
+  useSettings,
+} from "@/contexts/SettingsContext"
 import { useTranslations } from "next-intl"
 import { Dispatch, SetStateAction } from "react"
 
@@ -28,7 +32,7 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="h-[80svh] px-0 pb-1.5 bg-body dark:bg-dark-body flex flex-col">
+      <DialogContent className="h-[70svh] px-0 pb-1.5 bg-body dark:bg-dark-body flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl">
             {t("title")}
@@ -162,6 +166,37 @@ const DisplaySettings = () => {
                 updateSetting("switchToPlayerWhoIsPlaying", value)
               }
             />
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <h2 className="text-lg font-semibold">{t("game-board.title")}</h2>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <div>
+              <Label>{t("game-board.size.label")}</Label>
+              {settings.gameBoardSize === GameBoardSize.BIG && (
+                <p className="text-xs text-orange-600">
+                  {t("game-board.size.big-warning")}
+                </p>
+              )}
+            </div>
+            <RadioGroup
+              value={settings.gameBoardSize}
+              onValueChange={(value) =>
+                updateSetting("gameBoardSize", value as GameBoardSize)
+              }
+              className="flex gap-4"
+            >
+              {Object.values(GameBoardSize).map((size) => (
+                <div className="flex items-center space-x-2" key={size}>
+                  <RadioGroupItem value={size} id={size} />
+                  <Label htmlFor={size}>
+                    {t(`game-board.size.values.${size}`)}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
           </div>
         </div>
       </div>

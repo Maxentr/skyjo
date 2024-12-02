@@ -1,4 +1,5 @@
 import { CardTable } from "@/components/CardTable"
+import { useSettings } from "@/contexts/SettingsContext"
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import { cn } from "@/lib/utils"
 import { Constants as CoreConstants, SkyjoPlayerToJson } from "@skyjo/core"
@@ -12,6 +13,7 @@ type PlayerBoardProps = {
 
 const PlayerBoard = ({ player, isPlayerTurn }: PlayerBoardProps) => {
   const { game } = useSkyjo()
+  const { settings } = useSettings()
   const ta = useTranslations("utils.avatar")
   const tp = useTranslations("components.PlayerBoard")
 
@@ -32,6 +34,7 @@ const PlayerBoard = ({ player, isPlayerTurn }: PlayerBoardProps) => {
       <CardTable
         cards={player.cards}
         showSelectionAnimation={showSelectionAnimation}
+        size={settings.gameBoardSize}
       />
       <Image
         src={`/avatars/${player.avatar}.svg`}

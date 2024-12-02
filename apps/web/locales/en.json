@@ -442,6 +442,17 @@
               "big": "Big"
             }
           }
+        },
+        "game-board": {
+          "title": "Game board",
+          "size": {
+            "label": "Size of your game board",
+            "big-warning": "Can break display on mobile",
+            "values": {
+              "normal": "Normal",
+              "big": "Big"
+            }
+          }
         }
       },
       "audio": {

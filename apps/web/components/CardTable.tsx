@@ -1,4 +1,5 @@
 import { Card } from "@/components/Card"
+import { GameBoardSize } from "@/contexts/SettingsContext"
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import {
   canTurnInitialCard,
@@ -7,18 +8,30 @@ import {
 } from "@/lib/skyjo"
 import { cn } from "@/lib/utils"
 import { Constants as CoreConstants, SkyjoCardToJson } from "@skyjo/core"
+import { cva } from "class-variance-authority"
 import { AnimatePresence, m } from "framer-motion"
 import { useEffect, useState } from "react"
+
+const cardTableVariants = cva("inline-grid grid-flow-col duration-100 w-fit", {
+  variants: {
+    size: {
+      normal: "gap-1 smh:gap-2",
+      big: "gap-2 smh:gap-4",
+    },
+  },
+})
 
 type CardTableProps = {
   cards: SkyjoCardToJson[][]
   cardDisabled?: boolean
   showSelectionAnimation?: boolean
+  size?: GameBoardSize
 }
 const CardTable = ({
   cards,
   cardDisabled = false,
   showSelectionAnimation = false,
+  size = GameBoardSize.NORMAL,
 }: CardTableProps) => {
   const { game, player, actions } = useSkyjo()
   const numberOfRows = cards?.[0]?.length
@@ -64,7 +77,7 @@ const CardTable = ({
       exit={{ opacity: 0.9 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        "inline-grid grid-flow-col duration-100 gap-1 smh:gap-2 w-fit",
+        cardTableVariants({ size }),
         numberOfRowsForClass
           ? `grid-rows-${numberOfRowsForClass}`
           : "grid-rows-3",
@@ -86,6 +99,7 @@ const CardTable = ({
                     ? "animate-small-scale"
                     : ""
                 }
+                size={size}
                 disabled={cardDisabled || !canBeSelected}
                 flipAnimation={
                   game?.lastTurnStatus === CoreConstants.LAST_TURN_STATUS.TURN

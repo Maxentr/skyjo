@@ -437,6 +437,17 @@
               "big": "Grande"
             }
           }
+        },
+        "game-board": {
+          "title": "Plateau de jeu",
+          "size": {
+            "label": "Taille de votre plateau de jeu",
+            "big-warning": "Peut casser l'affichage sur mobile",
+            "values": {
+              "normal": "Normal",
+              "big": "Grand"
+            }
+          }
         }
       },
       "audio": {

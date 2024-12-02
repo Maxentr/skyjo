@@ -31,6 +31,12 @@ export const Appearance = {
 } as const
 export type Appearance = (typeof Appearance)[keyof typeof Appearance]
 
+export const GameBoardSize = {
+  NORMAL: "normal",
+  BIG: "big",
+} as const
+export type GameBoardSize = (typeof GameBoardSize)[keyof typeof GameBoardSize]
+
 type Settings = {
   chatVisibility: boolean
   chatNotificationSize: ChatNotificationSize
@@ -38,6 +44,7 @@ type Settings = {
   switchToPlayerWhoIsPlaying: boolean
   audio: boolean
   volume: number
+  gameBoardSize: GameBoardSize
 }
 type SettingsKeys = keyof Settings
 
@@ -48,6 +55,7 @@ const DEFAULT_SETTINGS: Settings = {
   switchToPlayerWhoIsPlaying: true,
   audio: true,
   volume: 50,
+  gameBoardSize: GameBoardSize.NORMAL,
 }
 
 type SettingsContext = {
