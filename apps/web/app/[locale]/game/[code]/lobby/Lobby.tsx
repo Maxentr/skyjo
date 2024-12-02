@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils"
 import { Constants as CoreConstants } from "@skyjo/core"
 import { GameSettings } from "@skyjo/shared/validations"
 import { m } from "framer-motion"
-import { HomeIcon, LockIcon, UnlockIcon } from "lucide-react"
+import { HomeIcon, InfoIcon, LockIcon, UnlockIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useLocalStorage } from "react-use"
@@ -238,9 +238,21 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </div>
               </div>
               <div className="flex flex-col gap-1">
-                <Label htmlFor="multiplier-for-first-player">
-                  {t("settings.multiplier-for-first-player.label")}
-                </Label>
+                <div className="flex flex-row items-start gap-2">
+                  <Label htmlFor="multiplier-for-first-player">
+                    {t("settings.multiplier-for-first-player.label")}
+                  </Label>
+                  <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <InfoIcon className="h-4 w-4" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {t("settings.multiplier-for-first-player.description")}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <div className="flex flex-row gap-2 items-center">
                   <Slider
                     key={game.settings.multiplierForFirstPlayer}

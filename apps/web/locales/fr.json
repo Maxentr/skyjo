@@ -89,6 +89,7 @@
         },
         "multiplier-for-first-player": {
           "label": "Multiplicateur pour le premier joueur",
+          "description": "Le score du premier joueur qui a retourné toutes ses cartes sera multiplié par ce nombre si il n'est pas strictement inférieur aux autres scores de la partie",
           "title": "Le score du premier joueur sera multiplié par {number} si il n'est pas strictement inférieur aux autres scores de la partie"
         }
       },

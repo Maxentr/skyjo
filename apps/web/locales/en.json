@@ -89,6 +89,7 @@
         },
         "multiplier-for-first-player": {
           "label": "Multiplier for the first player",
+          "description": "The score of the first player who has revealed all his cards will be multiplied by this number if it is not strictly inferior to the other scores of the game",
           "title": "The score of the first player will be multiplied by {number} if it is not strictly inferior to the other scores of the game"
         }
       },
