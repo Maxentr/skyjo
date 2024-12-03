@@ -436,7 +436,8 @@
         "title": "Affichage",
         "mobile": {
           "title": "Mobile",
-          "switch-to-player-who-is-playing": "Automatiquement basculer sur le joueur qui joue"
+          "switch-to-player-who-is-playing": "Automatiquement basculer sur le joueur qui joue",
+          "show-preview-opponents-cards": "Afficher l'aperçu des cartes des adversaires dans la liste des adversaires"
         },
         "chat": {
           "title": "Chat",

@@ -48,7 +48,7 @@ const TabsContent = React.forwardRef<
     ref={ref}
     tabIndex={-1}
     className={cn(
-      "pt-6 px-6 bg-container dark:bg-dark-container flex-grow",
+      "p-6 bg-container dark:bg-dark-container flex-grow overflow-y-auto",
       className,
     )}
     {...props}

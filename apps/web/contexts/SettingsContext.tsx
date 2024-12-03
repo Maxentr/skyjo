@@ -38,23 +38,28 @@ export const GameBoardSize = {
 export type GameBoardSize = (typeof GameBoardSize)[keyof typeof GameBoardSize]
 
 type Settings = {
-  chatVisibility: boolean
-  chatNotificationSize: ChatNotificationSize
+  // general
   locale: Locales
-  switchToPlayerWhoIsPlaying: boolean
+  // audio
   audio: boolean
   volume: number
+  // display
+  chatVisibility: boolean
+  chatNotificationSize: ChatNotificationSize
+  switchToPlayerWhoIsPlaying: boolean
+  showPreviewOpponentsCardsForMobile: boolean
   gameBoardSize: GameBoardSize
 }
 type SettingsKeys = keyof Settings
 
 const DEFAULT_SETTINGS: Settings = {
-  chatVisibility: true,
-  chatNotificationSize: ChatNotificationSize.NORMAL,
   locale: "en",
-  switchToPlayerWhoIsPlaying: true,
   audio: true,
   volume: 50,
+  chatVisibility: true,
+  chatNotificationSize: ChatNotificationSize.NORMAL,
+  switchToPlayerWhoIsPlaying: true,
+  showPreviewOpponentsCardsForMobile: true,
   gameBoardSize: GameBoardSize.NORMAL,
 }
 

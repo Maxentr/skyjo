@@ -441,7 +441,8 @@
         "title": "Display",
         "mobile": {
           "title": "Mobile",
-          "switch-to-player-who-is-playing": "Automatically switch to the player who is playing"
+          "switch-to-player-who-is-playing": "Automatically switch to the player who is playing",
+          "show-preview-opponents-cards": "Show a preview of opponents' cards in the opponents list"
         },
         "chat": {
           "title": "Chat",

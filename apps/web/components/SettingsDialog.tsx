@@ -39,7 +39,10 @@ const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="general" className="flex flex-col flex-grow">
+        <Tabs
+          defaultValue="general"
+          className="flex flex-col flex-grow overflow-y-auto"
+        >
           <TabsList className="px-6 flex">
             <TabsTrigger value="general">{t("general.title")}</TabsTrigger>
             <TabsTrigger value="audio">{t("audio.title")}</TabsTrigger>
@@ -164,6 +167,18 @@ const DisplaySettings = () => {
               checked={settings.switchToPlayerWhoIsPlaying}
               onCheckedChange={(value) =>
                 updateSetting("switchToPlayerWhoIsPlaying", value)
+              }
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="show-preview-opponents-cards">
+              {t("mobile.show-preview-opponents-cards")}
+            </Label>
+            <Switch
+              id="show-preview-opponents-cards"
+              checked={settings.showPreviewOpponentsCardsForMobile}
+              onCheckedChange={(value) =>
+                updateSetting("showPreviewOpponentsCardsForMobile", value)
               }
             />
           </div>

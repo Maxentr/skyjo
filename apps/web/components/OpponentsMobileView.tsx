@@ -105,7 +105,7 @@ const OpponentList = ({
   const { game } = useSkyjo()
 
   return (
-    <div className="absolute flex flex-col w-20 gap-4 h-[calc(100svh-2rem)] overflow-y-auto">
+    <div className="absolute flex flex-col w-20 gap-4 h-[calc(100svh-2rem)] pt-1 overflow-y-auto">
       {opponents.length > 1 &&
         opponents.map((opponent, index) => {
           const isSelected = index === selectedOpponentIndex
@@ -113,6 +113,7 @@ const OpponentList = ({
 
           return (
             <OpponentItem
+              key={opponent.id}
               opponent={opponent}
               index={index}
               isSelected={isSelected}
@@ -139,6 +140,10 @@ const OpponentItem = ({
   isPlayerWhoHasToPlay,
   setSelectedOpponentIndex,
 }: OpponentItemProps) => {
+  const {
+    settings: { showPreviewOpponentsCardsForMobile },
+  } = useSettings()
+
   return (
     <m.button
       key={opponent.id}
@@ -156,22 +161,23 @@ const OpponentItem = ({
         size="tiny"
         animate={isPlayerWhoHasToPlay}
       />
-      {/* TODO: add a display settings to show or hide the cards */}
-      <div className="flex flex-row gap-0.5">
-        {opponent.cards.map((column) => (
-          <div className="flex flex-col gap-0.5">
-            {column.map((card) => (
-              <Card
-                key={card.id}
-                card={card}
-                size="preview"
-                flipAnimation={false}
-                exitAnimation={false}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
+      {showPreviewOpponentsCardsForMobile && (
+        <div className="flex flex-row gap-0.5">
+          {opponent.cards.map((column) => (
+            <div className="flex flex-col gap-0.5">
+              {column.map((card) => (
+                <Card
+                  key={card.id}
+                  card={card}
+                  size="preview"
+                  flipAnimation={false}
+                  exitAnimation={false}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </m.button>
   )
 }
