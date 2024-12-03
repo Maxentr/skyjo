@@ -279,6 +279,17 @@
         "description": "La partie a déjà commencé"
       }
     },
+    "GameRules": {
+      "button-title": "Afficher les règles de la partie",
+      "title": "Règles de la partie",
+      "allow-skyjo-for-column": "Skyjo de colonne autorisé : {value, select, true {oui} false {non} other {inconnu}}",
+      "allow-skyjo-for-row": "Skyjo de ligne autorisé : {value, select, true {oui} false {non} other {inconnu}}",
+      "card-per-column": "Nombre de colonnes : {value}",
+      "card-per-row": "Nombre de lignes : {value}",
+      "initial-turned-count": "Nombre de cartes à retourner au début : {value}",
+      "multiplier-for-first-player": "Multiplicateur de points pour le premier joueur si il n'a pas le plus petit nombre de points : {value}",
+      "score-to-end-game": "Nombre de points pour finir la partie : {value}"
+    },
     "GameStoppedDialog": {
       "title": "La partie s'est arrêtée",
       "description": "La partie a été arrêtée car il n'y a plus assez de joueurs"

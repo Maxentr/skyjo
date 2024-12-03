@@ -284,6 +284,17 @@
         "description": "The game has already started"
       }
     },
+    "GameRules": {
+      "button-title": "Show game rules",
+      "title": "Game rules",
+      "allow-skyjo-for-column": "Allow Skyjo for column: {value, select, true {yes} false {no} other {unknown}}",
+      "allow-skyjo-for-row": "Allow Skyjo for row: {value, select, true {yes} false {no} other {unknown}}",
+      "card-per-column": "Number of columns: {value}",
+      "card-per-row": "Number of rows: {value}",
+      "initial-turned-count": "Number of cards to turn at the beginning: {value}",
+      "multiplier-for-first-player": "Multiplier for the first player if he does not have the smallest number of points: {value}",
+      "score-to-end-game": "Number of points to end the game: {value}"
+    },
     "GameStoppedDialog": {
       "title": "Game stopped",
       "description": "The game has been stopped because there are not enough players"

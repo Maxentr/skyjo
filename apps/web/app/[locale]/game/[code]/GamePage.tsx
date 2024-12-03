@@ -4,6 +4,7 @@ import DiscardPile from "@/components/DiscardPile"
 import DrawPile from "@/components/DrawPile"
 import EndRoundDialog from "@/components/EndRoundDialog"
 import GameInfo from "@/components/GameInfo"
+import { GameRules } from "@/components/GameRules"
 import GameStoppedDialog from "@/components/GameStoppedDialog"
 import MenuDropdown from "@/components/MenuDropdown"
 import OpponentBoard from "@/components/OpponentBoard"
@@ -68,6 +69,7 @@ const GamePage = () => {
           <div className="flex flex-col gap-4 items-center justify-start">
             <MenuDropdown />
             <Scoreboard />
+            <GameRules />
           </div>
         </div>
       </div>
