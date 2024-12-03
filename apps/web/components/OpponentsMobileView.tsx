@@ -163,8 +163,8 @@ const OpponentItem = ({
       />
       {showPreviewOpponentsCardsForMobile && (
         <div className="flex flex-row gap-0.5">
-          {opponent.cards.map((column) => (
-            <div className="flex flex-col gap-0.5">
+          {opponent.cards.map((column, columnIndex) => (
+            <div key={columnIndex} className="flex flex-col gap-0.5">
               {column.map((card) => (
                 <Card
                   key={card.id}
