@@ -511,7 +511,7 @@
       },
       "game-ended": "¡Perdiste!",
       "turn-cards": "Gira {number} carta{number, plural, =1 {} other {s}}",
-      "waiting-opponents-to-turn-cards": "Esperando a que el oponente {nbOpponents, plural, =1 {} other {s}} gire {número} carta{número, plural, =1 {} other {s}}",
+      "waiting-opponents-to-turn-cards": "Esperando a que el oponente {nbOpponents, plural, =1 {} other {s}} gire {number} carta{number, plural, =1 {} other {s}}",
       "player-turn": "Es el turno de {playerName}",
       "last-turn": "¡Última ronda!",
       "game-stopped": "Partida detenida",
