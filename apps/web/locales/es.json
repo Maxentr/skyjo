@@ -89,7 +89,8 @@
         },
         "multiplier-for-first-player": {
           "label": "Multiplicador para el primer jugador",
-          "title": "La puntuación del primer jugador se multiplicará por {number} si no es estrictamente inferior a las otras puntuaciones del juego"
+          "title": "La puntuación del primer jugador se multiplicará por {number} si no es estrictamente inferior a las otras puntuaciones del juego",
+          "description": "La puntuación del primer jugador que haya revelado todas sus cartas se multiplicará por este número si no es estrictamente inferior a las demás puntuaciones del juego"
         }
       },
       "start-game-button": "Iniciar el juego",
@@ -296,7 +297,8 @@
       "display": {
         "mobile": {
           "title": "Móvil",
-          "switch-to-player-who-is-playing": "Cambiar al jugador que está jugando"
+          "switch-to-player-who-is-playing": "Cambiar al jugador que está jugando",
+          "show-preview-opponents-cards": "Mostrar una vista previa de las cartas de los oponentes en la lista de oponentes"
         },
         "chat": {
           "title": "Chat",
@@ -310,7 +312,18 @@
             }
           }
         },
-        "title": "Mostrar"
+        "title": "Mostrar",
+        "game-board": {
+          "title": "Tablero de juego",
+          "size": {
+            "label": "Tamaño de tu tablero de juego",
+            "values": {
+              "normal": "Normal",
+              "big": "Grande"
+            },
+            "big-warning": "Puede hacer que se muestre de forma correcta en el móvil"
+          }
+        }
       },
       "title": "Ajustes"
     },
@@ -498,6 +511,17 @@
         "title": "La votación para expulsar a {playerName} falló",
         "description": "No hay suficientes votos para expulsar a {playerName}"
       }
+    },
+    "GameRules": {
+      "button-title": "Mostrar las reglas del juego",
+      "title": "Reglas del juego",
+      "allow-skyjo-for-column": "Permitir Skyjo para columna: {value, select, true {si} false {no} other {desconocido}}",
+      "allow-skyjo-for-row": "Permitir Skyjo para la fila: {value, select, true {si} false {no} other {desconocido}}",
+      "card-per-column": "Número de columnas: {value}",
+      "card-per-row": "Número de filas: {value}",
+      "initial-turned-count": "Número de cartas a girar al principio: {value}",
+      "score-to-end-game": "Número de puntos para terminar el juego: {value}",
+      "multiplier-for-first-player": "Multiplicador para el primer jugador si no tiene el menor número de puntos: {value}"
     }
   },
   "utils": {
