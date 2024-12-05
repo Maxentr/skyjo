@@ -16,7 +16,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22.10.1
+          node-version: 22.10.0
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
