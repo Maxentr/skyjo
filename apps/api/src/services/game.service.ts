@@ -216,7 +216,17 @@ export class GameService extends BaseService {
 
     if (clientStateVersion === null) {
       await this.sendGameToSocket(socket, game)
-      return
+      throw new CError(
+        "Client state version is null. This should never happen. Sent full state update",
+        {
+          code: ErrorConstants.ERROR.STATE_VERSION_NULL,
+          meta: {
+            gameCode: game.code,
+            serverStateVersion: game.stateVersion,
+            playerId: socket.data.playerId,
+          },
+        },
+      )
     }
 
     if (clientStateVersion > game.stateVersion) {
