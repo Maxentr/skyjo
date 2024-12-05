@@ -1,5 +1,5 @@
 import { PlayerService } from "@/services/player.service.js"
-import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
+import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Logger } from "@skyjo/logger"
 import type { ErrorReconnectMessage } from "@skyjo/shared/types"
@@ -11,14 +11,14 @@ const instance = new PlayerService()
 
 const playerRouter = (socket: SkyjoSocket) => {
   if (socket.recovered) {
-    socketErrorHandlerWrapper(async () => {
+    socketErrorWrapper(async () => {
       await instance.onRecover(socket)
     })
   }
 
   socket.on(
     "leave",
-    socketErrorHandlerWrapper(async () => {
+    socketErrorWrapper(async () => {
       await instance.onLeave(socket)
       socket.emit("leave:success")
     }),
@@ -26,7 +26,7 @@ const playerRouter = (socket: SkyjoSocket) => {
 
   socket.on(
     "disconnect",
-    socketErrorHandlerWrapper(async (reason: DisconnectReason) => {
+    socketErrorWrapper(async (reason: DisconnectReason) => {
       Logger.info(`Socket ${socket.id} disconnected for reason ${reason}`)
       if (reason === "ping timeout") await instance.onLeave(socket, true)
       else await instance.onLeave(socket)
@@ -35,7 +35,7 @@ const playerRouter = (socket: SkyjoSocket) => {
 
   socket.on(
     "reconnect",
-    socketErrorHandlerWrapper(async (reconnectData: LastGame) => {
+    socketErrorWrapper(async (reconnectData: LastGame) => {
       try {
         reconnect.parse(reconnectData)
         await instance.onReconnect(socket, reconnectData)
@@ -57,7 +57,7 @@ const playerRouter = (socket: SkyjoSocket) => {
 
   socket.on(
     "recover",
-    socketErrorHandlerWrapper(async () => {
+    socketErrorWrapper(async () => {
       await instance.onRecover(socket)
     }),
   )

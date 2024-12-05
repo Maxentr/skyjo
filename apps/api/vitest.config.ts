@@ -22,7 +22,7 @@ export default defineConfig({
         "src/service/*.ts",
         "src/utils/CError.ts",
         "src/utils/Logger.ts",
-        "src/utils/socketErrorHandlerWrapper.ts",
+        "src/utils/socketErrorWrapper.ts",
         "src/utils/mailer.ts",
         "src/db/*.ts",
         "src/routers/*.ts",

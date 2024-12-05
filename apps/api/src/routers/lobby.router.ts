@@ -1,5 +1,5 @@
 import { LobbyService } from "@/services/lobby.service.js"
-import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
+import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
 import {
   type CreatePlayer,
   type JoinGame,
@@ -35,7 +35,7 @@ const instance = new LobbyService()
 const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "create-private",
-    socketErrorHandlerWrapper(async (player: CreatePlayer) => {
+    socketErrorWrapper(async (player: CreatePlayer) => {
       const parsedPlayer = createPlayer.parse(player)
       await instance.onCreate(socket, parsedPlayer)
     }),
@@ -43,7 +43,7 @@ const lobbyRouter = (socket: SkyjoSocket) => {
 
   socket.on(
     "find",
-    socketErrorHandlerWrapper(async (player: CreatePlayer) => {
+    socketErrorWrapper(async (player: CreatePlayer) => {
       const parsedPlayer = createPlayer.parse(player)
       await instance.onFind(socket, parsedPlayer)
     }),
@@ -51,7 +51,7 @@ const lobbyRouter = (socket: SkyjoSocket) => {
 
   socket.on(
     "join",
-    socketErrorHandlerWrapper(async (data: JoinGame) => {
+    socketErrorWrapper(async (data: JoinGame) => {
       try {
         const { gameCode, player } = joinGame.parse(data)
         await instance.onJoin(socket, gameCode, player)
@@ -73,14 +73,14 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   //#region update settings
   socket.on(
     "game:settings",
-    socketErrorHandlerWrapper(async (data: UpdateGameSettings) => {
+    socketErrorWrapper(async (data: UpdateGameSettings) => {
       const settings = updateGameSettingsSchema.parse(data)
       await instance.onUpdateSettings(socket, settings)
     }),
   )
   socket.on(
     "game:settings:private",
-    socketErrorHandlerWrapper(async (data: UpdateGameSettingsPrivate) => {
+    socketErrorWrapper(async (data: UpdateGameSettingsPrivate) => {
       const isPrivate = updateGameSettingsPrivateSchema.parse(data, {
         path: ["private"],
       })
@@ -89,57 +89,51 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   )
   socket.on(
     "game:settings:allow-skyjo-for-column",
-    socketErrorHandlerWrapper(
-      async (data: UpdateGameSettingsAllowSkyjoForColumn) => {
-        const isAllowed = updateGameSettingsAllowSkyjoForColumnSchema.parse(
-          data,
-          {
-            path: ["allowSkyjoForColumn"],
-          },
-        )
+    socketErrorWrapper(async (data: UpdateGameSettingsAllowSkyjoForColumn) => {
+      const isAllowed = updateGameSettingsAllowSkyjoForColumnSchema.parse(
+        data,
+        {
+          path: ["allowSkyjoForColumn"],
+        },
+      )
 
-        await instance.onUpdateSingleSettings(
-          socket,
-          "allowSkyjoForColumn",
-          isAllowed,
-        )
-      },
-    ),
+      await instance.onUpdateSingleSettings(
+        socket,
+        "allowSkyjoForColumn",
+        isAllowed,
+      )
+    }),
   )
   socket.on(
     "game:settings:allow-skyjo-for-row",
-    socketErrorHandlerWrapper(
-      async (data: UpdateGameSettingsAllowSkyjoForRow) => {
-        const isAllowed = updateGameSettingsAllowSkyjoForRowSchema.parse(data, {
-          path: ["allowSkyjoForRow"],
-        })
-        await instance.onUpdateSingleSettings(
-          socket,
-          "allowSkyjoForRow",
-          isAllowed,
-        )
-      },
-    ),
+    socketErrorWrapper(async (data: UpdateGameSettingsAllowSkyjoForRow) => {
+      const isAllowed = updateGameSettingsAllowSkyjoForRowSchema.parse(data, {
+        path: ["allowSkyjoForRow"],
+      })
+      await instance.onUpdateSingleSettings(
+        socket,
+        "allowSkyjoForRow",
+        isAllowed,
+      )
+    }),
   )
   socket.on(
     "game:settings:initial-turned-count",
-    socketErrorHandlerWrapper(
-      async (data: UpdateGameSettingsInitialTurnedCount) => {
-        const initialTurnedCount =
-          updateGameSettingsInitialTurnedCountSchema.parse(data, {
-            path: ["initialTurnedCount"],
-          })
-        await instance.onUpdateSingleSettings(
-          socket,
-          "initialTurnedCount",
-          initialTurnedCount,
-        )
-      },
-    ),
+    socketErrorWrapper(async (data: UpdateGameSettingsInitialTurnedCount) => {
+      const initialTurnedCount =
+        updateGameSettingsInitialTurnedCountSchema.parse(data, {
+          path: ["initialTurnedCount"],
+        })
+      await instance.onUpdateSingleSettings(
+        socket,
+        "initialTurnedCount",
+        initialTurnedCount,
+      )
+    }),
   )
   socket.on(
     "game:settings:card-per-row",
-    socketErrorHandlerWrapper(async (data: UpdateGameSettingsCardPerRow) => {
+    socketErrorWrapper(async (data: UpdateGameSettingsCardPerRow) => {
       const cardPerRow = updateGameSettingsCardPerRowSchema.parse(data, {
         path: ["cardPerRow"],
       })
@@ -148,7 +142,7 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   )
   socket.on(
     "game:settings:card-per-column",
-    socketErrorHandlerWrapper(async (data: UpdateGameSettingsCardPerColumn) => {
+    socketErrorWrapper(async (data: UpdateGameSettingsCardPerColumn) => {
       const cardPerColumn = updateGameSettingsCardPerColumnSchema.parse(data, {
         path: ["cardPerColumn"],
       })
@@ -161,25 +155,23 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   )
   socket.on(
     "game:settings:score-to-end-game",
-    socketErrorHandlerWrapper(
-      async (data: UpdateGameSettingsScoreToEndGame) => {
-        const scoreToEndGame = updateGameSettingsScoreToEndGameSchema.parse(
-          data,
-          {
-            path: ["scoreToEndGame"],
-          },
-        )
-        await instance.onUpdateSingleSettings(
-          socket,
-          "scoreToEndGame",
-          scoreToEndGame,
-        )
-      },
-    ),
+    socketErrorWrapper(async (data: UpdateGameSettingsScoreToEndGame) => {
+      const scoreToEndGame = updateGameSettingsScoreToEndGameSchema.parse(
+        data,
+        {
+          path: ["scoreToEndGame"],
+        },
+      )
+      await instance.onUpdateSingleSettings(
+        socket,
+        "scoreToEndGame",
+        scoreToEndGame,
+      )
+    }),
   )
   socket.on(
     "game:settings:multiplier-for-first-player",
-    socketErrorHandlerWrapper(
+    socketErrorWrapper(
       async (data: UpdateGameSettingsMultiplierForFirstPlayer) => {
         const multiplierForFirstPlayer =
           updateGameSettingsMultiplierForFirstPlayerSchema.parse(data, {
@@ -197,7 +189,7 @@ const lobbyRouter = (socket: SkyjoSocket) => {
 
   socket.on(
     "start",
-    socketErrorHandlerWrapper(async () => {
+    socketErrorWrapper(async () => {
       await instance.onGameStart(socket)
     }),
   )

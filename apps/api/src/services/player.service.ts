@@ -1,6 +1,6 @@
 import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import { GameStateManager } from "@/utils/GameStateManager.js"
-import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
+import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
 import {
   Constants as CoreConstants,
   type ServerMessageType,
@@ -178,7 +178,7 @@ export class PlayerService extends BaseService {
       : CoreConstants.CONNECTION_STATUS.LEAVE
 
     this.disconnectTimeouts[player.id] = setTimeout(
-      socketErrorHandlerWrapper(async () => {
+      socketErrorWrapper(async () => {
         await callback()
       }),
       connectionLost

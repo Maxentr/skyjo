@@ -1,5 +1,5 @@
 import { ChatService } from "@/services/chat.service.js"
-import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
+import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
 import {
   type SendChatMessage,
   sendChatMessage,
@@ -11,7 +11,7 @@ const instance = new ChatService()
 const chatRouter = (socket: SkyjoSocket) => {
   socket.on(
     "message",
-    socketErrorHandlerWrapper(async (data: SendChatMessage) => {
+    socketErrorWrapper(async (data: SendChatMessage) => {
       const message = sendChatMessage.parse(data)
       await instance.onMessage(socket, message)
     }),

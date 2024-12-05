@@ -1,5 +1,5 @@
 import { KickService } from "@/services/kick.service.js"
-import { socketErrorHandlerWrapper } from "@/utils/socketErrorHandlerWrapper.js"
+import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
 import {
   type InitiateKickVote,
   type VoteToKick,
@@ -13,7 +13,7 @@ const instance = new KickService()
 export const kickRouter = (socket: SkyjoSocket) => {
   socket.on(
     "kick:initiate-vote",
-    socketErrorHandlerWrapper(async (data: InitiateKickVote) => {
+    socketErrorWrapper(async (data: InitiateKickVote) => {
       const { targetId } = initiateKickVote.parse(data)
       await instance.onInitiateKickVote(socket, targetId)
     }),
@@ -21,7 +21,7 @@ export const kickRouter = (socket: SkyjoSocket) => {
 
   socket.on(
     "kick:vote",
-    socketErrorHandlerWrapper(async (data: VoteToKick) => {
+    socketErrorWrapper(async (data: VoteToKick) => {
       const { vote } = voteToKick.parse(data)
       await instance.onVoteToKick(socket, vote)
     }),
