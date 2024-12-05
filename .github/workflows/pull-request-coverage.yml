@@ -3,7 +3,7 @@ on:
   pull_request:
     branches:
       - trunk
-      - "!weblate:*"
+      - "!weblate"
 
 jobs:
   test:
