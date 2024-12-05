@@ -20,7 +20,7 @@ jobs:
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
-          version: 9.14.2
+          version: 9.14.4
       - name: Install Vercel CLI
         run: pnpm add --global vercel@latest
       - name: Install Dependencies
