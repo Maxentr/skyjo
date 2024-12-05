@@ -47,7 +47,7 @@ const GameInfo = () => {
   }
 
   return (
-    <div className="absolute -top-6 smh:-top-8 sm:-top-11 text-center text-sm animate-scale flex flex-col items-center">
+    <div className="absolute -top-6 sm:-top-8 lg:-top-11 text-center text-sm animate-scale flex flex-col items-center">
       <AnimatePresence>
         {game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP && (
           <m.p
