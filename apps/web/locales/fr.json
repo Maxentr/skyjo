@@ -258,26 +258,17 @@
         "avatars": "Avatars créés par Freepik - Flaticon"
       }
     },
-    "GameLobbyButtons": {
-      "reconnect-game-button": "Se reconnecter à la partie",
-      "join-game-button": "Rejoindre la partie",
-      "find-game-button": "Trouver une partie",
-      "create-private-game-button": "Créer une partie privée",
-      "timeout": {
-        "description": "Le serveur prends plus de temps que prévu à répondre. Vous pouvez tenter de recharger la page et réessayer."
-      },
-      "game-not-found": {
-        "description": "La partie que vous cherchez n'existe pas"
-      },
-      "cannot-reconnect": {
-        "description": "Ce n'est plus possible de se reconnecter à la partie, le temps imparti pour se reconnecter a expiré"
-      },
-      "game-is-full": {
-        "description": "La partie est pleine, vous ne pouvez pas y rejoindre"
-      },
-      "game-already-started": {
-        "description": "La partie a déjà commencé"
-      }
+    "ReconnectGameButton": {
+      "button": "Se reconnecter à la partie"
+    },
+    "JoinGameButton": {
+      "button": "Rejoindre la partie"
+    },
+    "FindPublicGameButton": {
+      "button": "Trouver une partie"
+    },
+    "CreatePrivateGameButton": {
+      "button": "Créer une partie privée"
     },
     "GameRules": {
       "button-title": "Afficher les règles de la partie",
@@ -571,6 +562,25 @@
       "turtle": "tortue",
       "whale": "baleine",
       "owl": "hibou"
+    },
+    "socket": {
+      "error": {
+        "timeout": {
+          "description": "Le serveur prends plus de temps que prévu à répondre. Vous pouvez tenter de recharger la page et réessayer."
+        },
+        "game-not-found": {
+          "description": "La partie que vous cherchez n'existe pas"
+        },
+        "cannot-reconnect": {
+          "description": "Ce n'est plus possible de se reconnecter à la partie, le temps imparti pour se reconnecter a expiré"
+        },
+        "game-is-full": {
+          "description": "La partie est pleine, vous ne pouvez pas y rejoindre"
+        },
+        "game-already-started": {
+          "description": "La partie a déjà commencé"
+        }
+      }
     }
   },
   "contexts": {

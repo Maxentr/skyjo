@@ -263,26 +263,17 @@
         "avatars": "Avatars created by Freepik - Flaticon"
       }
     },
-    "GameLobbyButtons": {
-      "reconnect-game-button": "Reconnect to the game",
-      "join-game-button": "Join the game",
-      "find-game-button": "Find a game",
-      "create-private-game-button": "Create a private game",
-      "timeout": {
-        "description": "The server takes more time than expected to respond. You can try to reload the page and try again."
-      },
-      "game-not-found": {
-        "description": "The game you are looking for does not exist"
-      },
-      "cannot-reconnect": {
-        "description": "It is no longer possible to reconnect to the game, the time to reconnect has expired"
-      },
-      "game-is-full": {
-        "description": "The game is full, you cannot join"
-      },
-      "game-already-started": {
-        "description": "The game has already started"
-      }
+    "ReconnectGameButton": {
+      "button": "Reconnect to the game"
+    },
+    "JoinGameButton": {
+      "button": "Join the game"
+    },
+    "FindPublicGameButton": {
+      "button": "Find a game"
+    },
+    "CreatePrivateGameButton": {
+      "button": "Create a private game"
     },
     "GameRules": {
       "button-title": "Show game rules",
@@ -571,6 +562,25 @@
       "turtle": "turtle",
       "whale": "whale",
       "owl": "owl"
+    },
+    "socket": {
+      "error": {
+        "timeout": {
+          "description": "The server takes more time than expected to respond. You can try to reload the page and try again."
+        },
+        "game-not-found": {
+          "description": "The game you are looking for does not exist"
+        },
+        "cannot-reconnect": {
+          "description": "It is no longer possible to reconnect to the game, the time to reconnect has expired"
+        },
+        "game-is-full": {
+          "description": "The game is full, you cannot join"
+        },
+        "game-already-started": {
+          "description": "The game has already started"
+        }
+      }
     }
   },
   "contexts": {

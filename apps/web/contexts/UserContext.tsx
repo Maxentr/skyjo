@@ -1,6 +1,11 @@
 "use client"
 
-import { Avatar, Constants as CoreConstants, createPlayer } from "@skyjo/core"
+import {
+  Avatar,
+  Constants as CoreConstants,
+  CreatePlayer,
+  createPlayer,
+} from "@skyjo/core"
 import {
   Dispatch,
   PropsWithChildren,
@@ -23,7 +28,7 @@ type UserContext = {
   avatarIndex: number
   setUsername: Dispatch<SetStateAction<string>>
   setAvatarIndex: Dispatch<SetStateAction<number>>
-  saveUserInLocalStorage: () => void
+  saveUserInLocalStorage: () => CreatePlayer
   getAvatar: () => Avatar
 }
 
@@ -60,6 +65,8 @@ const UserProvider = ({ children }: PropsWithChildren) => {
     const player = createPlayer.parse({ username, avatar: getAvatar() })
     setPreferredUsername(player.username)
     setPreferredAvatarIndex(avatarIndex)
+
+    return player
   }
 
   const value = useMemo(
