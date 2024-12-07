@@ -154,10 +154,10 @@ export class LobbyService extends BaseService {
   private async createGame(
     socket: SkyjoSocket,
     playerToCreate: CreatePlayer,
-    isprotectedGame: boolean,
+    isPrivateGame: boolean,
   ) {
     const player = new SkyjoPlayer(playerToCreate, socket.id)
-    const game = new Skyjo(player.id, new SkyjoSettings(isprotectedGame))
+    const game = new Skyjo(player.id, new SkyjoSettings(isPrivateGame))
 
     await this.redis.createGame(game)
 
