@@ -30,6 +30,7 @@ export const FindPublicGameButton = ({
       onClick={handleGameCreation}
       className="w-full"
       loading={loading}
+      disabled={socket === null}
       title={t("button")}
     >
       {t("button")}
