@@ -1,4 +1,3 @@
-import IndexPage from "@/app/[locale]/IndexPage"
 import Footer from "@/components/Footer"
 import MenuDropdown from "@/components/MenuDropdown"
 import MovingArrow from "@/components/MovingArrow"
@@ -14,6 +13,7 @@ import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 import { use } from "react"
+import IndexPage from "./IndexPage"
 
 type SearchParams = {
   gameCode?: string

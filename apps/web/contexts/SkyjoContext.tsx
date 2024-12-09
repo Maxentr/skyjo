@@ -143,7 +143,11 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
       reason === "ping timeout" &&
       game?.status === CoreConstants.GAME_STATUS.LOBBY
     ) {
-      router.replace("/")
+      if (game?.settings.private) {
+        router.replace("/")
+      } else {
+        router.replace("/search")
+      }
     }
   }
 
@@ -168,9 +172,6 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     if (!admin) return
 
     switch (key) {
-      case "private":
-        socket!.emit(`game:settings:private`, value as boolean)
-        break
       case "allowSkyjoForColumn":
         socket!.emit(`game:settings:allow-skyjo-for-column`, value as boolean)
         break
@@ -209,9 +210,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const resetSettings = () => {
     if (!admin) return
 
-    socket!.emit("game:settings", {
-      private: game?.settings.private ?? false,
-    })
+    socket!.emit("game:settings", {})
   }
 
   const startGame = () => {

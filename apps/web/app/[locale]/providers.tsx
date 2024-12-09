@@ -4,7 +4,6 @@ import { Toaster } from "@/components/ui/toaster"
 import FeedbackProvider from "@/contexts/FeedbackContext"
 import RulesProvider from "@/contexts/RulesContext"
 import SettingsProvider from "@/contexts/SettingsContext"
-import SocketProvider from "@/contexts/SocketContext"
 import UserProvider from "@/contexts/UserContext"
 import { Locales } from "@/i18n/routing"
 import { LazyMotion, domAnimation } from "framer-motion"
@@ -30,16 +29,14 @@ const Providers = ({ children, locale }: ProvidersProps) => {
       <FeedbackProvider>
         <RulesProvider>
           <SettingsProvider locale={locale}>
-            <SocketProvider>
-              <FeedbackProvider>
-                <UserProvider>
-                  <LazyMotion strict features={domAnimation}>
-                    {children}
-                  </LazyMotion>
-                </UserProvider>
-                <Toaster />
-              </FeedbackProvider>
-            </SocketProvider>
+            <FeedbackProvider>
+              <UserProvider>
+                <LazyMotion strict features={domAnimation}>
+                  {children}
+                </LazyMotion>
+              </UserProvider>
+              <Toaster />
+            </FeedbackProvider>
           </SettingsProvider>
         </RulesProvider>
       </FeedbackProvider>
