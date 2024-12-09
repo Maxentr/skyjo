@@ -16,7 +16,6 @@ import {
   type UpdateGameSettingsCardPerRow,
   type UpdateGameSettingsInitialTurnedCount,
   type UpdateGameSettingsMultiplierForFirstPlayer,
-  type UpdateGameSettingsPrivate,
   type UpdateGameSettingsScoreToEndGame,
   updateGameSettingsAllowSkyjoForColumnSchema,
   updateGameSettingsAllowSkyjoForRowSchema,
@@ -24,7 +23,6 @@ import {
   updateGameSettingsCardPerRowSchema,
   updateGameSettingsInitialTurnedCountSchema,
   updateGameSettingsMultiplierForFirstPlayerSchema,
-  updateGameSettingsPrivateSchema,
   updateGameSettingsSchema,
   updateGameSettingsScoreToEndGameSchema,
 } from "@skyjo/shared/validations"
@@ -34,18 +32,10 @@ const instance = new LobbyService()
 
 const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
-    "create-private",
-    socketErrorWrapper(async (player: CreatePlayer) => {
+    "create",
+    socketErrorWrapper(async (player: CreatePlayer, isPrivate: boolean) => {
       const parsedPlayer = createPlayer.parse(player)
-      await instance.onCreate(socket, parsedPlayer)
-    }),
-  )
-
-  socket.on(
-    "find",
-    socketErrorWrapper(async (player: CreatePlayer) => {
-      const parsedPlayer = createPlayer.parse(player)
-      await instance.onFind(socket, parsedPlayer)
+      await instance.onCreate(socket, parsedPlayer, isPrivate)
     }),
   )
 
@@ -76,15 +66,6 @@ const lobbyRouter = (socket: SkyjoSocket) => {
     socketErrorWrapper(async (data: UpdateGameSettings) => {
       const settings = updateGameSettingsSchema.parse(data)
       await instance.onUpdateSettings(socket, settings)
-    }),
-  )
-  socket.on(
-    "game:settings:private",
-    socketErrorWrapper(async (data: UpdateGameSettingsPrivate) => {
-      const isPrivate = updateGameSettingsPrivateSchema.parse(data, {
-        path: ["private"],
-      })
-      await instance.onUpdateSingleSettings(socket, "private", isPrivate)
     }),
   )
   socket.on(

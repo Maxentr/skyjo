@@ -13,10 +13,6 @@ import { Logger } from "@skyjo/logger"
 import type { GameSettings } from "@skyjo/shared/validations"
 
 export class LobbyService extends BaseService {
-  private readonly BASE_NEW_GAME_CHANCE = 0.05 // 5%
-  private readonly MAX_NEW_GAME_CHANCE = 0.2 // 20%
-  private readonly IDEAL_LOBBY_GAME_COUNT = 3 // Number of lobby wanted at the same time
-
   async onCreate(
     socket: SkyjoSocket,
     playerToCreate: CreatePlayer,
@@ -45,17 +41,7 @@ export class LobbyService extends BaseService {
     await this.joinGame(socket, game, player)
   }
 
-  async onFind(socket: SkyjoSocket, playerToCreate: CreatePlayer) {
-    const game = await this.getPublicGameWithFreePlace()
-
-    if (!game) {
-      await this.onCreate(socket, playerToCreate, false)
-    } else {
-      await this.onJoin(socket, game.code, playerToCreate)
-    }
-  }
-
-  async onUpdateSingleSettings<T extends keyof SkyjoSettings>(
+  async onUpdateSingleSettings<T extends keyof Omit<SkyjoSettings, "private">>(
     socket: SkyjoSocket,
     key: T,
     value: SkyjoSettings[T],
@@ -162,28 +148,6 @@ export class LobbyService extends BaseService {
     await this.redis.createGame(game)
 
     return { player, game }
-  }
-
-  private async getPublicGameWithFreePlace() {
-    const eligibleGames = await this.redis.getPublicGameWithFreePlace()
-
-    // Adjust new game chance based on number of eligible games
-    const missingLobbyGameCount = Math.max(
-      0,
-      this.IDEAL_LOBBY_GAME_COUNT - eligibleGames.length,
-    )
-    const additionalChance = this.BASE_NEW_GAME_CHANCE * missingLobbyGameCount
-    const newGameChance = Math.min(
-      this.MAX_NEW_GAME_CHANCE,
-      this.BASE_NEW_GAME_CHANCE + additionalChance,
-    )
-
-    const shouldCreateNewGame =
-      Math.random() < newGameChance || eligibleGames.length === 0
-    if (shouldCreateNewGame) return null
-
-    const randomGameIndex = Math.floor(Math.random() * eligibleGames.length)
-    return eligibleGames[randomGameIndex]
   }
 
   private async addPlayerToGame(

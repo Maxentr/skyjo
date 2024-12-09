@@ -165,109 +165,6 @@ describe("LobbyService", () => {
     })
   })
 
-  describe("onFind", () => {
-    it("should create a new game if no eligible games exist", async () => {
-      const player: CreatePlayer = {
-        username: "player1",
-        avatar: CoreConstants.AVATARS.BEE,
-      }
-
-      service["redis"].getPublicGameWithFreePlace = vi.fn(() =>
-        Promise.resolve([]),
-      )
-
-      await service.onFind(socket, player)
-
-      const gameCode = socket.data.gameCode
-
-      expect(socket.emit).toHaveBeenNthCalledWith(
-        1,
-        "game:join",
-        gameCode,
-        CoreConstants.GAME_STATUS.LOBBY,
-        socket.data.playerId,
-      )
-      expect(socket.emit).toHaveBeenNthCalledWith(
-        2,
-        "message:server",
-        expect.objectContaining({
-          type: CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_JOINED,
-          username: "player1",
-        }),
-      )
-    })
-
-    it("should join a game if there is at least one eligible game and new game chance is not hit", async () => {
-      const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
-        "socket456",
-      )
-      const game = new Skyjo(opponent.id, new SkyjoSettings(false))
-      game.addPlayer(opponent)
-
-      const player: CreatePlayer = {
-        username: "player1",
-        avatar: CoreConstants.AVATARS.BEE,
-      }
-
-      service["redis"].getPublicGameWithFreePlace = vi.fn(() =>
-        Promise.resolve([game]),
-      )
-      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
-
-      // Math.min is used to calculate the new game chance
-      vi.spyOn(Math, "min").mockReturnValue(0)
-
-      await service.onFind(socket, player)
-
-      expect(game.players.length).toBe(2)
-      expect(socket.emit).toHaveBeenNthCalledWith(
-        1,
-        "game:join",
-        game.code,
-        CoreConstants.GAME_STATUS.LOBBY,
-        game.players[1].id,
-      )
-
-      vi.restoreAllMocks()
-    })
-
-    it("should create a new game even if there is at least one eligible game because new game chance is hit", async () => {
-      const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
-        "socket456",
-      )
-      const otherGame = new Skyjo(opponent.id, new SkyjoSettings(false))
-      otherGame.addPlayer(opponent)
-
-      const player: CreatePlayer = {
-        username: "player1",
-        avatar: CoreConstants.AVATARS.BEE,
-      }
-
-      service["redis"].getPublicGameWithFreePlace = vi.fn(() =>
-        Promise.resolve([otherGame]),
-      )
-      service["redis"].getGame = vi.fn(() => Promise.resolve(otherGame))
-
-      // Math.min is used to calculate the new game chance
-      vi.spyOn(Math, "min").mockReturnValue(1)
-
-      await service.onFind(socket, player)
-
-      expect(otherGame.players.length).toBe(1)
-      expect(socket.emit).toHaveBeenNthCalledWith(
-        1,
-        "game:join",
-        socket.data.gameCode,
-        CoreConstants.GAME_STATUS.LOBBY,
-        socket.data.playerId,
-      )
-
-      vi.restoreAllMocks()
-    })
-  })
-
   describe("onUpdateSingleSettings", () => {
     it("should throw if user is not admin", async () => {
       const opponent = new SkyjoPlayer(
@@ -334,7 +231,6 @@ describe("LobbyService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       const newSettings: GameSettings = {
-        private: false,
         allowSkyjoForColumn: true,
         allowSkyjoForRow: true,
         initialTurnedCount: 2,
@@ -364,7 +260,6 @@ describe("LobbyService", () => {
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       const newSettings: GameSettings = {
-        private: true,
         allowSkyjoForColumn: true,
         allowSkyjoForRow: true,
         initialTurnedCount: 2,
@@ -379,6 +274,7 @@ describe("LobbyService", () => {
       expect(game.settings).toBeInstanceOf(SkyjoSettings)
       expect(game.settings.toJson()).toStrictEqual({
         ...newSettings,
+        private: game.settings.private,
         maxPlayers: 8,
       })
     })
