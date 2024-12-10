@@ -50,7 +50,7 @@ const FeedbackForm = ({ setOpen }: FeedbackProps) => {
     if (!values.message) return
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/feedback`,
+      `${process.env.NEXT_PUBLIC_API_URL}/feedbacks`,
       {
         method: "POST",
         headers: {

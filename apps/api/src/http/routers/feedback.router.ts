@@ -1,9 +1,9 @@
-import { FeedbackService } from "@/http/services/feedback.service.js"
 import { zValidator } from "@hono/zod-validator"
 import { feedbackSchema } from "@skyjo/shared/validations"
 import { Hono } from "hono"
+import { FeedbackService } from "../services/feedback.service.js"
 
-export const feedbackRouter = new Hono().basePath("/feedback")
+export const feedbackRouter = new Hono().basePath("/feedbacks")
 
 const feedbackService = new FeedbackService()
 
