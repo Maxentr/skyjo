@@ -10,6 +10,7 @@ import { RedisClient } from "./client.js"
 export class GameRepository extends RedisClient {
   private static readonly GAME_PREFIX = "game:"
   private static readonly GAME_TTL = 60 * 10 // 10 minutes
+  private static readonly PUBLIC_GAMES_SORTED_SET = "public_games"
 
   async createGame(game: Skyjo) {
     const existingGame = await this.getGameSafe(game.code)
@@ -21,12 +22,29 @@ export class GameRepository extends RedisClient {
     }
 
     await this.setGame(game)
+
+    if (!game.settings.private) await this.addToPublicGames(game)
   }
 
-  async getPublicGamesWithFreePlace() {
-    const games = await this.getEligibleGames()
+  async getPublicGames(nbPerPage: number, page: number) {
+    const client = await RedisClient.getClient()
 
-    return games
+    // all games with at least 1 players
+    const minScore = -Infinity
+    const maxScore = Infinity
+
+    const gameCodes = await client.zRange(
+      GameRepository.PUBLIC_GAMES_SORTED_SET,
+      minScore,
+      maxScore,
+      {
+        BY: "SCORE",
+        LIMIT: { offset: nbPerPage * (page - 1), count: nbPerPage },
+      },
+    )
+    const games = await Promise.all(gameCodes.map((code) => this.getGame(code)))
+
+    return games.filter(this.isGameEligibleToPublicGames)
   }
 
   async getGameSafe(code: string = "") {
@@ -67,6 +85,8 @@ export class GameRepository extends RedisClient {
 
   async updateGame(game: Skyjo) {
     await this.setGame(game)
+
+    if (!game.settings.private) await this.updateInPublicGames(game)
   }
 
   async updatePlayer(gameCode: string, player: SkyjoPlayerToJson) {
@@ -94,7 +114,10 @@ export class GameRepository extends RedisClient {
   async removeGame(code: string): Promise<void> {
     const client = await RedisClient.getClient()
 
-    await client.del(this.getGameKey(code))
+    const removeGameJson = client.del(this.getGameKey(code))
+    const removeFromPublicGames = this.removeFromPublicGames(code)
+
+    await Promise.all([removeGameJson, removeFromPublicGames])
   }
 
   async removePlayer(gameCode: string, playerId: string): Promise<void> {
@@ -102,6 +125,9 @@ export class GameRepository extends RedisClient {
 
     const key = this.getGameKey(gameCode)
     await client.json.del(key, `$.players[?(@.id == '${playerId}')]`)
+
+    const game = await this.getGame(gameCode)
+    if (!game.settings.private) await this.updateInPublicGames(game)
   }
 
   //#region private methods
@@ -126,32 +152,50 @@ export class GameRepository extends RedisClient {
 
     await client.expire(this.getGameKey(game.code), GameRepository.GAME_TTL)
   }
+
+  //#region public games
+  private isGameEligibleToPublicGames(game: Skyjo) {
+    return (
+      !game.settings.private &&
+      game.status === CoreConstants.GAME_STATUS.LOBBY &&
+      !game.isFull()
+    )
+  }
+
+  private async addToPublicGames(game: Skyjo) {
+    const client = await RedisClient.getClient()
+
+    await client.zAdd(
+      GameRepository.PUBLIC_GAMES_SORTED_SET,
+      {
+        score: -game.players.length,
+        value: game.code,
+      },
+      { NX: true },
+    )
+  }
+  private async updateInPublicGames(game: Skyjo) {
+    if (this.isGameEligibleToPublicGames(game)) {
+      const client = await RedisClient.getClient()
+
+      await client.zAdd(
+        GameRepository.PUBLIC_GAMES_SORTED_SET,
+        {
+          score: -game.players.length,
+          value: game.code,
+        },
+        { XX: true },
+      )
+    } else {
+      await this.removeFromPublicGames(game.code)
+    }
+  }
+  private async removeFromPublicGames(code: string) {
+    const client = await RedisClient.getClient()
+
+    await client.zRem(GameRepository.PUBLIC_GAMES_SORTED_SET, code)
+  }
   //#endregion
 
-  private async getEligibleGames() {
-    const client = await RedisClient.getClient()
-    const eligibleGames: Skyjo[] = []
-
-    let cursor = 0
-    do {
-      const result = await client.scan(cursor, { MATCH: "game:*", COUNT: 100 })
-
-      for (const key of result.keys) {
-        const game = await this.getGame(
-          key.replace(GameRepository.GAME_PREFIX, ""),
-        )
-
-        const isEligible =
-          !game.settings.private &&
-          game.status === CoreConstants.GAME_STATUS.LOBBY &&
-          !game.isFull()
-
-        if (isEligible) eligibleGames.push(game)
-      }
-
-      cursor = result.cursor
-    } while (cursor !== 0)
-
-    return eligibleGames
-  }
+  //#endregion
 }
