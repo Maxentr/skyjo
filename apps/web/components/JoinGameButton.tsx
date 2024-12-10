@@ -5,9 +5,11 @@ import { useToast } from "@/components/ui/use-toast"
 import { useSocket } from "@/contexts/SocketContext"
 import { useUser } from "@/contexts/UserContext"
 import { useRouter } from "@/i18n/routing"
+import { cn } from "@/lib/utils"
 import { Constants as CoreConstants, GameStatus } from "@skyjo/core"
 import { Constants as ErrorConstants } from "@skyjo/error"
 import { ErrorJoinMessage } from "@skyjo/shared/types"
+import { ClassValue } from "clsx"
 import { useTranslations } from "next-intl"
 import { Dispatch, SetStateAction } from "react"
 
@@ -15,11 +17,13 @@ type JoinGameButtonProps = {
   gameCode: string
   loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
+  className?: ClassValue
 }
 export const JoinGameButton = ({
   gameCode,
   loading,
   setLoading,
+  className,
 }: JoinGameButtonProps) => {
   const t = useTranslations("components.JoinGameButton")
   const tSocketError = useTranslations("utils.socket.error")
@@ -97,7 +101,7 @@ export const JoinGameButton = ({
       onClick={handleJoiningGame}
       color="secondary"
       disabled={!username || socket === null}
-      className="w-full mb-4"
+      className={cn(className)}
       loading={loading}
       title={t("button")}
     >

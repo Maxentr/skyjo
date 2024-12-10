@@ -5,9 +5,11 @@ import { useToast } from "@/components/ui/use-toast"
 import { useSocket } from "@/contexts/SocketContext"
 import { useUser } from "@/contexts/UserContext"
 import { useRouter } from "@/i18n/routing"
+import { cn } from "@/lib/utils"
 import { Constants as CoreConstants, GameStatus } from "@skyjo/core"
 import { Constants as ErrorConstants } from "@skyjo/error"
 import { ErrorJoinMessage } from "@skyjo/shared/types"
+import { ClassValue } from "clsx"
 import { useTranslations } from "next-intl"
 import { Dispatch, SetStateAction } from "react"
 
@@ -15,11 +17,13 @@ type CreateGameButtonProps = {
   type: "private" | "public"
   loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
+  className?: ClassValue
 }
 export const CreateGameButton = ({
   type,
   loading,
   setLoading,
+  className,
 }: CreateGameButtonProps) => {
   const t = useTranslations("components.CreateGameButton")
   const tSocketError = useTranslations("utils.socket.error")
@@ -95,7 +99,7 @@ export const CreateGameButton = ({
   return (
     <Button
       onClick={handleGameCreation}
-      className="w-full"
+      className={cn(className)}
       disabled={!username || socket === null}
       loading={loading}
       title={t("button", { type })}

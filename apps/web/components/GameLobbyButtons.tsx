@@ -32,13 +32,19 @@ const GameLobbyButtons = ({
           gameCode={gameCode}
           loading={loading}
           setLoading={setLoading}
+          className="w-full mb-4"
         />
       )}
-      <FindPublicGameButton loading={loading} setLoading={setLoading} />
+      <FindPublicGameButton
+        loading={loading}
+        setLoading={setLoading}
+        className="w-full"
+      />
       <CreateGameButton
         type="private"
         loading={loading}
         setLoading={setLoading}
+        className="w-full"
       />
     </div>
   )
