@@ -1,5 +1,5 @@
-import type { BaseService } from "@/services/base.service.js"
-import type { SkyjoSocket } from "@/types/skyjoSocket.js"
+import type { BaseService } from "@/socketio/services/base.service.js"
+import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import { TEST_SOCKET_ID } from "@tests/constants-test.js"
 import { vi } from "vitest"
 
@@ -22,13 +22,10 @@ export const mockRedis = (service: BaseService) => {
   service["redis"].getGame = vi.fn(() =>
     Promise.reject(new Error("This is the default mock of getGame")),
   )
-  service["redis"].getPublicGameWithFreePlace = vi.fn(() =>
+  service["redis"].getPublicGamesWithFreePlace = vi.fn(() =>
     Promise.reject(
       new Error("This is the default mock of getPublicGameWithFreePlace"),
     ),
-  )
-  service["redis"].isPlayerInGame = vi.fn(() =>
-    Promise.reject(new Error("This is the default mock of isPlayerInGame")),
   )
   service["redis"].canReconnectPlayer = vi.fn(() =>
     Promise.reject(new Error("This is the default mock of canReconnectPlayer")),

@@ -1,10 +1,4 @@
 import { Server as HttpServer } from "http"
-import { chatRouter } from "@/routers/chat.router.js"
-import { gameRouter } from "@/routers/game.router.js"
-import { kickRouter } from "@/routers/kick.router.js"
-import { lobbyRouter } from "@/routers/lobby.router.js"
-import { playerRouter } from "@/routers/player.router.js"
-import type { SkyjoSocket } from "@/types/skyjoSocket.js"
 import { ENV } from "@env"
 import type { ServerType } from "@hono/node-server"
 import { Logger } from "@skyjo/logger"
@@ -14,6 +8,12 @@ import type {
 } from "@skyjo/shared/types"
 import { Server } from "socket.io"
 import customParser from "socket.io-msgpack-parser"
+import { chatRouter } from "./routers/chat.router.js"
+import { gameRouter } from "./routers/game.router.js"
+import { kickRouter } from "./routers/kick.router.js"
+import { lobbyRouter } from "./routers/lobby.router.js"
+import { playerRouter } from "./routers/player.router.js"
+import type { SkyjoSocket } from "./types/skyjoSocket.js"
 
 export const initializeSocketServer = (server: ServerType) => {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(

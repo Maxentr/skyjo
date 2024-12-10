@@ -1,6 +1,6 @@
-import { BaseService } from "@/services/base.service.js"
-import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { GameStateManager } from "@/utils/GameStateManager.js"
+import { BaseService } from "@/socketio/services/base.service.js"
+import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
+import { GameStateManager } from "@/socketio/utils/GameStateManager.js"
 import {
   Constants as CoreConstants,
   type CreatePlayer,

@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts --env-file=.env",
+    "dev": "tsx watch --env-file=.env src/index.ts",
     "build": "tsc --project tsconfig.prod.json && pnpx tsc-alias --project tsconfig.prod.json",
     "prod": "tsx dist/src/index.js",
     "biome:check": "pnpm biome check --write .",

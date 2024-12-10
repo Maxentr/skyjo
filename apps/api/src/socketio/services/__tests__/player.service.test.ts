@@ -1,6 +1,6 @@
-import { mockRedis, mockSocket } from "@/services/__tests__/_mock.js"
-import { PlayerService } from "@/services/player.service.js"
-import type { SkyjoSocket } from "@/types/skyjoSocket.js"
+import { mockRedis, mockSocket } from "@/socketio/services/__tests__/_mock.js"
+import { PlayerService } from "@/socketio/services/player.service.js"
+import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import {
   type ConnectionStatus,
   Constants as CoreConstants,

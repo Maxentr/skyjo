@@ -1,5 +1,5 @@
-import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { GameStateManager } from "@/utils/GameStateManager.js"
+import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
+import { GameStateManager } from "@/socketio/utils/GameStateManager.js"
 import { Constants as CoreConstants, KickVote, type Skyjo } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { BaseService } from "./base.service.js"

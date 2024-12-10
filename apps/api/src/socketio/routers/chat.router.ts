@@ -1,5 +1,5 @@
-import { ChatService } from "@/services/chat.service.js"
-import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
+import { ChatService } from "@/socketio/services/chat.service.js"
+import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   type SendChatMessage,
   sendChatMessage,

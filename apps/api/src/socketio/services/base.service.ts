@@ -1,5 +1,5 @@
 import { Constants } from "@/constants.js"
-import { GameStateManager } from "@/utils/GameStateManager.js"
+import { GameStateManager } from "@/socketio/utils/GameStateManager.js"
 import { GameRepository } from "@skyjo/cache"
 import {
   Constants as CoreConstants,

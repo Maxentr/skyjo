@@ -1,6 +1,6 @@
-import type { SkyjoSocket } from "@/types/skyjoSocket.js"
-import { GameStateManager } from "@/utils/GameStateManager.js"
-import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
+import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
+import { GameStateManager } from "@/socketio/utils/GameStateManager.js"
+import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   Constants as CoreConstants,
   type ServerMessageType,

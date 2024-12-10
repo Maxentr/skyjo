@@ -1,5 +1,5 @@
-import { KickService } from "@/services/kick.service.js"
-import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
+import { KickService } from "@/socketio/services/kick.service.js"
+import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   type InitiateKickVote,
   type VoteToKick,

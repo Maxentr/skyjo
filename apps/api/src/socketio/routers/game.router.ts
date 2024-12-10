@@ -1,5 +1,5 @@
-import { GameService } from "@/services/game.service.js"
-import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
+import { GameService } from "@/socketio/services/game.service.js"
+import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   type PlayPickCard,
   type PlayReplaceCard,

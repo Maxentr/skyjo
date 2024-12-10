@@ -1,5 +1,5 @@
-import { PlayerService } from "@/services/player.service.js"
-import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
+import { PlayerService } from "@/socketio/services/player.service.js"
+import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Logger } from "@skyjo/logger"
 import type { ErrorReconnectMessage } from "@skyjo/shared/types"

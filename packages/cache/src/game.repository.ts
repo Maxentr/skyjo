@@ -23,7 +23,7 @@ export class GameRepository extends RedisClient {
     await this.setGame(game)
   }
 
-  async getPublicGameWithFreePlace() {
+  async getPublicGamesWithFreePlace() {
     const games = await this.getEligibleGames()
 
     return games

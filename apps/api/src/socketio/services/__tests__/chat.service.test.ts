@@ -1,5 +1,5 @@
-import { mockSocket } from "@/services/__tests__/_mock.js"
-import type { SkyjoSocket } from "@/types/skyjoSocket.js"
+import { mockSocket } from "@/socketio/services/__tests__/_mock.js"
+import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import {
   Constants as CoreConstants,
   Skyjo,

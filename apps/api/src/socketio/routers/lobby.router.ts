@@ -1,5 +1,5 @@
-import { LobbyService } from "@/services/lobby.service.js"
-import { socketErrorWrapper } from "@/utils/socketErrorWrapper.js"
+import { LobbyService } from "@/socketio/services/lobby.service.js"
+import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   type CreatePlayer,
   type JoinGame,
