@@ -11,15 +11,17 @@ import { ErrorJoinMessage } from "@skyjo/shared/types"
 import { useTranslations } from "next-intl"
 import { Dispatch, SetStateAction } from "react"
 
-type CreatePrivateGameButtonProps = {
+type CreateGameButtonProps = {
+  type: "private" | "public"
   loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
 }
-export const CreatePrivateGameButton = ({
+export const CreateGameButton = ({
+  type,
   loading,
   setLoading,
-}: CreatePrivateGameButtonProps) => {
-  const t = useTranslations("components.CreatePrivateGameButton")
+}: CreateGameButtonProps) => {
+  const t = useTranslations("components.CreateGameButton")
   const tSocketError = useTranslations("utils.socket.error")
   const { username, saveUserInLocalStorage } = useUser()
   const { socket } = useSocket()
@@ -55,7 +57,7 @@ export const CreatePrivateGameButton = ({
       })
     }, 10000)
 
-    socket.emit("create", player, true)
+    socket.emit("create", player, type === "private")
 
     socket.once("error:join", (message: ErrorJoinMessage) => {
       clearTimeout(timeout)
@@ -96,9 +98,9 @@ export const CreatePrivateGameButton = ({
       className="w-full"
       disabled={!username || socket === null}
       loading={loading}
-      title={t("button")}
+      title={t("button", { type })}
     >
-      {t("button")}
+      {t("button", { type })}
     </Button>
   )
 }

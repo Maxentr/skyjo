@@ -36,6 +36,9 @@
         }
       }
     },
+    "Search": {
+      "title": "Public games"
+    },
     "Maintenance": {
       "title": "Site under maintenance",
       "description": "We are currently updating the site, please try again later.",
@@ -272,8 +275,8 @@
     "FindPublicGameButton": {
       "button": "Find a game"
     },
-    "CreatePrivateGameButton": {
-      "button": "Create a private game"
+    "CreateGameButton": {
+      "button": "Create a {type, select, private {private} public {public} other {unknown}} game"
     },
     "GameRules": {
       "button-title": "Show game rules",

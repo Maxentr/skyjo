@@ -1,6 +1,6 @@
 "use client"
 
-import { CreatePrivateGameButton } from "@/components/CreatePrivateGameButton"
+import { CreateGameButton } from "@/components/CreateGameButton"
 import { FindPublicGameButton } from "@/components/FindPublicGameButton"
 import { JoinGameButton } from "@/components/JoinGameButton"
 import { ReconnectGameButton } from "@/components/ReconnectGameButton"
@@ -35,7 +35,11 @@ const GameLobbyButtons = ({
         />
       )}
       <FindPublicGameButton loading={loading} setLoading={setLoading} />
-      <CreatePrivateGameButton loading={loading} setLoading={setLoading} />
+      <CreateGameButton
+        type="private"
+        loading={loading}
+        setLoading={setLoading}
+      />
     </div>
   )
 }

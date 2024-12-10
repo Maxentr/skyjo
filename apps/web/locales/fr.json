@@ -267,8 +267,8 @@
     "FindPublicGameButton": {
       "button": "Trouver une partie"
     },
-    "CreatePrivateGameButton": {
-      "button": "Créer une partie privée"
+    "CreateGameButton": {
+      "button": "Créer une partie {type, select, private {privée} public {publique} other {inconnue}}"
     },
     "GameRules": {
       "button-title": "Afficher les règles de la partie",

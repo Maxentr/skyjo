@@ -336,8 +336,8 @@
     "FindPublicGameButton": {
       "button": "Encontrar una partida"
     },
-    "CreatePrivateGameButton": {
-      "button": "Crear una partida privada"
+    "CreateGameButton": {
+      "button": "Crear una partida {type, select, private {privada} public {pública} other {desconocida}}"
     },
     "Rules": {
       "round-start": {
