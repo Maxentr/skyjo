@@ -60,6 +60,8 @@
       }
     },
     "Lobby": {
+      "leave-to-home": "Retour à l'accueil",
+      "leave-to-public-game-list": "Retour à la liste des parties publiques",
       "settings": {
         "title": "Paramètres",
         "private": {

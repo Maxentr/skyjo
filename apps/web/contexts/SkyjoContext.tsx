@@ -83,12 +83,17 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     return destroyGameListeners
   }, [socket, gameCode])
 
+  useEffect(() => {
+    socket!.on("leave:success", onLeave)
+    return () => {
+      socket!.off("leave:success", onLeave)
+    }
+  }, [game?.settings.private])
+
   //#region reconnection
 
   useEffect(() => {
-    if (socket?.recovered) {
-      socket.emit("recover")
-    }
+    if (socket?.recovered) socket.emit("recover")
   }, [socket?.recovered])
 
   const gameStatusRef = useRef(game?.status)
@@ -134,7 +139,8 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const onLeave = () => {
     setGame(undefined)
     setChat([])
-    router.replace("/")
+    if (game?.settings.private) router.replace("/")
+    else router.replace("/search")
   }
 
   const onDisconnect = (reason: Socket.DisconnectReason) => {
@@ -143,24 +149,19 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
       reason === "ping timeout" &&
       game?.status === CoreConstants.GAME_STATUS.LOBBY
     ) {
-      if (game?.settings.private) {
-        router.replace("/")
-      } else {
-        router.replace("/search")
-      }
+      if (game?.settings.private) router.replace("/")
+      else router.replace("/search")
     }
   }
 
   const initGameListeners = () => {
     socket!.on("game", onGameReceive)
     socket!.on("game:update", onGameUpdate)
-    socket!.on("leave:success", onLeave)
   }
 
   const destroyGameListeners = () => {
     socket!.off("game", onGameReceive)
     socket!.off("game:update", onGameUpdate)
-    socket!.off("leave:success", onLeave)
   }
   //#endregion
 

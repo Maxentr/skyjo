@@ -63,6 +63,8 @@
       }
     },
     "Lobby": {
+      "leave-to-home": "Leave to homepage",
+      "leave-to-public-game-list": "Leave to public game list",
       "settings": {
         "title": "Settings",
         "private": {

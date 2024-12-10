@@ -18,11 +18,16 @@ import {
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import { useRouter } from "@/i18n/routing"
 import { isAdmin } from "@/lib/skyjo"
-import { cn } from "@/lib/utils"
 import { Constants as CoreConstants } from "@skyjo/core"
 import { GameSettings } from "@skyjo/shared/validations"
 import { m } from "framer-motion"
-import { HomeIcon, InfoIcon, LockIcon, UnlockIcon } from "lucide-react"
+import {
+  DoorOpenIcon,
+  HomeIcon,
+  InfoIcon,
+  LockIcon,
+  UnlockIcon,
+} from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useLocalStorage } from "react-use"
@@ -92,23 +97,33 @@ const Lobby = ({ gameCode }: LobbyProps) => {
       </div>
       <div className="flex flex-col gap-4 md:gap-8 items-center h-fit w-full md:max-w-3xl lg:max-w-4xl p-4 pb-20 md:pb-4">
         <div className="flex flex-col lg:flex-row gap-4 w-full">
-          <div className="bg-container dark:bg-dark-container border-2 border-black dark:border-dark-border rounded-2xl w-full px-8 md:px-12 py-8 relative">
-            <HomeIcon
-              className="absolute top-4 left-4 h-6 w-6 text-black dark:text-dark-font cursor-pointer"
-              onClick={actions.leave}
-            />
-            <span className="absolute top-4 right-4">
+          <div className="bg-container dark:bg-dark-container border-2 border-black dark:border-dark-border rounded-2xl w-full p-4 sm:p-8">
+            <div className="flex flex-row justify-between items-center mb-6">
+              <button
+                title={t(
+                  game.settings.private
+                    ? "leave-to-home"
+                    : "leave-to-public-game-list",
+                )}
+                onClick={actions.leave}
+                className="top-4 left-4 size-6 cursor-pointer text-black dark:text-dark-font"
+              >
+                {game.settings.private ? (
+                  <HomeIcon className="size-6" />
+                ) : (
+                  <DoorOpenIcon className="size-6" />
+                )}
+              </button>
+              <h2 className="text-black dark:text-dark-font text-center text-2xl">
+                {t("settings.title")}
+              </h2>
               <TooltipProvider delayDuration={200}>
                 <Tooltip defaultOpen={admin}>
-                  <TooltipTrigger className="relative">
+                  <TooltipTrigger className="size-6 relative cursor-default text-black dark:text-dark-font">
                     {game.settings.private ? (
-                      <LockIcon
-                        className={cn("h-6 w-6 text-black dark:text-dark-font")}
-                      />
+                      <LockIcon className="size-6" />
                     ) : (
-                      <UnlockIcon
-                        className={cn("h-6 w-6 text-black dark:text-dark-font")}
-                      />
+                      <UnlockIcon className="size-6" />
                     )}
                   </TooltipTrigger>
                   <TooltipContent>
@@ -118,10 +133,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            </span>
-            <h2 className="text-black dark:text-dark-font text-center text-2xl mb-2 lg:mb-5">
-              {t("settings.title")}
-            </h2>
+            </div>
 
             <div className="flex flex-col gap-4 lg:gap-3">
               <div className="flex flex-row items-center gap-2">
