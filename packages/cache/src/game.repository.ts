@@ -42,20 +42,32 @@ export class GameRepository extends RedisClient {
         LIMIT: { offset: nbPerPage * (page - 1), count: nbPerPage },
       },
     )
-    const games = await Promise.all(gameCodes.map((code) => this.getGame(code)))
+    const games = await Promise.all(
+      gameCodes.map(async (code) => {
+        const game = await this.getGameSafe(code)
+        if (!game) await this.removeFromPublicGames(code)
 
-    return games.filter(this.isGameEligibleToPublicGames)
+        return game
+      }),
+    )
+
+    const filteredGames = games.filter(
+      (game): game is Skyjo =>
+        game !== null && this.isGameEligibleToPublicGames(game),
+    )
+
+    return filteredGames
   }
 
   async getGameSafe(code: string = "") {
     try {
-      return await this.getGame(code)
+      return await this.getGame(code, false)
     } catch {
       return null
     }
   }
 
-  async getGame(code: string = "") {
+  async getGame(code: string = "", logError = true) {
     const client = await RedisClient.getClient()
     const key = this.getGameKey(code)
 
@@ -63,6 +75,7 @@ export class GameRepository extends RedisClient {
     if (!game) {
       throw new CError("Game not found in cache", {
         level: "warn",
+        shouldLog: logError,
         code: ErrorConstants.ERROR.GAME_NOT_FOUND,
         meta: { gameCode: code },
       })
