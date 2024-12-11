@@ -11,7 +11,6 @@ gameRouter.get(
   "/public",
   zValidator("query", getPublicGamesQuerySchema),
   async (c) => {
-    console.log("get public games")
     const query = c.req.valid("query")
 
     const games = await gameService.getPublicGames(query.nbPerPage, query.page)
