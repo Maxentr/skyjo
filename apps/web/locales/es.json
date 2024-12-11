@@ -61,7 +61,6 @@
     },
     "Lobby": {
       "settings": {
-        "title": "Ajustes",
         "private": {
           "tooltip": {
             "on": "Este juego es privado, solo las personas con el enlace pueden unirse",

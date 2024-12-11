@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import { useRouter } from "@/i18n/routing"
-import { isAdmin } from "@/lib/skyjo"
+import { getAdmin, isAdmin } from "@/lib/skyjo"
 import { Constants as CoreConstants } from "@skyjo/core"
 import { GameSettings } from "@skyjo/shared/validations"
 import { m } from "framer-motion"
@@ -85,6 +85,10 @@ const Lobby = ({ gameCode }: LobbyProps) => {
     timeoutStart = setTimeout(() => setIsLoading(false), 5000)
   }
 
+  const adminName = getAdmin(game)?.name ?? ""
+  const adminNameSliced =
+    adminName.length > 12 ? adminName.slice(0, 8) + "..." : adminName
+
   return (
     <m.div
       className="relative h-svh w-full z-20 flex flex-col md:items-center mdh:md:justify-center overflow-auto"
@@ -115,7 +119,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 )}
               </button>
               <h2 className="text-black dark:text-dark-font text-center text-2xl">
-                {t("settings.title")}
+                {t("title", {
+                  name: adminNameSliced,
+                })}
               </h2>
               <TooltipProvider delayDuration={200}>
                 <Tooltip defaultOpen={admin}>

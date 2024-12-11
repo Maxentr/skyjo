@@ -60,10 +60,10 @@
       }
     },
     "Lobby": {
+      "title": "Partie de {name}",
       "leave-to-home": "Retour à l'accueil",
       "leave-to-public-game-list": "Retour à la liste des parties publiques",
       "settings": {
-        "title": "Paramètres",
         "private": {
           "tooltip": {
             "on": "Cette partie est privée, seuls les personnes ayant le lien peuvent rejoindre",

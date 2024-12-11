@@ -63,10 +63,10 @@
       }
     },
     "Lobby": {
+      "title": "{name}'s game",
       "leave-to-home": "Leave to homepage",
       "leave-to-public-game-list": "Leave to public game list",
       "settings": {
-        "title": "Settings",
         "private": {
           "tooltip": {
             "on": "This game is private, only people with the link can join",
