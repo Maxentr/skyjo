@@ -10,6 +10,7 @@ import { RedisClient } from "./client.js"
 export class GameRepository extends RedisClient {
   private static readonly GAME_PREFIX = "game:"
   private static readonly GAME_TTL = 60 * 10 // 10 minutes
+  private static readonly PUBLIC_GAME_IN_LOBBY_TTL = 60 * 4 // 4 minutes
   private static readonly PUBLIC_GAMES_SORTED_SET = "public_games"
 
   async createGame(game: Skyjo) {
@@ -163,7 +164,12 @@ export class GameRepository extends RedisClient {
 
     await client.json.set(key, "$", json)
 
-    await client.expire(this.getGameKey(game.code), GameRepository.GAME_TTL)
+    const ttl =
+      !game.settings.private && game.status === CoreConstants.GAME_STATUS.LOBBY
+        ? GameRepository.PUBLIC_GAME_IN_LOBBY_TTL
+        : GameRepository.GAME_TTL
+
+    await client.expire(this.getGameKey(game.code), ttl)
   }
 
   //#region public games
