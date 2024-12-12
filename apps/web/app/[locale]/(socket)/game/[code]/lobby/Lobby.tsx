@@ -21,13 +21,7 @@ import { getAdmin, isAdmin } from "@/lib/skyjo"
 import { Constants as CoreConstants } from "@skyjo/core"
 import { GameSettings } from "@skyjo/shared/validations"
 import { m } from "framer-motion"
-import {
-  DoorOpenIcon,
-  HomeIcon,
-  InfoIcon,
-  LockIcon,
-  UnlockIcon,
-} from "lucide-react"
+import { ArrowLeftIcon, InfoIcon, LockIcon, UnlockIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useLocalStorage } from "react-use"
@@ -112,11 +106,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 onClick={actions.leave}
                 className="top-4 left-4 size-6 cursor-pointer text-black dark:text-dark-font"
               >
-                {game.settings.private ? (
-                  <HomeIcon className="size-6" />
-                ) : (
-                  <DoorOpenIcon className="size-6" />
-                )}
+                <ArrowLeftIcon className="size-6" />
               </button>
               <h2 className="text-black dark:text-dark-font text-center text-2xl">
                 {t("title", {
