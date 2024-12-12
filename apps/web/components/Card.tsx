@@ -199,6 +199,7 @@ const Card = ({
       onClick={onClick}
       title={title}
       disabled={disabled}
+      data-attr-pii="game-card"
     >
       {cardContent}
     </m.button>
