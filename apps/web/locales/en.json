@@ -37,7 +37,10 @@
       }
     },
     "Search": {
-      "title": "Public games"
+      "back": "Back to homepage",
+      "title": "Public games",
+      "no-games-found": "No games found",
+      "game-of": "{name}'s game"
     },
     "Maintenance": {
       "title": "Site under maintenance",

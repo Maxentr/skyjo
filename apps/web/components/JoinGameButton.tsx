@@ -11,19 +11,21 @@ import { Constants as ErrorConstants } from "@skyjo/error"
 import { ErrorJoinMessage } from "@skyjo/shared/types"
 import { ClassValue } from "clsx"
 import { useTranslations } from "next-intl"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, ReactNode, SetStateAction } from "react"
 
 type JoinGameButtonProps = {
   gameCode: string
   loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
   className?: ClassValue
+  children?: ReactNode
 }
 export const JoinGameButton = ({
   gameCode,
   loading,
   setLoading,
   className,
+  children,
 }: JoinGameButtonProps) => {
   const t = useTranslations("components.JoinGameButton")
   const tSocketError = useTranslations("utils.socket.error")
@@ -105,7 +107,7 @@ export const JoinGameButton = ({
       loading={loading}
       title={t("button")}
     >
-      {t("button")}
+      {children || t("button")}
     </Button>
   )
 }

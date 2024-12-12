@@ -15,13 +15,15 @@ export class GameService extends BaseService {
   private parsePublicGamePlayers(
     players: SkyjoPlayer[],
   ): PublicGame["players"] {
-    return players.map((p) => ({ avatar: p.avatar, name: p.name }))
+    return players.map((p) => ({ id: p.id, avatar: p.avatar, name: p.name }))
   }
 
   private parsePublicGame(game: Skyjo): PublicGame {
     return {
       code: game.code,
+      adminName: game.players.find((p) => game.isAdmin(p.id))?.name ?? "",
       players: this.parsePublicGamePlayers(game.players),
+      maxPlayers: game.settings.maxPlayers,
     }
   }
 

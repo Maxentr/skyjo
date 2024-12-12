@@ -36,6 +36,12 @@
         }
       }
     },
+    "Search": {
+      "back": "Retour à la page d'accueil",
+      "title": "Parties publiques",
+      "no-games-found": "Aucune partie trouvée",
+      "game-of": "Partie de {name}"
+    },
     "Maintenance": {
       "title": "Site en maintenance",
       "description": "Nous sommes en ce moment en train de faire des mises à jour sur le site, veuillez réessayer plus tard.",
