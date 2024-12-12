@@ -1,10 +1,9 @@
 import { GameRepository } from "@skyjo/cache"
 import type { Skyjo, SkyjoPlayer } from "@skyjo/core"
 import type { PublicGame } from "@skyjo/shared/types"
-import { BaseService } from "./base.service.js"
 
-export class GameService extends BaseService {
-  private gameRepository = new GameRepository()
+export class GameService {
+  private readonly gameRepository = new GameRepository()
 
   async getPublicGames(nbPerPage: number, page: number): Promise<PublicGame[]> {
     const games = await this.gameRepository.getPublicGames(nbPerPage, page)

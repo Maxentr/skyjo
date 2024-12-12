@@ -63,7 +63,7 @@ export const JoinGameButton = ({
       })
     }, 10000)
 
-    socket.emit("join", { gameCode: gameCode!, player })
+    socket.emit("join", { gameCode, player })
 
     socket.once("error:join", (message: ErrorJoinMessage) => {
       clearTimeout(timeout)

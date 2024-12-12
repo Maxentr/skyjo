@@ -173,14 +173,14 @@ const PublicGameRow = ({ game, loading, setLoading }: PublicGameRowProps) => {
 
 const LoadingPublicGames = () => {
   return Array.from({ length: 2 }).map((_, index) => (
-    <Fragment key={index}>
+    <Fragment key={`loading-game-${index}`}>
       <div className="w-full flex flex-row items-center justify-between">
         <div className="flex flex-col gap-1">
           <div className="h-4 py-2 w-32 animate-pulse bg-gray-200 rounded" />
           <div className="flex flex-row items-center gap-2">
-            {Array.from({ length: 8 }).map((_, index) => (
+            {Array.from({ length: 8 }).map((_, playerIndex) => (
               <div
-                key={index}
+                key={`loading-player-${index}-${playerIndex}`}
                 className="flex flex-col items-center justify-center"
               >
                 <div className="size-5 animate-pulse bg-gray-200 rounded-full" />
