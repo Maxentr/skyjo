@@ -148,3 +148,8 @@ export const isAdmin = (game?: SkyjoToJson, playerId?: string) => {
 
   return playerId === game.adminId
 }
+
+export const getAdmin = (game?: SkyjoToJson) => {
+  if (!game) return undefined
+  return game.players.find((player) => player.id === game.adminId)
+}

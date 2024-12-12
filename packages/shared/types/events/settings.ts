@@ -6,13 +6,11 @@ import type {
   UpdateGameSettingsCardPerRow,
   UpdateGameSettingsInitialTurnedCount,
   UpdateGameSettingsMultiplierForFirstPlayer,
-  UpdateGameSettingsPrivate,
   UpdateGameSettingsScoreToEndGame,
 } from "../../validations/updateGameSettings.js"
 
 export interface ClientToServerSettingsEvents {
   "game:settings": (settings: UpdateGameSettings) => void
-  "game:settings:private": (isPrivate: UpdateGameSettingsPrivate) => void
   "game:settings:allow-skyjo-for-column": (
     allowSkyjoForColumn: UpdateGameSettingsAllowSkyjoForColumn,
   ) => void

@@ -36,6 +36,12 @@
         }
       }
     },
+    "Search": {
+      "back": "Back to homepage",
+      "title": "Public games",
+      "no-games-found": "No games found",
+      "game-of": "{name}'s game"
+    },
     "Maintenance": {
       "title": "Site under maintenance",
       "description": "We are currently updating the site, please try again later.",
@@ -60,8 +66,10 @@
       }
     },
     "Lobby": {
+      "title": "{name}'s game",
+      "leave-to-home": "Leave to homepage",
+      "leave-to-public-game-list": "Leave to public game list",
       "settings": {
-        "title": "Settings",
         "private": {
           "tooltip": {
             "on": "This game is private, only people with the link can join",
@@ -263,26 +271,17 @@
         "avatars": "Avatars created by Freepik - Flaticon"
       }
     },
-    "GameLobbyButtons": {
-      "reconnect-game-button": "Reconnect to the game",
-      "join-game-button": "Join the game",
-      "find-game-button": "Find a game",
-      "create-private-game-button": "Create a private game",
-      "timeout": {
-        "description": "The server takes more time than expected to respond. You can try to reload the page and try again."
-      },
-      "game-not-found": {
-        "description": "The game you are looking for does not exist"
-      },
-      "cannot-reconnect": {
-        "description": "It is no longer possible to reconnect to the game, the time to reconnect has expired"
-      },
-      "game-is-full": {
-        "description": "The game is full, you cannot join"
-      },
-      "game-already-started": {
-        "description": "The game has already started"
-      }
+    "ReconnectGameButton": {
+      "button": "Reconnect to the game"
+    },
+    "JoinGameButton": {
+      "button": "Join the game"
+    },
+    "FindPublicGameButton": {
+      "button": "Find a game"
+    },
+    "CreateGameButton": {
+      "button": "Create a {type, select, private {private} public {public} other {unknown}} game"
     },
     "GameRules": {
       "button-title": "Show game rules",
@@ -571,6 +570,25 @@
       "turtle": "turtle",
       "whale": "whale",
       "owl": "owl"
+    },
+    "socket": {
+      "error": {
+        "timeout": {
+          "description": "The server takes more time than expected to respond. You can try to reload the page and try again."
+        },
+        "game-not-found": {
+          "description": "The game you are looking for does not exist"
+        },
+        "cannot-reconnect": {
+          "description": "It is no longer possible to reconnect to the game, the time to reconnect has expired"
+        },
+        "game-is-full": {
+          "description": "The game is full, you cannot join"
+        },
+        "game-already-started": {
+          "description": "The game has already started"
+        }
+      }
     }
   },
   "contexts": {

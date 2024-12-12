@@ -2,11 +2,6 @@ import { Constants as CoreConstants } from "@skyjo/core"
 import { z } from "zod"
 
 // Individual property schemas
-export const updateGameSettingsPrivateSchema = z.boolean()
-export type UpdateGameSettingsPrivate = z.infer<
-  typeof updateGameSettingsPrivateSchema
->
-
 export const updateGameSettingsAllowSkyjoForColumnSchema = z
   .boolean()
   .default(CoreConstants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN)
@@ -71,7 +66,6 @@ export type UpdateGameSettingsMultiplierForFirstPlayer = z.infer<
 >
 
 export const updateGameSettingsSchema = z.object({
-  private: updateGameSettingsPrivateSchema,
   allowSkyjoForColumn: updateGameSettingsAllowSkyjoForColumnSchema,
   allowSkyjoForRow: updateGameSettingsAllowSkyjoForRowSchema,
   initialTurnedCount: updateGameSettingsInitialTurnedCountSchema,

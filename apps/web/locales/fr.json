@@ -36,6 +36,12 @@
         }
       }
     },
+    "Search": {
+      "back": "Retour à la page d'accueil",
+      "title": "Parties publiques",
+      "no-games-found": "Aucune partie trouvée",
+      "game-of": "Partie de {name}"
+    },
     "Maintenance": {
       "title": "Site en maintenance",
       "description": "Nous sommes en ce moment en train de faire des mises à jour sur le site, veuillez réessayer plus tard.",
@@ -60,8 +66,10 @@
       }
     },
     "Lobby": {
+      "title": "Partie de {name}",
+      "leave-to-home": "Retour à l'accueil",
+      "leave-to-public-game-list": "Retour à la liste des parties publiques",
       "settings": {
-        "title": "Paramètres",
         "private": {
           "tooltip": {
             "on": "Cette partie est privée, seuls les personnes ayant le lien peuvent rejoindre",
@@ -258,26 +266,17 @@
         "avatars": "Avatars créés par Freepik - Flaticon"
       }
     },
-    "GameLobbyButtons": {
-      "reconnect-game-button": "Se reconnecter à la partie",
-      "join-game-button": "Rejoindre la partie",
-      "find-game-button": "Trouver une partie",
-      "create-private-game-button": "Créer une partie privée",
-      "timeout": {
-        "description": "Le serveur prends plus de temps que prévu à répondre. Vous pouvez tenter de recharger la page et réessayer."
-      },
-      "game-not-found": {
-        "description": "La partie que vous cherchez n'existe pas"
-      },
-      "cannot-reconnect": {
-        "description": "Ce n'est plus possible de se reconnecter à la partie, le temps imparti pour se reconnecter a expiré"
-      },
-      "game-is-full": {
-        "description": "La partie est pleine, vous ne pouvez pas y rejoindre"
-      },
-      "game-already-started": {
-        "description": "La partie a déjà commencé"
-      }
+    "ReconnectGameButton": {
+      "button": "Se reconnecter à la partie"
+    },
+    "JoinGameButton": {
+      "button": "Rejoindre la partie"
+    },
+    "FindPublicGameButton": {
+      "button": "Trouver une partie"
+    },
+    "CreateGameButton": {
+      "button": "Créer une partie {type, select, private {privée} public {publique} other {inconnue}}"
     },
     "GameRules": {
       "button-title": "Afficher les règles de la partie",
@@ -571,6 +570,25 @@
       "turtle": "tortue",
       "whale": "baleine",
       "owl": "hibou"
+    },
+    "socket": {
+      "error": {
+        "timeout": {
+          "description": "Le serveur prends plus de temps que prévu à répondre. Vous pouvez tenter de recharger la page et réessayer."
+        },
+        "game-not-found": {
+          "description": "La partie que vous cherchez n'existe pas"
+        },
+        "cannot-reconnect": {
+          "description": "Ce n'est plus possible de se reconnecter à la partie, le temps imparti pour se reconnecter a expiré"
+        },
+        "game-is-full": {
+          "description": "La partie est pleine, vous ne pouvez pas y rejoindre"
+        },
+        "game-already-started": {
+          "description": "La partie a déjà commencé"
+        }
+      }
     }
   },
   "contexts": {

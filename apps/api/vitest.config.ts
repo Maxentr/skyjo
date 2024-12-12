@@ -11,21 +11,19 @@ export default defineConfig({
       reportOnFailure: true,
       provider: "istanbul",
       reportsDirectory: "tests/coverage",
+      include: ["src/socketio/**/**"],
       exclude: [
-        "env.ts",
-        "src/constants.ts",
-        "src/index.ts",
-        "src/initializeSocketServer.ts",
-        "src/**/__tests__/constants-test.ts",
-        "src/**/__tests__/_mock.ts",
+        // global
+        "src/**/routers/*.ts",
+        "src/**/index.ts",
+        "src/**/**/__tests__/constants-test.ts",
+        "src/**/**/__tests__/_mock.ts",
         "tests/*.ts",
-        "src/service/*.ts",
-        "src/utils/CError.ts",
-        "src/utils/Logger.ts",
-        "src/utils/socketErrorWrapper.ts",
-        "src/utils/mailer.ts",
-        "src/db/*.ts",
-        "src/routers/*.ts",
+
+        // socketio
+        "src/socketio/utils/socketErrorWrapper.ts",
+
+        // default
         ...coverageConfigDefaults.exclude,
       ],
       thresholds: {

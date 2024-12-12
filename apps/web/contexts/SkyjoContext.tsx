@@ -83,12 +83,17 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     return destroyGameListeners
   }, [socket, gameCode])
 
+  useEffect(() => {
+    socket!.on("leave:success", onLeave)
+    return () => {
+      socket!.off("leave:success", onLeave)
+    }
+  }, [game?.settings.private])
+
   //#region reconnection
 
   useEffect(() => {
-    if (socket?.recovered) {
-      socket.emit("recover")
-    }
+    if (socket?.recovered) socket.emit("recover")
   }, [socket?.recovered])
 
   const gameStatusRef = useRef(game?.status)
@@ -134,7 +139,8 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const onLeave = () => {
     setGame(undefined)
     setChat([])
-    router.replace("/")
+    if (game?.settings.private) router.replace("/")
+    else router.replace("/search")
   }
 
   const onDisconnect = (reason: Socket.DisconnectReason) => {
@@ -143,20 +149,19 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
       reason === "ping timeout" &&
       game?.status === CoreConstants.GAME_STATUS.LOBBY
     ) {
-      router.replace("/")
+      if (game?.settings.private) router.replace("/")
+      else router.replace("/search")
     }
   }
 
   const initGameListeners = () => {
     socket!.on("game", onGameReceive)
     socket!.on("game:update", onGameUpdate)
-    socket!.on("leave:success", onLeave)
   }
 
   const destroyGameListeners = () => {
     socket!.off("game", onGameReceive)
     socket!.off("game:update", onGameUpdate)
-    socket!.off("leave:success", onLeave)
   }
   //#endregion
 
@@ -168,9 +173,6 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     if (!admin) return
 
     switch (key) {
-      case "private":
-        socket!.emit(`game:settings:private`, value as boolean)
-        break
       case "allowSkyjoForColumn":
         socket!.emit(`game:settings:allow-skyjo-for-column`, value as boolean)
         break
@@ -209,9 +211,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const resetSettings = () => {
     if (!admin) return
 
-    socket!.emit("game:settings", {
-      private: game?.settings.private ?? false,
-    })
+    socket!.emit("game:settings", {})
   }
 
   const startGame = () => {

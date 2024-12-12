@@ -3,7 +3,6 @@ import type { SkyjoSettingsToJson } from "@/types/skyjoSettings.js"
 import { Constants } from "../constants.js"
 
 type UpdateSettings = {
-  private: boolean
   allowSkyjoForColumn: boolean
   allowSkyjoForRow: boolean
   initialTurnedCount: number
@@ -61,7 +60,6 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
   }
 
   updateSettings(settings: UpdateSettings) {
-    this.private = settings.private
     this.allowSkyjoForColumn = settings.allowSkyjoForColumn
     this.allowSkyjoForRow = settings.allowSkyjoForRow
     this.initialTurnedCount = settings.initialTurnedCount

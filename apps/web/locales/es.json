@@ -61,7 +61,6 @@
     },
     "Lobby": {
       "settings": {
-        "title": "Ajustes",
         "private": {
           "tooltip": {
             "on": "Este juego es privado, solo las personas con el enlace pueden unirse",
@@ -327,26 +326,17 @@
       },
       "title": "Ajustes"
     },
-    "GameLobbyButtons": {
-      "join-game-button": "Únirse a una partida",
-      "reconnect-game-button": "Reconectar a la partida",
-      "find-game-button": "Encontrar una partida",
-      "create-private-game-button": "Crear una partida privada",
-      "timeout": {
-        "description": "El servidor tarda más tiempo del esperado en responder. Puede intentar recargar la página e intentarlo de nuevo."
-      },
-      "cannot-reconnect": {
-        "description": "Ya no es posible volver a conectarse al juego, el tiempo para reconectarse ha expirado"
-      },
-      "game-is-full": {
-        "description": "La partida está completa, no puedes unirte"
-      },
-      "game-not-found": {
-        "description": "La partida que buscas no existe"
-      },
-      "game-already-started": {
-        "description": "La partida ya ha comenzado"
-      }
+    "ReconnectGameButton": {
+      "button": "Reconectar a la partida"
+    },
+    "JoinGameButton": {
+      "button": "Únirse a una partida"
+    },
+    "FindPublicGameButton": {
+      "button": "Encontrar una partida"
+    },
+    "CreateGameButton": {
+      "button": "Crear una partida {type, select, private {privada} public {pública} other {desconocida}}"
     },
     "Rules": {
       "round-start": {
@@ -571,6 +561,25 @@
       "turtle": "tortuga",
       "whale": "ballena",
       "owl": "búho"
+    },
+    "socket": {
+      "error": {
+        "timeout": {
+          "description": "El servidor tarda más tiempo del esperado en responder. Puede intentar recargar la página e intentarlo de nuevo."
+        },
+        "cannot-reconnect": {
+          "description": "Ya no es posible volver a conectarse al juego, el tiempo para reconectarse ha expirado"
+        },
+        "game-is-full": {
+          "description": "La partida está completa, no puedes unirte"
+        },
+        "game-not-found": {
+          "description": "La partida que buscas no existe"
+        },
+        "game-already-started": {
+          "description": "La partida ya ha comenzado"
+        }
+      }
     }
   },
   "contexts": {

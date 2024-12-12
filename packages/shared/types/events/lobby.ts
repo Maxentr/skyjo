@@ -2,8 +2,7 @@ import type { CreatePlayer, GameStatus, JoinGame } from "@skyjo/core"
 import type { Error as ThrownError } from "@skyjo/error"
 
 export interface ClientToServerLobbyEvents {
-  "create-private": (player: CreatePlayer) => void
-  find: (player: CreatePlayer) => void
+  create: (player: CreatePlayer, isPrivate: boolean) => void
   join: (data: JoinGame) => void
   start: () => void
 }
