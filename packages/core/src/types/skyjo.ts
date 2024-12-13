@@ -53,6 +53,7 @@ export type SkyjoToDb = {
   discardPile: number[]
   drawPile: number[]
   settings: {
+    isConfirmed: boolean
     private: boolean
     maxPlayers: number
     allowSkyjoForColumn: boolean

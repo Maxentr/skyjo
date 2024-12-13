@@ -13,6 +13,7 @@ describe("SkyjoSettings", () => {
   it("should return default settings", () => {
     const defaultSettings = new SkyjoSettings()
 
+    expect(defaultSettings.isConfirmed).toBeFalsy()
     expect(defaultSettings.private).toBeFalsy()
     expect(defaultSettings.allowSkyjoForColumn).toBe(
       Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN,
@@ -34,8 +35,15 @@ describe("SkyjoSettings", () => {
     )
   })
 
+  it("should have the settings validation to true by default for private game", () => {
+    const defaultSettings = new SkyjoSettings(true)
+
+    expect(defaultSettings.isConfirmed).toBeTruthy()
+  })
+
   it("should populate the class", () => {
     const dbGameSettings: SkyjoToDb["settings"] = {
+      isConfirmed: true,
       allowSkyjoForColumn: false,
       allowSkyjoForRow: false,
       initialTurnedCount: 4,
@@ -54,6 +62,7 @@ describe("SkyjoSettings", () => {
 
   it("should update settings", () => {
     const newSettings = {
+      isConfirmed: true,
       private: true,
       allowSkyjoForColumn: true,
       allowSkyjoForRow: true,
@@ -107,6 +116,7 @@ describe("SkyjoSettings", () => {
     const settingsToJson = settings.toJson()
 
     expect(settingsToJson).toStrictEqual({
+      isConfirmed: false,
       private: false,
       allowSkyjoForColumn: true,
       allowSkyjoForRow: false,

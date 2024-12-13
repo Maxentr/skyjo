@@ -23,8 +23,6 @@ export class GameRepository extends RedisClient {
     }
 
     await this.setGame(game)
-
-    if (!game.settings.private) await this.addToPublicGames(game)
   }
 
   async getPublicGames(nbPerPage: number, page: number) {
@@ -177,34 +175,19 @@ export class GameRepository extends RedisClient {
     return (
       !game.settings.private &&
       game.status === CoreConstants.GAME_STATUS.LOBBY &&
-      !game.isFull()
+      !game.isFull() &&
+      game.settings.isConfirmed
     )
   }
 
-  private async addToPublicGames(game: Skyjo) {
-    const client = await RedisClient.getClient()
-
-    await client.zAdd(
-      GameRepository.PUBLIC_GAMES_SORTED_SET,
-      {
-        score: -game.players.length,
-        value: game.code,
-      },
-      { NX: true },
-    )
-  }
   private async updateInPublicGames(game: Skyjo) {
     if (this.isGameEligibleToPublicGames(game)) {
       const client = await RedisClient.getClient()
 
-      await client.zAdd(
-        GameRepository.PUBLIC_GAMES_SORTED_SET,
-        {
-          score: -game.players.length,
-          value: game.code,
-        },
-        { XX: true },
-      )
+      await client.zAdd(GameRepository.PUBLIC_GAMES_SORTED_SET, {
+        score: -game.players.length,
+        value: game.code,
+      })
     } else {
       await this.removeFromPublicGames(game.code)
     }

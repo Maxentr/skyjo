@@ -63,6 +63,7 @@ describe("Skyjo", () => {
         players: [],
 
         settings: {
+          isConfirmed: false,
           maxPlayers: 8,
           private: false,
           allowSkyjoForColumn: true,
@@ -126,6 +127,7 @@ describe("Skyjo", () => {
         ],
 
         settings: {
+          isConfirmed: true,
           private: true,
           maxPlayers: 8,
           allowSkyjoForColumn: true,
@@ -1035,6 +1037,7 @@ describe("Skyjo", () => {
           },
         ],
         settings: {
+          isConfirmed: false,
           allowSkyjoForColumn: true,
           allowSkyjoForRow: false,
           cardPerColumn: 4,

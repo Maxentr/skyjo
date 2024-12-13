@@ -18,10 +18,17 @@ import {
 import { useSkyjo } from "@/contexts/SkyjoContext"
 import { useRouter } from "@/i18n/routing"
 import { getAdmin, isAdmin } from "@/lib/skyjo"
+import { cn } from "@/lib/utils"
 import { Constants as CoreConstants } from "@skyjo/core"
 import { GameSettings } from "@skyjo/shared/validations"
 import { m } from "framer-motion"
-import { ArrowLeftIcon, InfoIcon, LockIcon, UnlockIcon } from "lucide-react"
+import {
+  ArrowLeftIcon,
+  InfoIcon,
+  LockIcon,
+  TriangleAlertIcon,
+  UnlockIcon,
+} from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
 import { useLocalStorage } from "react-use"
@@ -83,6 +90,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
   const adminNameSliced =
     adminName.length > 12 ? adminName.slice(0, 8) + "..." : adminName
 
+  const disableInput =
+    !admin || (!game.settings.private && game.settings.isConfirmed)
+
   return (
     <m.div
       className="relative h-svh w-full z-20 flex flex-col md:items-center mdh:md:justify-center overflow-auto"
@@ -139,7 +149,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   onCheckedChange={(checked) =>
                     actions.updateSingleSettings("allowSkyjoForColumn", checked)
                   }
-                  disabled={!admin}
+                  disabled={disableInput}
                   title={t("settings.allow-skyjo-for-column")}
                 />
                 <Label htmlFor="skyjo-for-column">
@@ -153,7 +163,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   onCheckedChange={(checked) =>
                     actions.updateSingleSettings("allowSkyjoForRow", checked)
                   }
-                  disabled={!admin}
+                  disabled={disableInput}
                   title={t("settings.allow-skyjo-for-row")}
                 />
                 <Label htmlFor="skyjo-for-row">
@@ -172,7 +182,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     actions.updateSingleSettings("cardPerColumn", value)
                   }
                   title={t("settings.nb-columns.title")}
-                  disabled={!admin}
+                  disabled={disableInput}
                   disabledRadioNumber={
                     game.settings.cardPerRow === 1 ? [1] : []
                   }
@@ -188,7 +198,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     actions.updateSingleSettings("cardPerRow", value)
                   }
                   title={t("settings.nb-rows.title")}
-                  disabled={!admin}
+                  disabled={disableInput}
                 />
               </div>
               <div className="flex flex-col gap-1">
@@ -209,7 +219,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     title={t("settings.initial-turned-count.title", {
                       number: game.settings.initialTurnedCount,
                     })}
-                    disabled={!admin}
+                    disabled={disableInput}
                   />
                   <Input
                     name={"initial-turned-count"}
@@ -226,7 +236,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     title={t("settings.initial-turned-count.title", {
                       number: game.settings.initialTurnedCount,
                     })}
-                    disabled={!admin}
+                    disabled={disableInput}
                     className="w-16 text-center"
                   />
                 </div>
@@ -264,7 +274,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     title={t("settings.multiplier-for-first-player.title", {
                       number: game.settings.multiplierForFirstPlayer,
                     })}
-                    disabled={!admin}
+                    disabled={disableInput}
                   />
                   <Input
                     name={"multiplier-for-first-player"}
@@ -281,7 +291,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     title={t("settings.multiplier-for-first-player.title", {
                       number: game.settings.multiplierForFirstPlayer,
                     })}
-                    disabled={!admin}
+                    disabled={disableInput}
                     className="w-16 text-center"
                   />
                 </div>
@@ -304,7 +314,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     title={t("settings.score-to-end-game.title", {
                       number: game.settings.scoreToEndGame,
                     })}
-                    disabled={!admin}
+                    disabled={disableInput}
                   />
                   <Input
                     name={"score-to-end-game"}
@@ -321,29 +331,58 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     title={t("settings.score-to-end-game.title", {
                       number: game.settings.scoreToEndGame,
                     })}
-                    disabled={!admin}
+                    disabled={disableInput}
                     className="w-20 text-center"
                   />
                 </div>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 lg:gap-8 mt-6 lg:mt-8">
-              {admin && (
-                <Button
-                  onClick={actions.resetSettings}
-                  className="bg-slate-200"
-                >
-                  {t("settings.reset-settings")}
-                </Button>
-              )}
-              <Button
-                onClick={beforeStartGame}
-                disabled={hasMinPlayers || !admin}
-                loading={isLoading}
+            {!game.settings.private && (
+              <div className="flex flex-row justify-center gap-1 mt-6">
+                <TriangleAlertIcon className="size-5 text-red-500 dark:text-red-600" />
+                <p className="text-sm text-red-500 dark:text-red-600">
+                  {t("settings.validation-warning")}
+                </p>
+              </div>
+            )}
+            {admin ? (
+              <div
+                className={cn(
+                  "flex flex-col sm:flex-row justify-center items-center gap-4 lg:gap-8",
+                  game.settings.private ? "mt-6 lg:mt-8" : "mt-4",
+                )}
               >
-                {t("start-game-button")}
-              </Button>
-            </div>
+                {(game.settings.private || !game.settings.isConfirmed) && (
+                  <Button
+                    onClick={actions.resetSettings}
+                    className="bg-slate-200"
+                  >
+                    {t("settings.reset-settings")}
+                  </Button>
+                )}
+                {!game.settings.isConfirmed ? (
+                  <Button onClick={actions.toggleSettingsValidation}>
+                    {t("settings.validate-settings")}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={beforeStartGame}
+                    disabled={hasMinPlayers || !admin}
+                    loading={isLoading}
+                  >
+                    {t("start-game-button")}
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <p className="text-center text-black dark:text-dark-font mt-6 lg:mt-8">
+                {t(
+                  game.settings.isConfirmed
+                    ? "waiting-admin-to-start"
+                    : "waiting-admin-to-validate-settings",
+                )}
+              </p>
+            )}
           </div>
           <div className="block bg-container dark:bg-dark-container border-2 border-black dark:border-dark-border rounded-2xl w-full lg:w-80 p-4 lg:p-8">
             <h3 className="text-black dark:text-dark-font text-center text-xl mb-2 lg:mb-5">

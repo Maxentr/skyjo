@@ -27,6 +27,7 @@ export interface SkyjoSettingsInterface {
 }
 
 export class SkyjoSettings implements SkyjoSettingsInterface {
+  isConfirmed: boolean = false
   private: boolean = false
   maxPlayers: number = Constants.SKYJO_DEFAULT_SETTINGS.MAX_PLAYERS
   allowSkyjoForColumn: boolean =
@@ -43,9 +44,12 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
 
   constructor(isPrivate: boolean = false) {
     this.private = isPrivate
+
+    if (isPrivate) this.isConfirmed = true
   }
 
   populate(settings: SkyjoToDb["settings"]) {
+    this.isConfirmed = settings.isConfirmed
     this.private = settings.private
     this.maxPlayers = settings.maxPlayers
     this.allowSkyjoForColumn = settings.allowSkyjoForColumn
@@ -83,6 +87,7 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
 
   toJson() {
     return {
+      isConfirmed: this.isConfirmed,
       private: this.private,
       maxPlayers: this.maxPlayers,
       allowSkyjoForColumn: this.allowSkyjoForColumn,

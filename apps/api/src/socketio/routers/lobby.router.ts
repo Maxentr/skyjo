@@ -166,6 +166,12 @@ const lobbyRouter = (socket: SkyjoSocket) => {
       },
     ),
   )
+  socket.on(
+    "game:settings:toggle-validation",
+    socketErrorWrapper(async () => {
+      await instance.onToggleSettingsValidation(socket)
+    }),
+  )
   //#endregion
 
   socket.on(

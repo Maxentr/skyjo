@@ -276,7 +276,46 @@ describe("LobbyService", () => {
         ...newSettings,
         private: game.settings.private,
         maxPlayers: 8,
+        isConfirmed: game.settings.isConfirmed,
       })
+    })
+  })
+
+  describe("onToggleSettingsValidation", () => {
+    it("should do nothing if game is private", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(true))
+      game.addPlayer(player)
+      socket.data.gameCode = game.code
+      socket.data.playerId = player.id
+
+      expect(game.settings.isConfirmed).toBeTruthy()
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await service.onToggleSettingsValidation(socket)
+
+      expect(game.settings.isConfirmed).toBeTruthy()
+    })
+
+    it("should set the settings validation to true", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(false))
+      game.addPlayer(player)
+      socket.data.gameCode = game.code
+      socket.data.playerId = player.id
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await service.onToggleSettingsValidation(socket)
+
+      expect(game.settings.isConfirmed).toBeTruthy()
     })
   })
 

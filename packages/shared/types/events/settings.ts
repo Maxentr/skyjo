@@ -32,4 +32,5 @@ export interface ClientToServerSettingsEvents {
   "game:settings:multiplier-for-first-player": (
     multiplierForFirstPlayer: UpdateGameSettingsMultiplierForFirstPlayer,
   ) => void
+  "game:settings:toggle-validation": () => void
 }

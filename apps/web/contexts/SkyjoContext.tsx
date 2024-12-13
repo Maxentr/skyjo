@@ -40,6 +40,7 @@ type SkyjoContext = {
       value: UpdateGameSettings[T],
     ) => void
     updateSettings: (settings: UpdateGameSettings) => void
+    toggleSettingsValidation: () => void
     resetSettings: () => void
     startGame: () => void
     playRevealCard: (column: number, row: number) => void
@@ -202,6 +203,12 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     }
   }
 
+  const toggleSettingsValidation = () => {
+    if (!admin) return
+
+    socket!.emit("game:settings:toggle-validation")
+  }
+
   const updateSettings = (settings: UpdateGameSettings) => {
     if (!admin) return
 
@@ -279,6 +286,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const actions = {
     sendMessage,
     updateSingleSettings,
+    toggleSettingsValidation,
     updateSettings,
     resetSettings,
     startGame,

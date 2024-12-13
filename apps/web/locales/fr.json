@@ -69,6 +69,7 @@
       "title": "Partie de {name}",
       "leave-to-home": "Retour à l'accueil",
       "leave-to-public-game-list": "Retour à la liste des parties publiques",
+      "go-back-to-settings": "Retour aux paramètres",
       "settings": {
         "private": {
           "tooltip": {
@@ -77,6 +78,8 @@
           }
         },
         "reset-settings": "Réinitialiser les paramètres",
+        "validation-warning": "Les paramètres de la partie ne sont pas modifiables une fois qu'ils ont été validés",
+        "validate-settings": "Valider les paramètres",
         "allow-skyjo-for-column": "Autoriser les Skyjo pour les colonnes",
         "allow-skyjo-for-row": "Autoriser les Skyjo pour les lignes",
         "nb-columns": {
@@ -102,6 +105,8 @@
         }
       },
       "start-game-button": "Commencer la partie",
+      "waiting-admin-to-start": "En attente du lancement de la partie par l'admin",
+      "waiting-admin-to-confirm-game-settings": "En attente de la validation des paramètres par l'admin",
       "player-section": {
         "title": "Joueurs"
       }

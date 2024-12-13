@@ -350,6 +350,7 @@ export class Skyjo implements SkyjoInterface {
       discardPile: this.discardPile,
       drawPile: this.drawPile,
       settings: {
+        isConfirmed: this.settings.isConfirmed,
         private: this.settings.private,
         maxPlayers: this.settings.maxPlayers,
         allowSkyjoForColumn: this.settings.allowSkyjoForColumn,

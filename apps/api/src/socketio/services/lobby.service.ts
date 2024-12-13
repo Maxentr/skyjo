@@ -98,7 +98,22 @@ export class LobbyService extends BaseService {
     const stateManager = new GameStateManager(game)
 
     game.settings.updateSettings(settings)
+    game.updatedAt = new Date()
 
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
+    await this.redis.updateGame(game)
+  }
+
+  async onToggleSettingsValidation(socket: SkyjoSocket) {
+    const game = await this.redis.getGame(socket.data.gameCode)
+    if (game.settings.private) return
+
+    const stateManager = new GameStateManager(game)
+
+    game.settings.isConfirmed = !game.settings.isConfirmed
     game.updatedAt = new Date()
 
     this.sendGameUpdateToSocketAndRoom(socket, {

@@ -69,6 +69,7 @@
       "title": "{name}'s game",
       "leave-to-home": "Leave to homepage",
       "leave-to-public-game-list": "Leave to public game list",
+      "go-back-to-settings": "Go back to settings",
       "settings": {
         "private": {
           "tooltip": {
@@ -77,6 +78,8 @@
           }
         },
         "reset-settings": "Reset settings",
+        "validation-warning": "Game settings cannot be modified once they have been validated",
+        "validate-settings": "Validate settings",
         "allow-skyjo-for-column": "Allow Skyjo for column",
         "allow-skyjo-for-row": "Allow Skyjo for row",
         "nb-columns": {
@@ -102,6 +105,8 @@
         }
       },
       "start-game-button": "Start the game",
+      "waiting-admin-to-start": "Waiting for the admin to start the game",
+      "waiting-admin-to-confirm-game-settings": "Waiting for the admin to validate the settings",
       "player-section": {
         "title": "Players"
       }

@@ -1,4 +1,5 @@
 export type SkyjoSettingsToJson = {
+  isConfirmed: boolean
   private: boolean
   maxPlayers: number
 
