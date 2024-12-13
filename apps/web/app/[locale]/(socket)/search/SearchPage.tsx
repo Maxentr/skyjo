@@ -144,6 +144,7 @@ const PublicGameRow = ({ game, loading, setLoading }: PublicGameRowProps) => {
                 width={20}
                 height={20}
                 alt={tAvatar(player.avatar)}
+                className="select-none dark:opacity-75"
                 title={player.name}
                 priority
               />
@@ -153,7 +154,7 @@ const PublicGameRow = ({ game, loading, setLoading }: PublicGameRowProps) => {
             (_, index) => (
               <div
                 key={game.code + index}
-                className="size-5 bg-gray-100 rounded-full"
+                className="size-5 bg-gray-100 dark:bg-gray-700 rounded-full"
               />
             ),
           )}
@@ -176,21 +177,21 @@ const LoadingPublicGames = () => {
     <Fragment key={`loading-game-${index}`}>
       <div className="w-full flex flex-row items-center justify-between">
         <div className="flex flex-col gap-1">
-          <div className="h-4 py-2 w-32 animate-pulse bg-gray-200 rounded" />
+          <div className="h-4 py-2 w-32 animate-pulse bg-gray-200 dark:bg-gray-600 rounded" />
           <div className="flex flex-row items-center gap-2">
             {Array.from({ length: 8 }).map((_, playerIndex) => (
               <div
                 key={`loading-player-${index}-${playerIndex}`}
                 className="flex flex-col items-center justify-center"
               >
-                <div className="size-5 animate-pulse bg-gray-200 rounded-full" />
+                <div className="size-5 animate-pulse bg-gray-200 dark:bg-gray-600 rounded-full" />
               </div>
             ))}
           </div>
         </div>
-        <div className="size-10 animate-pulse bg-gray-200 rounded-md" />
+        <div className="size-10 animate-pulse bg-gray-200 dark:bg-gray-600 rounded-md" />
       </div>
-      <hr className="last:hidden w-full border-gray-200 animate-pulse" />
+      <hr className="last:hidden w-full border-gray-200 dark:border-gray-600 animate-pulse" />
     </Fragment>
   ))
 }
