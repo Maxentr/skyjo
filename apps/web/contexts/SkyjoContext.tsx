@@ -79,7 +79,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     initGameListeners()
 
     // first time we get the game, we don't have a state version
-    socket.emit("get", game?.stateVersion ?? null)
+    socket.emit("get", null, true)
 
     return destroyGameListeners
   }, [socket, gameCode])

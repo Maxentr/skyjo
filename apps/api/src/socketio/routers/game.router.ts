@@ -18,13 +18,15 @@ const instance = new GameService()
 const gameRouter = (socket: SkyjoSocket) => {
   socket.on(
     "get",
-    socketErrorWrapper(async (clientStateVersion: number) => {
-      const stateVersion = stateVersionSchema
-        .nullable()
-        .parse(clientStateVersion)
+    socketErrorWrapper(
+      async (clientStateVersion: number, firstTime: boolean = false) => {
+        const stateVersion = stateVersionSchema
+          .nullable()
+          .parse(clientStateVersion)
 
-      await instance.onGet(socket, stateVersion)
-    }),
+        await instance.onGet(socket, stateVersion, firstTime)
+      },
+    ),
   )
 
   socket.on(

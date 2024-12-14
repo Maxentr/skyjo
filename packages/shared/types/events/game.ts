@@ -8,7 +8,7 @@ import type {
 } from "@skyjo/core"
 
 export interface ClientToServerGameEvents {
-  get: (stateVersion: number | null) => void
+  get: (stateVersion: number | null, firstTime?: boolean) => void
   "play:reveal-card": (data: PlayRevealCard, stateVersion: number) => void
   "play:pick-card": (data: PlayPickCard, stateVersion: number) => void
   "play:replace-card": (data: PlayReplaceCard, stateVersion: number) => void

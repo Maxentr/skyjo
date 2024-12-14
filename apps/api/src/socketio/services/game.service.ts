@@ -12,10 +12,14 @@ import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { BaseService } from "./base.service.js"
 
 export class GameService extends BaseService {
-  async onGet(socket: SkyjoSocket, clientStateVersion: number | null) {
+  async onGet(
+    socket: SkyjoSocket,
+    clientStateVersion: number | null,
+    firstTime: boolean = false,
+  ) {
     // TODO add trycatch and send error get if game not found to redirect the client to the homepage with a toast to explain the error
     // Leave the checkStateVersion check if client really needs to get the game
-    await this.checkStateVersion(socket, clientStateVersion)
+    await this.checkStateVersion(socket, clientStateVersion, firstTime)
   }
 
   async onRevealCard(
@@ -211,11 +215,15 @@ export class GameService extends BaseService {
   protected async checkStateVersion(
     socket: SkyjoSocket,
     clientStateVersion: number | null,
+    firstTime: boolean = false,
   ) {
     const game = await this.redis.getGame(socket.data.gameCode)
 
     if (clientStateVersion === null) {
       await this.sendGameToSocket(socket, game)
+
+      if (firstTime) return
+
       throw new CError(
         "Client state version is null. This should never happen. Sent full state update",
         {
