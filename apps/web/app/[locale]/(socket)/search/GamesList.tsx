@@ -1,8 +1,7 @@
 import { GameTag } from "@/app/[locale]/(socket)/search/GameTag"
 import { JoinGameButton } from "@/components/JoinGameButton"
 import { PublicGame, type PublicGameTag } from "@skyjo/shared/types"
-import { AnimatePresence } from "framer-motion"
-import { m } from "framer-motion"
+import { AnimatePresence, m } from "framer-motion"
 import { Gamepad2Icon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
@@ -25,12 +24,13 @@ export const GamesList = ({
 }: GamesListProps) => {
   const t = useTranslations("pages.Search")
 
+  const isEmpty = games?.length === 0 && !isFetching
+
   return (
     <div className="flex flex-col gap-4 items-center overflow-y-scroll max-h-[55svh] px-8 py-4">
       <AnimatePresence>
-        {isFetching ? (
-          <LoadingPublicGames />
-        ) : games?.length === 0 ? (
+        {isFetching && <LoadingPublicGames />}
+        {isEmpty ? (
           <m.p
             className="min-h-[6svh] flex flex-1 flex-col items-center justify-center"
             initial={{ opacity: 0 }}
