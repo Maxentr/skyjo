@@ -337,7 +337,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </div>
               </div>
             </div>
-            {!game.settings.private && (
+            {admin && !game.settings.private && (
               <div className="flex flex-row justify-center gap-1 mt-6">
                 <TriangleAlertIcon className="size-5 text-red-500 dark:text-red-600" />
                 <p className="text-sm text-red-500 dark:text-red-600">
