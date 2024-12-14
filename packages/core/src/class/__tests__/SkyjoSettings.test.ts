@@ -112,6 +112,21 @@ describe("SkyjoSettings", () => {
     })
   })
 
+  describe("isClassicSettings", () => {
+    it("should return true if the settings are classic", () => {
+      const settings = new SkyjoSettings()
+
+      expect(settings.isClassicSettings()).toBeTruthy()
+    })
+
+    it("should return false if the settings are not classic", () => {
+      const settings = new SkyjoSettings()
+      settings.allowSkyjoForRow = true
+
+      expect(settings.isClassicSettings()).toBeFalsy()
+    })
+  })
+
   it("should return json", () => {
     const settingsToJson = settings.toJson()
 

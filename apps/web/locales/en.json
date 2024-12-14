@@ -37,8 +37,23 @@
       }
     },
     "Search": {
-      "back": "Back to homepage",
-      "title": "Public games",
+      "header": {
+        "back": "Back to homepage",
+        "title": "Public games",
+        "refresh": "Refresh the games list"
+      },
+      "tags": {
+        "title": "Filters:",
+        "no-tags-available": "No more tags available",
+        "tag": {
+          "classic": "Classic",
+          "custom": "Custom",
+          "column": "Column",
+          "row": "Row",
+          "short-game": "Short game",
+          "long-game": "Long game"
+        }
+      },
       "no-games-found": "No games found",
       "game-of": "{name}'s game"
     },

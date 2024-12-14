@@ -37,8 +37,23 @@
       }
     },
     "Search": {
-      "back": "Retour à la page d'accueil",
-      "title": "Parties publiques",
+      "header": {
+        "back": "Retour à la page d'accueil",
+        "title": "Parties publiques",
+        "refresh": "Rafraîchir la liste des parties"
+      },
+      "tags": {
+        "title": "Filtres :",
+        "no-tags-available": "Plus aucun tag disponible",
+        "tag": {
+          "classic": "Classique",
+          "custom": "Personnalisé",
+          "column": "Colonne",
+          "row": "Ligne",
+          "short-game": "Partie courte",
+          "long-game": "Partie longue"
+        }
+      },
       "no-games-found": "Aucune partie trouvée",
       "game-of": "Partie de {name}"
     },

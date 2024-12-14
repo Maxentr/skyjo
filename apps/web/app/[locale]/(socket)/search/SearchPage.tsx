@@ -1,17 +1,14 @@
 "use client"
 
+import { GamesList } from "@/app/[locale]/(socket)/search/GamesList"
+import { SearchHeader } from "@/app/[locale]/(socket)/search/SearchHeader"
+import { TagsFilter } from "@/app/[locale]/(socket)/search/TagsFilter"
 import { CreateGameButton } from "@/components/CreateGameButton"
-import { JoinGameButton } from "@/components/JoinGameButton"
 import MenuDropdown from "@/components/MenuDropdown"
-import { useRouter } from "@/i18n/routing"
-import { cn } from "@/lib/utils"
-import { PublicGame } from "@skyjo/shared/types"
+import { PublicGame, PublicGameTag } from "@skyjo/shared/types"
 import { useQuery } from "@tanstack/react-query"
 import { m } from "framer-motion"
-import { Gamepad2Icon, HomeIcon, RefreshCwIcon } from "lucide-react"
-import { useTranslations } from "next-intl"
-import Image from "next/image"
-import { Dispatch, Fragment, SetStateAction, useState } from "react"
+import { useState } from "react"
 
 const fetchPublicGames = async (page = 1): Promise<PublicGame[]> => {
   const response = await fetch(
@@ -26,10 +23,8 @@ const fetchPublicGames = async (page = 1): Promise<PublicGame[]> => {
 }
 
 export const SearchPage = () => {
-  const router = useRouter()
-  const t = useTranslations("pages.Search")
-
   const [buttonLoading, setButtonLoading] = useState(false)
+  const [selectedTags, setSelectedTags] = useState<PublicGameTag[]>([])
 
   const page = 1
   const { data, isFetching, refetch } = useQuery({
@@ -37,6 +32,20 @@ export const SearchPage = () => {
     queryFn: () => fetchPublicGames(page),
     refetchInterval: 30000,
   })
+
+  const onTagClick = (tag: PublicGameTag) => {
+    setSelectedTags((prev) => {
+      if (prev.includes(tag)) return prev.filter((t) => t !== tag)
+      return [...prev, tag]
+    })
+  }
+
+  const filteredGames =
+    selectedTags.length > 0
+      ? data?.filter((game) =>
+          selectedTags.every((tag) => game.tags.includes(tag)),
+        )
+      : data
 
   return (
     <m.div
@@ -56,142 +65,23 @@ export const SearchPage = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <div className="flex flex-row items-center justify-between pt-4 px-4 sm:pt-8 sm:px-8">
-            <button
-              className="size-6 text-black dark:text-dark-font cursor-pointer"
-              onClick={() => router.replace("/")}
-              title={t("back")}
-            >
-              <HomeIcon className="size-6" />
-            </button>
-            <h2 className="text-black dark:text-dark-font text-center text-2xl">
-              {t("title")}
-            </h2>
-
-            <button
-              className="size-6 text-black dark:text-dark-font disabled:opacity-50 cursor-pointer"
-              onClick={() => refetch()}
-              disabled={isFetching}
-              title={t("back")}
-            >
-              <RefreshCwIcon
-                className={cn("size-6", isFetching && "animate-spin")}
-              />
-            </button>
-          </div>
-
-          <div className="flex flex-col gap-4 items-center overflow-y-scroll max-h-[55svh] px-4 sm:px-8 py-4">
-            {isFetching ? (
-              <LoadingPublicGames />
-            ) : data?.length === 0 ? (
-              <p className="min-h-[7svh] flex flex-1 flex-col items-center justify-center">
-                {t("no-games-found")}
-              </p>
-            ) : (
-              data?.map((game) => (
-                <Fragment key={game.code}>
-                  <PublicGameRow
-                    game={game}
-                    loading={buttonLoading}
-                    setLoading={setButtonLoading}
-                  />
-                  <hr className="last:hidden w-full border-black dark:border-gray-700" />
-                </Fragment>
-              ))
-            )}
-          </div>
+          <SearchHeader onRefresh={refetch} isFetching={isFetching} />
+          <TagsFilter selectedTags={selectedTags} onTagClick={onTagClick} />
+          <GamesList
+            games={filteredGames}
+            isFetching={isFetching}
+            buttonLoading={buttonLoading}
+            setButtonLoading={setButtonLoading}
+            onTagClick={onTagClick}
+          />
           <CreateGameButton
             type="public"
-            className="w-fit mx-auto mb-4 sm:mb-8"
+            className="w-fit mx-auto mb-8"
             loading={buttonLoading}
             setLoading={setButtonLoading}
           />
-          {/* <div className="flex flex-row items-center gap-2 justify-center">
-            <Button onClick={() => setPage(page - 1)}>Previous</Button>
-            <p className="text-black dark:text-dark-font text-sm">
-              Page {page}
-            </p>
-            <Button onClick={() => setPage(page + 1)}>Next</Button>
-          </div> */}
         </m.div>
       </div>
     </m.div>
   )
-}
-type PublicGameRowProps = {
-  game: PublicGame
-  loading: boolean
-  setLoading: Dispatch<SetStateAction<boolean>>
-}
-const PublicGameRow = ({ game, loading, setLoading }: PublicGameRowProps) => {
-  const t = useTranslations("pages.Search")
-  const tAvatar = useTranslations("utils.avatar")
-
-  return (
-    <div className="w-full flex flex-row items-center justify-between gap-4 sm:gap-0">
-      <div className="flex flex-col gap-1">
-        <p className="text-black dark:text-dark-font text-base">
-          {t("game-of", { name: game.adminName })}
-        </p>
-        <div className="flex flex-row items-center gap-2">
-          {game.players.map((player) => (
-            <div
-              key={player.id}
-              className="flex flex-col items-center justify-center"
-            >
-              <Image
-                src={`/avatars/${player.avatar}.svg`}
-                width={20}
-                height={20}
-                alt={tAvatar(player.avatar)}
-                className="select-none dark:opacity-75"
-                title={player.name}
-                priority
-              />
-            </div>
-          ))}
-          {Array.from({ length: game.maxPlayers - game.players.length }).map(
-            (_, index) => (
-              <div
-                key={game.code + index}
-                className="size-5 bg-gray-100 dark:bg-gray-700 rounded-full"
-              />
-            ),
-          )}
-        </div>
-      </div>
-      <JoinGameButton
-        gameCode={game.code}
-        loading={loading}
-        setLoading={setLoading}
-        className="size-10 p-0"
-      >
-        <Gamepad2Icon className="size-5 text-black dark:text-dark-font" />
-      </JoinGameButton>
-    </div>
-  )
-}
-
-const LoadingPublicGames = () => {
-  return Array.from({ length: 2 }).map((_, index) => (
-    <Fragment key={`loading-game-${index}`}>
-      <div className="w-full flex flex-row items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <div className="h-4 py-2 w-32 animate-pulse bg-gray-200 dark:bg-gray-600 rounded" />
-          <div className="flex flex-row items-center gap-2">
-            {Array.from({ length: 8 }).map((_, playerIndex) => (
-              <div
-                key={`loading-player-${index}-${playerIndex}`}
-                className="flex flex-col items-center justify-center"
-              >
-                <div className="size-5 animate-pulse bg-gray-200 dark:bg-gray-600 rounded-full" />
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="size-10 animate-pulse bg-gray-200 dark:bg-gray-600 rounded-md" />
-      </div>
-      <hr className="last:hidden w-full border-gray-200 dark:border-gray-600 animate-pulse" />
-    </Fragment>
-  ))
 }

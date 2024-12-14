@@ -85,6 +85,24 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     }
   }
 
+  isClassicSettings() {
+    return (
+      this.allowSkyjoForColumn ===
+        Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN &&
+      this.allowSkyjoForRow ===
+        Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_ROW &&
+      this.initialTurnedCount ===
+        Constants.SKYJO_DEFAULT_SETTINGS.CARDS.INITIAL_TURNED_COUNT &&
+      this.cardPerRow === Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW &&
+      this.cardPerColumn ===
+        Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN &&
+      this.scoreToEndGame ===
+        Constants.SKYJO_DEFAULT_SETTINGS.SCORE_TO_END_GAME &&
+      this.multiplierForFirstPlayer ===
+        Constants.SKYJO_DEFAULT_SETTINGS.MULTIPLIER_FOR_FIRST_PLAYER
+    )
+  }
+
   toJson() {
     return {
       isConfirmed: this.isConfirmed,
