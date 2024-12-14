@@ -31,6 +31,9 @@ export const SearchPage = () => {
     queryKey: ["publicGames", page],
     queryFn: () => fetchPublicGames(page),
     refetchInterval: 30000,
+    retryDelay: (attemptIndex) => {
+      return Math.min(1000 * 2 ** attemptIndex, 30000)
+    },
   })
 
   const onTagClick = (tag: PublicGameTag) => {
