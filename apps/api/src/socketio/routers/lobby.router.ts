@@ -1,4 +1,5 @@
 import { LobbyService } from "@/socketio/services/lobby.service.js"
+import { consumeSocketRateLimiter } from "@/socketio/utils/rate-limiter.js"
 import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   type CreatePlayer,
@@ -26,9 +27,16 @@ import {
   updateGameSettingsSchema,
   updateGameSettingsScoreToEndGameSchema,
 } from "@skyjo/shared/validations"
+import { RateLimiterMemory } from "rate-limiter-flexible"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
 
 const instance = new LobbyService()
+
+const settingsRateLimiter = new RateLimiterMemory({
+  keyPrefix: "settings",
+  points: 10,
+  duration: 5,
+})
 
 const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
@@ -64,6 +72,8 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "game:settings",
     socketErrorWrapper(async (data: UpdateGameSettings) => {
+      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
       const settings = updateGameSettingsSchema.parse(data)
       await instance.onUpdateSettings(socket, settings)
     }),
@@ -71,6 +81,8 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "game:settings:allow-skyjo-for-column",
     socketErrorWrapper(async (data: UpdateGameSettingsAllowSkyjoForColumn) => {
+      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
       const isAllowed = updateGameSettingsAllowSkyjoForColumnSchema.parse(
         data,
         {
@@ -88,6 +100,8 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "game:settings:allow-skyjo-for-row",
     socketErrorWrapper(async (data: UpdateGameSettingsAllowSkyjoForRow) => {
+      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
       const isAllowed = updateGameSettingsAllowSkyjoForRowSchema.parse(data, {
         path: ["allowSkyjoForRow"],
       })
@@ -101,6 +115,8 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "game:settings:initial-turned-count",
     socketErrorWrapper(async (data: UpdateGameSettingsInitialTurnedCount) => {
+      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
       const initialTurnedCount =
         updateGameSettingsInitialTurnedCountSchema.parse(data, {
           path: ["initialTurnedCount"],
@@ -115,6 +131,8 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "game:settings:card-per-row",
     socketErrorWrapper(async (data: UpdateGameSettingsCardPerRow) => {
+      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
       const cardPerRow = updateGameSettingsCardPerRowSchema.parse(data, {
         path: ["cardPerRow"],
       })
@@ -124,6 +142,8 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "game:settings:card-per-column",
     socketErrorWrapper(async (data: UpdateGameSettingsCardPerColumn) => {
+      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
       const cardPerColumn = updateGameSettingsCardPerColumnSchema.parse(data, {
         path: ["cardPerColumn"],
       })
@@ -137,6 +157,8 @@ const lobbyRouter = (socket: SkyjoSocket) => {
   socket.on(
     "game:settings:score-to-end-game",
     socketErrorWrapper(async (data: UpdateGameSettingsScoreToEndGame) => {
+      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
       const scoreToEndGame = updateGameSettingsScoreToEndGameSchema.parse(
         data,
         {
@@ -154,6 +176,8 @@ const lobbyRouter = (socket: SkyjoSocket) => {
     "game:settings:multiplier-for-first-player",
     socketErrorWrapper(
       async (data: UpdateGameSettingsMultiplierForFirstPlayer) => {
+        await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
         const multiplierForFirstPlayer =
           updateGameSettingsMultiplierForFirstPlayerSchema.parse(data, {
             path: ["multiplierForFirstPlayer"],

@@ -16,6 +16,7 @@ export class Constants {
     STATE_VERSION_AHEAD: "state-version-ahead",
     STATE_VERSION_BEHIND: "state-version-behind",
     STATE_VERSION_NULL: "state-version-null",
+    TOO_MANY_REQUESTS: "too-many-requests",
   } as const
 }
 export type Error = (typeof Constants.ERROR)[keyof typeof Constants.ERROR]
