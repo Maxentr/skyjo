@@ -90,12 +90,20 @@
           "label": "Multiplicador para el primer jugador",
           "title": "La puntuación del primer jugador se multiplicará por {number} si no es estrictamente inferior a las otras puntuaciones del juego",
           "description": "La puntuación del primer jugador que haya revelado todas sus cartas se multiplicará por este número si no es estrictamente inferior a las demás puntuaciones del juego"
-        }
+        },
+        "validate-settings": "Validar los ajustes",
+        "validation-warning": "Los ajustes de la partida no pueden modificarse una vez validados"
       },
       "start-game-button": "Iniciar el juego",
       "player-section": {
         "title": "Jugadores"
-      }
+      },
+      "waiting-admin-to-confirm-game-settings": "Esperando a que el administrador valide la configuración",
+      "title": "Partida de {name}",
+      "leave-to-home": "Ir a la página de inicio",
+      "leave-to-public-game-list": "Ir a la lista pública de partidas",
+      "waiting-admin-to-start": "Esperando a que el administrador inicie la partida",
+      "go-back-to-settings": "Volver a los ajustes"
     },
     "ResultsPage": {
       "title": "Resultados del juego",
@@ -185,6 +193,27 @@
         "description": "Aprende las reglas de Skyjo, un juego multijugador en línea divertido y atractivo. Descubre cómo jugar a Skyjo con amigos gratis y domina el juego con nuestra guía detallada.",
         "title": "¿Cómo jugar a Skyjo? | Skyjo en línea"
       }
+    },
+    "Search": {
+      "header": {
+        "title": "Juegos públicos",
+        "refresh": "Actualizar la lista de juegos",
+        "back": "Volver a la página de inicio"
+      },
+      "tags": {
+        "title": "Filtros:",
+        "no-tags-available": "No hay más etiquetas disponibles",
+        "tag": {
+          "classic": "Clásico",
+          "custom": "Personalizada",
+          "column": "Columna",
+          "row": "Fila",
+          "short-game": "Partida rápido",
+          "long-game": "Partida larga"
+        }
+      },
+      "no-games-found": "Sin partidas",
+      "game-of": "Partida {name}"
     }
   },
   "components": {
