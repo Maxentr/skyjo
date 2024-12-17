@@ -19,6 +19,7 @@ type JoinGameButtonProps = {
   setLoading: Dispatch<SetStateAction<boolean>>
   className?: ClassValue
   children?: ReactNode
+  onError?: () => void
 }
 export const JoinGameButton = ({
   gameCode,
@@ -26,6 +27,7 @@ export const JoinGameButton = ({
   setLoading,
   className,
   children,
+  onError,
 }: JoinGameButtonProps) => {
   const t = useTranslations("components.JoinGameButton")
   const tSocketError = useTranslations("utils.socket.error")
@@ -69,7 +71,7 @@ export const JoinGameButton = ({
       clearTimeout(timeout)
       setLoading(false)
 
-      router.replace(`/`)
+      onError?.()
 
       toast({
         description: joinErrorDescription[message],
