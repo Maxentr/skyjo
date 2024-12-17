@@ -45,10 +45,13 @@ export class PlayerService extends BaseService {
 
       if (game.isAdmin(player.id)) await this.changeAdmin(game)
 
-      if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
-        if (game.status !== CoreConstants.GAME_STATUS.FINISHED)
-          game.removePlayer(player.id)
+      if (
+        game.status === CoreConstants.GAME_STATUS.LOBBY ||
+        game.status === CoreConstants.GAME_STATUS.STOPPED
+      )
+        game.removePlayer(player.id)
 
+      if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
         game.restartGameIfAllPlayersWantReplay()
 
         const promises: Promise<void>[] = []
@@ -189,52 +192,9 @@ export class PlayerService extends BaseService {
 
   private async updateGameAfterTimeoutExpired(socket: SkyjoSocket) {
     const game = await this.redis.getGame(socket.data.gameCode)
-    const stateManager = new GameStateManager(game)
-
     const player = game.getPlayerById(socket.data.playerId)!
 
-    if (
-      !player ||
-      player.connectionStatus === CoreConstants.CONNECTION_STATUS.CONNECTED
-    ) {
-      return
-    }
-
-    player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
-
-    if (!game.haveAtLeastMinPlayersConnected()) {
-      game.status = CoreConstants.GAME_STATUS.STOPPED
-
-      this.sendGameUpdateToSocketAndRoom(socket, {
-        room: game.code,
-        stateManager,
-      })
-      await this.redis.removeGame(game.code)
-      return
-    }
-
-    if (game.getCurrentPlayer()?.id === socket.data.playerId) {
-      game.nextTurn()
-    }
-
-    if (
-      game.roundStatus ===
-      CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
-    )
-      game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
-
-    game.checkEndOfRound()
-    if (
-      game.roundStatus === CoreConstants.ROUND_STATUS.OVER &&
-      game.status !== CoreConstants.GAME_STATUS.FINISHED
-    ) {
-      this.restartRound(socket, game)
-    }
-
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
-      stateManager,
-    })
+    await this.handlePlayerDisconnection(socket, game, player)
 
     const message =
       CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_RECONNECTION_EXPIRED
@@ -250,8 +210,6 @@ export class PlayerService extends BaseService {
         },
       ],
     })
-
-    await this.redis.updateGame(game)
   }
 
   private async reconnectPlayer(

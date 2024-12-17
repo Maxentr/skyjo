@@ -1,5 +1,4 @@
 import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
-import { GameStateManager } from "@/socketio/utils/GameStateManager.js"
 import { Constants as CoreConstants, KickVote, type Skyjo } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { BaseService } from "./base.service.js"
@@ -184,8 +183,6 @@ export class KickService extends BaseService {
     game: Skyjo,
     kickVote: KickVote,
   ) {
-    const stateManager = new GameStateManager(game)
-
     const playerToKick = game.getPlayerById(kickVote.targetId)
     if (!playerToKick) {
       throw new CError(
@@ -207,28 +204,13 @@ export class KickService extends BaseService {
     playerToKick.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
     await this.redis.updatePlayer(game.code, playerToKick.toJson())
 
-    if (game.isAdmin(playerToKick.id)) await this.changeAdmin(game)
-
-    if (
-      game.status === CoreConstants.GAME_STATUS.LOBBY ||
-      game.status === CoreConstants.GAME_STATUS.FINISHED ||
-      game.status === CoreConstants.GAME_STATUS.STOPPED
-    ) {
-      game.removePlayer(playerToKick.id)
-      await this.redis.removePlayer(game.code, playerToKick.id)
-    }
+    await this.handlePlayerDisconnection(socket, game, playerToKick)
 
     this.sendToSocketAndRoom(socket, {
       room: game.code,
       event: "kick:vote-success",
       data: [kickVote.toJson()],
     })
-
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
-      stateManager,
-    })
-    await this.redis.updateGame(game)
   }
   //#endregion
 }

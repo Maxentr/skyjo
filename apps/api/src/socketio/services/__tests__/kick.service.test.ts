@@ -163,6 +163,7 @@ describe("KickService", () => {
     })
 
     it("should add a vote to the kick vote and broadcast the success and change the admin if target is the current admin", async () => {
+      game.status = CoreConstants.GAME_STATUS.PLAYING
       game.adminId = opponent2.id
       await service.onInitiateKickVote(socket, opponent2.id)
       await service.onVoteToKick(opponent1Socket, true)
@@ -170,39 +171,8 @@ describe("KickService", () => {
       expect(game.adminId).not.toBe(opponent2.id)
     })
 
-    it("should add a vote to the kick vote, broadcast the success and remove the player if game is in lobby", async () => {
-      await service.onInitiateKickVote(opponent1Socket, opponent2.id)
-
-      await service.onVoteToKick(socket, true)
-
-      expect(socket.emit).toHaveBeenNthCalledWith(
-        1,
-        "kick:vote-success",
-        expect.objectContaining({}),
-      )
-
-      expect(service["kickVotes"].get(game.id)).toBeUndefined()
-      expect(game.players.find((p) => p.id === opponent2.id)).toBeUndefined()
-    })
-
-    it("should add a vote to the kick vote, broadcast the success and remove the player if game is finished", async () => {
+    it("should add a vote to the kick vote, broadcast the success and remove the player if game is not playing", async () => {
       game.status = CoreConstants.GAME_STATUS.FINISHED
-      await service.onInitiateKickVote(opponent1Socket, opponent2.id)
-
-      await service.onVoteToKick(socket, true)
-
-      expect(socket.emit).toHaveBeenNthCalledWith(
-        1,
-        "kick:vote-success",
-        expect.objectContaining({}),
-      )
-
-      expect(service["kickVotes"].get(game.id)).toBeUndefined()
-      expect(game.players.find((p) => p.id === opponent2.id)).toBeUndefined()
-    })
-
-    it("should add a vote to the kick vote, broadcast the success and remove the player if game is stopped", async () => {
-      game.status = CoreConstants.GAME_STATUS.STOPPED
       await service.onInitiateKickVote(opponent1Socket, opponent2.id)
 
       await service.onVoteToKick(socket, true)
@@ -226,6 +196,11 @@ describe("KickService", () => {
 
       expect(socket.emit).toHaveBeenNthCalledWith(
         1,
+        "game:update",
+        expect.objectContaining({}),
+      )
+      expect(socket.emit).toHaveBeenNthCalledWith(
+        2,
         "kick:vote-success",
         expect.objectContaining({}),
       )

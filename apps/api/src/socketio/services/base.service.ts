@@ -159,4 +159,62 @@ export abstract class BaseService {
       await this.redis.updateGame(game)
     }, Constants.NEW_ROUND_DELAY)
   }
+
+  protected async handlePlayerDisconnection(
+    socket: SkyjoSocket,
+    game: Skyjo,
+    player: SkyjoPlayer,
+  ) {
+    const stateManager = new GameStateManager(game)
+
+    if (
+      !player ||
+      player.connectionStatus === CoreConstants.CONNECTION_STATUS.CONNECTED
+    ) {
+      return
+    }
+
+    if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
+      game.removePlayer(player.id)
+      await this.redis.removePlayer(game.code, player.id)
+
+      return
+    }
+
+    if (!game.haveAtLeastMinPlayersConnected()) {
+      game.status = CoreConstants.GAME_STATUS.STOPPED
+
+      this.sendGameUpdateToSocketAndRoom(socket, {
+        room: game.code,
+        stateManager,
+      })
+      await this.redis.removeGame(game.code)
+      return
+    }
+
+    player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
+
+    if (game.isAdmin(player.id)) await this.changeAdmin(game)
+
+    if (game.getCurrentPlayer()?.id === player.id) game.nextTurn()
+
+    if (
+      game.roundStatus ===
+      CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
+    )
+      game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
+
+    game.checkEndOfRound()
+
+    if (game.roundStatus === CoreConstants.ROUND_STATUS.OVER) {
+      this.restartRound(socket, game)
+    }
+
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
+
+    await this.redis.updateGame(game)
+  }
 }
