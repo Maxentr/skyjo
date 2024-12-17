@@ -13,6 +13,7 @@ type GamesListProps = {
   buttonLoading: boolean
   setButtonLoading: Dispatch<SetStateAction<boolean>>
   onTagClick: (tag: PublicGameTag) => void
+  onJoinGameError: () => void
 }
 
 export const GamesList = ({
@@ -21,6 +22,7 @@ export const GamesList = ({
   buttonLoading,
   setButtonLoading,
   onTagClick,
+  onJoinGameError,
 }: GamesListProps) => {
   const t = useTranslations("pages.Search")
 
@@ -47,6 +49,7 @@ export const GamesList = ({
                 loading={buttonLoading}
                 setLoading={setButtonLoading}
                 onTagClick={onTagClick}
+                onJoinGameError={onJoinGameError}
               />
               <m.hr
                 className="last:hidden w-full border-black dark:border-gray-700"
@@ -67,12 +70,14 @@ type PublicGameRowProps = {
   loading: boolean
   setLoading: Dispatch<SetStateAction<boolean>>
   onTagClick: (tag: PublicGameTag) => void
+  onJoinGameError: () => void
 }
 const PublicGameRow = ({
   game,
   loading,
   setLoading,
   onTagClick,
+  onJoinGameError,
 }: PublicGameRowProps) => {
   const t = useTranslations("pages.Search")
   const tAvatar = useTranslations("utils.avatar")
@@ -126,6 +131,7 @@ const PublicGameRow = ({
         gameCode={game.code}
         loading={loading}
         setLoading={setLoading}
+        onError={onJoinGameError}
         className="size-10 p-0"
       >
         <Gamepad2Icon className="size-5 text-black dark:text-dark-font" />

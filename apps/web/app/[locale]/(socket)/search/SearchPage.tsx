@@ -76,6 +76,7 @@ export const SearchPage = () => {
             buttonLoading={buttonLoading}
             setButtonLoading={setButtonLoading}
             onTagClick={onTagClick}
+            onJoinGameError={refetch}
           />
           <CreateGameButton
             type="public"
