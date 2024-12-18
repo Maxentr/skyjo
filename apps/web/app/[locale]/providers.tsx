@@ -24,14 +24,11 @@ if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
     capture_pageview: false,
     capture_pageleave: true,
     opt_in_site_apps: true,
-    autocapture: {
-      element_attribute_ignorelist: ['data-attr-pii="game-card"'],
-    },
     rate_limiting: {
       events_per_second: 5,
     },
     before_send: [
-      sampleByDistinctId(0.8),
+      sampleByDistinctId(0.6),
       sampleByEvent(
         ["$$heatmap", "$heatmaps_data", "$web_vitals", "$dead_click"],
         0.5,

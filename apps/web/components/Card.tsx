@@ -189,6 +189,7 @@ const Card = ({
           : undefined
       }
       className={cn(
+        "ph-no-capture",
         cardClass({
           size,
           value: cardValue[value ?? "not-visible"],
@@ -199,7 +200,6 @@ const Card = ({
       onClick={onClick}
       title={title}
       disabled={disabled}
-      data-attr-pii="game-card"
     >
       {cardContent}
     </m.button>
