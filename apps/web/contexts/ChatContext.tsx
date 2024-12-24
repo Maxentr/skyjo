@@ -2,6 +2,7 @@
 
 import { useSettings } from "@/contexts/SettingsContext"
 import { useSocket } from "@/contexts/SocketContext"
+import { useUser } from "@/contexts/UserContext"
 import { Constants as CoreConstants, SystemMessageType } from "@skyjo/core"
 import { Constants as SharedConstants } from "@skyjo/shared/constants"
 import {
@@ -30,6 +31,9 @@ const playerJoinedSound = new Howl({
 const playerLeftSound = new Howl({
   src: ["/sounds/player-left.ogg"],
 })
+const wizzSound = new Howl({
+  src: "/sounds/wizz.ogg",
+})
 
 type ChatContext = {
   chat: ChatMessage[]
@@ -45,12 +49,14 @@ type ChatContext = {
   mutePlayer: (username: string) => void
   unmutePlayer: (username: string) => void
   toggleMutePlayer: (username: string) => void
+  wizzPlayer: (targetUsername: string) => void
 }
 
 const ChatContext = createContext<ChatContext | undefined>(undefined)
 
 const ChatProvider = ({ children }: PropsWithChildren) => {
   const { socket } = useSocket()
+  const { username } = useUser()
   const {
     settings: { chatVisibility },
   } = useSettings()
@@ -69,6 +75,7 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
       socket.on("message", onMessageReceived)
       socket.on("message:system", onSystemMessageReceived)
       socket.on("message:server", onServerMessageReceived)
+      socket.on("wizz", onWizzReceived)
     }
 
     return () => {
@@ -76,6 +83,7 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
         socket.off("message", onMessageReceived)
         socket.off("message:system", onSystemMessageReceived)
         socket.off("message:server", onServerMessageReceived)
+        socket.off("wizz", onWizzReceived)
       }
     }
   }, [socket, chatVisibility, mutedPlayers])
@@ -141,6 +149,31 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
   const onSystemMessageReceived = (message: SystemChatMessage) => {
     setChat((prev) => [message, ...prev])
   }
+
+  const onWizzReceived = (
+    targetUsername: string,
+    initiatorUsername: string,
+  ) => {
+    if (targetUsername === username) {
+      const wizzContainer = document.querySelector(".wizz-container")
+      if (wizzContainer) {
+        wizzContainer.classList.add("animate-wizz")
+        setTimeout(() => {
+          wizzContainer.classList.remove("animate-wizz")
+        }, 2000)
+      } else {
+        console.error("Wizz container not found")
+      }
+
+      wizzSound.play()
+      addSystemMessage(
+        t("wizz-self", { initiatorUsername }),
+        CoreConstants.SYSTEM_MESSAGE_TYPE.WARN_SYSTEM_MESSAGE,
+      )
+    } else {
+      addSystemMessage(t("wizz-other", { targetUsername, initiatorUsername }))
+    }
+  }
   //#endregion
 
   const addSystemMessage = (
@@ -201,6 +234,20 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
   }
   //#endregion
 
+  //#region Wizz functionality
+  const wizzPlayer = (targetUsername: string) => {
+    if (!targetUsername) {
+      addSystemMessage(
+        t("argument-required", { command: "/wizz" }),
+        CoreConstants.SYSTEM_MESSAGE_TYPE.WARN_SYSTEM_MESSAGE,
+      )
+    }
+
+    socket!.emit("wizz", targetUsername)
+    addSystemMessage(t("wizz-sent", { targetUsername }))
+  }
+  //#endregion
+
   const contextValue = useMemo(
     () => ({
       chat,
@@ -216,12 +263,15 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
       mutePlayer,
       unmutePlayer,
       toggleMutePlayer,
+      wizzPlayer,
     }),
     [chat, unreadMessages, hasUnreadMessage, mutedPlayers],
   )
 
   return (
-    <ChatContext.Provider value={contextValue}>{children}</ChatContext.Provider>
+    <ChatContext.Provider value={contextValue}>
+      <div className="wizz-container">{children}</div>
+    </ChatContext.Provider>
   )
 }
 

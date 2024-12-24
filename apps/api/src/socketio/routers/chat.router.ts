@@ -3,7 +3,9 @@ import { consumeSocketRateLimiter } from "@/socketio/utils/rate-limiter.js"
 import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   type SendChatMessage,
+  type WizzPlayerUsername,
   sendChatMessage,
+  wizzPlayerUsername,
 } from "@skyjo/shared/validations"
 import { RateLimiterMemory } from "rate-limiter-flexible"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
@@ -17,6 +19,13 @@ const rateLimiter = new RateLimiterMemory({
   blockDuration: 20,
 })
 
+const rateLimiterWizz = new RateLimiterMemory({
+  keyPrefix: "chat-wizz",
+  points: 1,
+  duration: 5,
+  blockDuration: 20,
+})
+
 const chatRouter = (socket: SkyjoSocket) => {
   socket.on(
     "message",
@@ -25,6 +34,17 @@ const chatRouter = (socket: SkyjoSocket) => {
 
       const message = sendChatMessage.parse(data)
       await instance.onMessage(socket, message)
+    }),
+  )
+
+  socket.on(
+    "wizz",
+    socketErrorWrapper(async (data: WizzPlayerUsername) => {
+      await consumeSocketRateLimiter(rateLimiterWizz)(socket)
+
+      const targetUsername = wizzPlayerUsername.parse(data)
+
+      await instance.onWizz(socket, targetUsername)
     }),
   )
 }

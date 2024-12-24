@@ -6,3 +6,7 @@ export const sendChatMessage = z.object({
 })
 
 export type SendChatMessage = z.infer<typeof sendChatMessage>
+
+export const wizzPlayerUsername = z.string()
+
+export type WizzPlayerUsername = z.infer<typeof wizzPlayerUsername>

@@ -15,6 +15,7 @@ const config = {
     "grid-rows-4",
     "grid-rows-5",
     "grid-rows-6",
+    "animate-wizz",
   ],
   prefix: "",
   theme: {
@@ -101,6 +102,68 @@ const config = {
             "animation-timing-function": "cubic-bezier(0,0,0.2,1)",
           },
         },
+        wizz: {
+          "5%": {
+            transform: "translate(7px, 7px)",
+          },
+          "10%": {
+            transform: "translateY(-7px)",
+          },
+          "15%": {
+            transform: "translate(-1px, 5px)",
+          },
+          "20%": {
+            transform: "translate(-6px, 8px)",
+          },
+          "25%": {
+            transform: "translate(-5px, -7px)",
+          },
+          "30%": {
+            transform: "translate(6px, 7px)",
+          },
+          "35%": {
+            transform: "translate(9px, -6px)",
+          },
+          "40%": {
+            transform: "translate(-3px, 9px)",
+          },
+          "45%": {
+            transform: "translate(-3px, 4px)",
+          },
+          "50%": {
+            transform: "translate(-3px, 1px)",
+          },
+          "55%": {
+            transform: "translate(-8px, 3px)",
+          },
+          "60%": {
+            transform: "translate(7px, 3px)",
+          },
+          "65%": {
+            transform: "translate(-1px)",
+          },
+          "70%": {
+            transform: "translate(7px, -4px)",
+          },
+          "75%": {
+            transform: "translate(-2px, -8px)",
+          },
+          "80%": {
+            transform: "translateY(-9px)",
+          },
+          "85%": {
+            transform: "translate(-6px, 7px)",
+          },
+          "90%": {
+            transform: "translate(9px, 1px)",
+          },
+          "95%": {
+            transform: "translate(-9px, 7px)",
+          },
+          "100%": {
+            transform: "translateY(7px)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -108,6 +171,7 @@ const config = {
         scale: "scale 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "small-scale": "small-scale 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "small-bounce": "small-bounce 1s infinite",
+        wizz: "wizz 1s",
       },
     },
   },

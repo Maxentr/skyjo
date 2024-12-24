@@ -32,6 +32,7 @@ const ChatForm = ({ chatOpen }: ChatFormProps) => {
     mutePlayer,
     unmutePlayer,
     addSystemMessage,
+    wizzPlayer,
   } = useChat()
   const t = useTranslations("components.ChatForm")
   const form = useForm<z.infer<typeof chatFormSchema>>({
@@ -57,6 +58,12 @@ const ChatForm = ({ chatOpen }: ChatFormProps) => {
       value: "/unmute",
       description: "Unmute a player",
     },
+    {
+      name: "/wizz [username]",
+      value: "/wizz",
+      description:
+        "Shake the screen and play a sound to get a player's attention",
+    },
   ]
 
   useEffect(() => {
@@ -71,6 +78,8 @@ const ChatForm = ({ chatOpen }: ChatFormProps) => {
     if (value.startsWith("/")) {
       const [command, ...args] = value.split(" ")
       if (command === "/mute" || command === "/unmute") {
+        handleNameTagSuggestion(args.join(" "), false)
+      } else if (command === "/wizz") {
         handleNameTagSuggestion(args.join(" "), false)
       } else {
         handleCommandSuggestion(command)
@@ -199,6 +208,9 @@ const ChatForm = ({ chatOpen }: ChatFormProps) => {
         break
       case "/unmute":
         unmutePlayer(args.slice(1).trim() ?? "")
+        break
+      case "/wizz":
+        wizzPlayer(args.slice(1).trim() ?? "")
         break
       default:
         addSystemMessage(t("unknown-command", { command }))

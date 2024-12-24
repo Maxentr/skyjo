@@ -572,7 +572,10 @@
       "player-already-muted": "{username} is already muted",
       "player-muted": "{username} is now muted",
       "player-not-muted": "{username} is not muted",
-      "player-unmuted": "{username} is no longer muted"
+      "player-unmuted": "{username} is no longer muted",
+      "wizz-sent": "You have sent a wizz to {targetUsername}!",
+      "wizz-self": "You have been wizz by {initiatorUsername}!",
+      "wizz-other": "{initiatorUsername} has wizz {targetUsername} !"
     },
     "avatar": {
       "bee": "bee",

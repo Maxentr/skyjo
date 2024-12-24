@@ -15,6 +15,7 @@ const chatMessageClasses = cva("text-sm text-wrap break-words md:break-all", {
       "player-timeout": " text-red-600 ",
       "player-timeout-can-reconnect": " text-amber-600 ",
       "player-reconnection-expired": " text-red-600 ",
+      wizz: " text-purple-600",
       "system-message": " text-blue-500 ",
       "success-system-message": " text-green-600 ",
       "warn-system-message": " text-orange-500 ",

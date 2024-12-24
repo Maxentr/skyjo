@@ -35,4 +35,23 @@ export class ChatService extends BaseService {
     socket.to(game.code).emit("message", newMessage)
     socket.emit("message", newMessage)
   }
+
+  async onWizz(socket: SkyjoSocket, targetUsername: string) {
+    const game = await this.redis.getGame(socket.data.gameCode)
+
+    const player = game.getPlayerById(socket.data.playerId)
+    if (!player) {
+      throw new CError(`Player try to send a message but is not found.`, {
+        code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
+        meta: {
+          game,
+          socket,
+          gameCode: game.code,
+          playerId: socket.data.playerId,
+        },
+      })
+    }
+
+    socket.to(socket.data.gameCode).emit("wizz", targetUsername, player.name)
+  }
 }

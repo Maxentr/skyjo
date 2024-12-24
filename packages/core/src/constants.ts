@@ -84,6 +84,7 @@ export class Constants {
     PLAYER_TIMEOUT: "player-timeout",
     PLAYER_TIMEOUT_CAN_RECONNECT: "player-timeout-can-reconnect",
     PLAYER_RECONNECTION_EXPIRED: "player-reconnection-expired",
+    WIZZ: "wizz",
   } as const
 
   static readonly SERVER_MESSAGE_TYPE_ARRAY = Object.values(
