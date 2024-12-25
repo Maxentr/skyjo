@@ -174,6 +174,8 @@ export abstract class BaseService {
       return
     }
 
+    player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
+
     if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
       game.removePlayer(player.id)
       await this.redis.removePlayer(game.code, player.id)
