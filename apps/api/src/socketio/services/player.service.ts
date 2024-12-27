@@ -47,7 +47,8 @@ export class PlayerService extends BaseService {
 
       if (
         game.status === CoreConstants.GAME_STATUS.LOBBY ||
-        game.status === CoreConstants.GAME_STATUS.STOPPED
+        game.status === CoreConstants.GAME_STATUS.STOPPED ||
+        game.status === CoreConstants.GAME_STATUS.FINISHED
       )
         game.removePlayer(player.id)
 

@@ -172,7 +172,7 @@ describe("PlayerService", () => {
       expect(game.players.length).toBe(3)
     })
 
-    it("should disconnect the player but not remove it if the game is finished", async () => {
+    it("should remove the player if the game is finished", async () => {
       const opponent = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
@@ -206,14 +206,11 @@ describe("PlayerService", () => {
 
       await service.onLeave(socket)
 
-      expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.LEAVE,
-      )
       expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.FINISHED)
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.OVER,
       )
-      expect(game.players.length).toBe(2)
+      expect(game.players.length).toBe(1)
     })
 
     it("should disconnect the player after timeout expired and start the game because everyone turned the number of cards to start", async () => {
