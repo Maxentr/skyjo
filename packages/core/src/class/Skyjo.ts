@@ -294,6 +294,9 @@ export class Skyjo implements SkyjoInterface {
       this.stateVersion = 0
       this.updatedAt = new Date()
       this.turn = 0
+
+      // allow admin to change settings again
+      this.settings.isConfirmed = false
     }
   }
 
