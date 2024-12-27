@@ -14,6 +14,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      name: "search",
+      priority: 0.9,
+    },
+    {
+      name: "create?private=true",
+      priority: 0.9,
+    },
+    {
+      name: "create?private=false",
+      priority: 0.9,
+    },
+    {
       name: "rules",
       priority: 0.8,
     },
