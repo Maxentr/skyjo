@@ -379,7 +379,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 {t(
                   game.settings.isConfirmed
                     ? "waiting-admin-to-start"
-                    : "waiting-admin-to-validate-settings",
+                    : "waiting-admin-to-confirm-game-settings",
                 )}
               </p>
             )}
