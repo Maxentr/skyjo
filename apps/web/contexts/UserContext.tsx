@@ -29,6 +29,7 @@ type UserContext = {
   setUsername: Dispatch<SetStateAction<string>>
   setAvatarIndex: Dispatch<SetStateAction<number>>
   saveUserInLocalStorage: () => CreatePlayer
+  getUser: () => CreatePlayer
   getAvatar: () => Avatar
 }
 
@@ -69,6 +70,10 @@ const UserProvider = ({ children }: PropsWithChildren) => {
     return player
   }
 
+  const getUser = () => {
+    return { username, avatar: getAvatar() }
+  }
+
   const value = useMemo(
     () => ({
       username,
@@ -77,6 +82,7 @@ const UserProvider = ({ children }: PropsWithChildren) => {
       setAvatarIndex,
       saveUserInLocalStorage,
       getAvatar,
+      getUser,
     }),
     [username, avatarIndex],
   )
