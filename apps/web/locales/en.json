@@ -1,8 +1,8 @@
 {
   "head": {
-    "title": "Play Skyjo Online with Friends | Skyjo Online",
+    "title": "Play Skyjo Online with friends | Skyjo Online",
     "description": "Enjoy playing Skyjo online with friends for free! Join the fun in this exciting multiplayer game and challenge your friends to see who can win!",
-    "keywords": "Skyjo,Skyjo online,multiplayer game,play with friends,free online games,play Skyjo online"
+    "keywords": "Skyjo,Skyjo online,multiplayer game,card game,play with friends,free online games,online card games"
   },
   "pages": {
     "Index": {
@@ -37,6 +37,11 @@
       }
     },
     "Search": {
+      "head": {
+        "title": "Find public Skyjo games | Skyjo Online",
+        "description": "Looking for a Skyjo game to join? Browse available public games and start playing Skyjo online instantly with other players. Play for free now!",
+        "keywords": "Skyjo,Skyjo online,find game,join game,public games,online multiplayer,play with others,quick play,free online games,open games,online card game, multiplayer card game"
+      },
       "header": {
         "back": "Back to homepage",
         "title": "Public games",
@@ -56,6 +61,14 @@
       },
       "no-games-found": "No games found",
       "game-of": "{name}'s game"
+    },
+    "Create": {
+      "head": {
+        "title": "Create a Skyjo game | Skyjo Online",
+        "description": "Start a new Skyjo game online! Create private or public rooms, invite your friends, and enjoy the fun of Skyjo together. Play now for free!",
+        "keywords": "Skyjo,Skyjo online,create game,start game,private game,public game,play with friends,online multiplayer,free online games,custom game"
+      },
+      "loading-text": "Creating your game…"
     },
     "Maintenance": {
       "title": "Site under maintenance",
@@ -142,8 +155,8 @@
     "PrivacyPolicy": {
       "head": {
         "title": "Privacy Policy | Skyjo Online",
-        "description": "Learn how Skyjo Online protects your privacy and data while playing our free online card game. Discover our data collection, usage, and protection practices.",
-        "keywords": "Skyjo Online,privacy policy,data protection,online game privacy,secure gaming,user data,GDPR compliance"
+        "description": "Learn about Skyjo Online's commitment to your privacy. Our policy details data collection, usage, security measures, and GDPR compliance for our online card game.",
+        "keywords": "Skyjo Online,privacy policy,data protection,online game privacy,secure gaming,user data,GDPR,CCPA,data security"
       },
       "content": {
         "back": "Back to the home page",
@@ -208,10 +221,11 @@
     },
     "Rules": {
       "head": {
-        "title": "How to Play Skyjo | Skyjo Online",
-        "description": "Learn the rules of Skyjo, a fun and engaging online multiplayer game. Discover how to play Skyjo with friends for free and master the game with our detailed guide.",
-        "keywords": "Skyjo rules,how to play Skyjo,Skyjo game,online multiplayer,free card game,play with friends,Skyjo game rules"
+        "title": "How to play Skyjo | Skyjo Online",
+        "description": "Learn how to play Skyjo with our comprehensive guide. Discover the rules, strategies, and tips to master this fun online card game. Play Skyjo online with friends now!",
+        "keywords": "Skyjo rules,how to play Skyjo,Skyjo game,card game rules,online card game,game instructions,gameplay guide"
       },
+
       "back": "Back to the home page",
       "title": "Skyjo game rules"
     }

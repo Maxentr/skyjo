@@ -1,8 +1,8 @@
 {
   "head": {
     "title": "Jouer à Skyjo en ligne avec des amis | Skyjo Online",
-    "description": "Jouez gratuitement à Skyjo en ligne avec vos amis ! Jouez à ce jeu multijoueur passionnant et défiez vos amis pour voir qui peut gagner !",
-    "keywords": "Skyjo,Skyjo en ligne,jeu multijoueur,jouer avec des amis,jeux en ligne gratuits,jouer à Skyjo en ligne"
+    "description": "Amusez-vous à jouer à Skyjo en ligne gratuitement ! Rejoignez des amis ou trouvez de nouveaux adversaires dans ce jeu de cartes multijoueur passionnant. Parties rapides, jeu amusant, jouez maintenant !",
+    "keywords": "Skyjo,Skyjo en ligne,jeu multijoueur,jeu de cartes,jouer avec des amis,jeux en ligne gratuits,jeux de cartes en ligne"
   },
   "pages": {
     "Index": {
@@ -37,6 +37,11 @@
       }
     },
     "Search": {
+      "head": {
+        "title": "Trouver des parties publiques de Skyjo | Skyjo Online",
+        "description": "Vous cherchez une partie de Skyjo à rejoindre ? Parcourez les parties publiques disponibles et commencez à jouer à Skyjo en ligne instantanément avec d'autres joueurs. Jouez gratuitement maintenant !",
+        "keywords": "Skyjo,Skyjo en ligne,trouver une partie,rejoindre une partie,parties publiques,multijoueur en ligne,jouer avec les autres,jeu rapide,jeux en ligne gratuits,parties ouvertes,jeu de cartes en ligne,jeu de cartes multijoueur"
+      },
       "header": {
         "back": "Retour à la page d'accueil",
         "title": "Parties publiques",
@@ -56,6 +61,14 @@
       },
       "no-games-found": "Aucune partie trouvée",
       "game-of": "Partie de {name}"
+    },
+    "Create": {
+      "head": {
+        "title": "Créer une partie de Skyjo | Skyjo Online",
+        "description": "Démarrez une nouvelle partie de Skyjo en ligne ! Créez des salons privés ou publics, invitez vos amis et profitez du plaisir de Skyjo ensemble. Jouez maintenant gratuitement !",
+        "keywords": "Skyjo,Skyjo en ligne,créer une partie,démarrer une partie,partie privée,partie publique,jouer avec des amis,multijoueur en ligne,jeux en ligne gratuits,partie personnalisée"
+      },
+      "loading-text": "Création de votre partie…"
     },
     "Maintenance": {
       "title": "Site en maintenance",
@@ -141,9 +154,9 @@
     },
     "PrivacyPolicy": {
       "head": {
-        "title": "Politique de Confidentialité | Skyjo Online",
-        "description": "Découvrez comment Skyjo Online protège votre vie privée et vos données lors de vos parties en ligne gratuites. Apprenez nos pratiques de collecte, d'utilisation et de protection des données.",
-        "keywords": "Skyjo Online,politique de confidentialité,protection des données,confidentialité jeu en ligne,jeu sécurisé,données utilisateurs,conformité RGPD"
+        "title": "Politique de confidentialité | Skyjo Online",
+        "description": "Découvrez l'engagement de Skyjo en ligne envers votre vie privée. Notre politique détaille la collecte, l'utilisation, les mesures de sécurité des données et la conformité au RGPD pour notre jeu de cartes en ligne.",
+        "keywords": "Skyjo en ligne,politique de confidentialité,protection des données,confidentialité des jeux en ligne,jeu sécurisé,données utilisateur,RGPD,CCPA,sécurité des données"
       },
       "content": {
         "back": "Retour à l'accueil",
@@ -208,9 +221,9 @@
     },
     "Rules": {
       "head": {
-        "title": "Comment jouer au Skyjo | Skyjo Onlone",
-        "description": "Apprenez les règles du Skyjo, un jeu multijoueur en ligne amusant et captivant. Découvrez comment jouer gratuitement à Skyjo avec des amis et maîtrisez le jeu grâce à notre guide détaillé.",
-        "keywords": "Règles du jeu Skyjo,jeu,en ligne,multijoueur,gratuit,jouer avec des amis,règles,règles du jeu"
+        "title": "Comment jouer au Skyjo | Skyjo Online",
+        "description": "Apprenez à jouer à Skyjo grâce à notre guide complet. Découvrez les règles, les stratégies et les astuces pour maîtriser ce jeu de cartes en ligne amusant. Jouez à Skyjo en ligne avec des amis maintenant !",
+        "keywords": "règles de Skyjo,comment jouer à Skyjo,jeu Skyjo,règles du jeu de cartes,jeu de cartes en ligne,instructions du jeu,guide du gameplay"
       },
       "back": "Retour à l'accueil",
       "title": "Règles du jeu Skyjo"
