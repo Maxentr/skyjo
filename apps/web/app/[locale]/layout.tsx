@@ -1,7 +1,7 @@
 import MaintenancePage from "@/app/[locale]/MaintenancePage"
 import PostHogPageView from "@/app/[locale]/PostHogPageView"
 import Providers from "@/app/[locale]/providers"
-import { Locales, routing } from "@/i18n/routing"
+import { Locales, generateAlternatesLanguages, routing } from "@/i18n/routing"
 import { posthogServer } from "@/lib/posthog-server"
 import { getCurrentUrl } from "@/lib/utils"
 import { Metadata, Viewport } from "next"
@@ -69,11 +69,7 @@ export async function generateMetadata(props: LocaleLayoutProps) {
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: currentUrl,
-      languages: {
-        en: "/",
-        fr: "/fr",
-        es: "/es",
-      },
+      languages: generateAlternatesLanguages(),
     },
     authors: { url: githubUrl, name: "Maxent" },
     openGraph: {

@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer"
+import { generateAlternatesLanguages } from "@/i18n/routing"
 import { getCurrentUrl } from "@/lib/utils"
 import { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
@@ -27,11 +28,7 @@ export async function generateMetadata(props: PrivacyPolicyLayoutProps) {
     keywords: t("keywords").split(","),
     alternates: {
       canonical: currentUrl,
-      languages: {
-        en: "/privacy-policy",
-        fr: "/fr/privacy-policy",
-        es: "/es/privacy-policy",
-      },
+      languages: generateAlternatesLanguages("privacy-policy"),
     },
     openGraph: {
       title: t("title"),
