@@ -73,8 +73,7 @@
           "label": "Número de puntos para terminar el juego",
           "title": "{number} puntos serán necesarios para terminar el juego"
         },
-        "multiplier-for-first-player": {
-          "label": "Multiplicador para el primer jugador",
+        "first-player-score-penalty-multiplier": {
           "title": "La puntuación del primer jugador se multiplicará por {number} si no es estrictamente inferior a las otras puntuaciones del juego",
           "description": "La puntuación del primer jugador que haya revelado todas sus cartas se multiplicará por este número si no es estrictamente inferior a las demás puntuaciones del juego"
         },
@@ -526,8 +525,7 @@
       "card-per-column": "Número de columnas: {value}",
       "card-per-row": "Número de filas: {value}",
       "initial-turned-count": "Número de cartas a girar al principio: {value}",
-      "score-to-end-game": "Número de puntos para terminar el juego: {value}",
-      "multiplier-for-first-player": "Multiplicador para el primer jugador si no tiene el menor número de puntos: {value}"
+      "score-to-end-game": "Número de puntos para terminar el juego: {value}"
     }
   },
   "utils": {

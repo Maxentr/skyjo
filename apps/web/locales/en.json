@@ -113,8 +113,8 @@
           "label": "Number of points to end the game",
           "title": "{number} points will be required to end the game"
         },
-        "multiplier-for-first-player": {
-          "label": "Multiplier for the first player",
+        "first-player-score-penalty-multiplier": {
+          "label": "First player score penalty multiplier",
           "description": "The score of the first player who has revealed all his cards will be multiplied by this number if it is not strictly inferior to the other scores of the game",
           "title": "The score of the first player will be multiplied by {number} if it is not strictly inferior to the other scores of the game"
         }
@@ -312,7 +312,7 @@
       "card-per-column": "Number of columns: {value}",
       "card-per-row": "Number of rows: {value}",
       "initial-turned-count": "Number of cards to turn at the beginning: {value}",
-      "multiplier-for-first-player": "Multiplier for the first player if he does not have the smallest number of points: {value}",
+      "first-player-score-penalty-multiplier": "Multiplier penalty for the first player if he does not have the smallest number of points: {value}",
       "score-to-end-game": "Number of points to end the game: {value}"
     },
     "GameStoppedDialog": {

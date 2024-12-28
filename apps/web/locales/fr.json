@@ -113,8 +113,8 @@
           "label": "Nombre de points pour finir la partie",
           "title": "{number} points seront nécessaires pour finir la partie"
         },
-        "multiplier-for-first-player": {
-          "label": "Multiplicateur pour le premier joueur",
+        "first-player-score-penalty-multiplier": {
+          "label": "Multiplicateur de pénalité pour le score du premier joueur",
           "description": "Le score du premier joueur qui a retourné toutes ses cartes sera multiplié par ce nombre si il n'est pas strictement inférieur aux autres scores de la partie",
           "title": "Le score du premier joueur sera multiplié par {number} si il n'est pas strictement inférieur aux autres scores de la partie"
         }
@@ -306,7 +306,7 @@
       "card-per-column": "Nombre de colonnes : {value}",
       "card-per-row": "Nombre de lignes : {value}",
       "initial-turned-count": "Nombre de cartes à retourner au début : {value}",
-      "multiplier-for-first-player": "Multiplicateur de points pour le premier joueur si il n'a pas le plus petit nombre de points : {value}",
+      "first-player-score-penalty-multiplier": "Multiplicateur de pénalité pour le premier joueur si il n'a pas le plus petit nombre de points : {value}",
       "score-to-end-game": "Nombre de points pour finir la partie : {value}"
     },
     "GameStoppedDialog": {

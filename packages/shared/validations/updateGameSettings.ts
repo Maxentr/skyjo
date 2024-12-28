@@ -18,7 +18,12 @@ export const updateGameSettingsSchema = z.object({
     .max(CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN)
     .optional(),
   scoreToEndGame: z.number().int().min(1).max(10000000).optional(),
-  multiplierForFirstPlayer: z.number().int().min(1).max(10000000).optional(),
+  firstPlayerScorePenaltyMultiplier: z
+    .number()
+    .int()
+    .min(1)
+    .max(10000000)
+    .optional(),
 })
 
 export type UpdateGameSettings = z.input<typeof updateGameSettingsSchema>

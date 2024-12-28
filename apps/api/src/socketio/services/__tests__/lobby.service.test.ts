@@ -191,7 +191,7 @@ describe("LobbyService", () => {
         cardPerRow: 6,
         cardPerColumn: 8,
         scoreToEndGame: 100,
-        multiplierForFirstPlayer: 2,
+        firstPlayerScorePenaltyMultiplier: 2,
       }
 
       await expect(
@@ -248,7 +248,7 @@ describe("LobbyService", () => {
         cardPerRow: 6,
         cardPerColumn: 8,
         scoreToEndGame: 100,
-        multiplierForFirstPlayer: 2,
+        firstPlayerScorePenaltyMultiplier: 2,
       }
 
       await service.onUpdateSettings(socket, newSettings)

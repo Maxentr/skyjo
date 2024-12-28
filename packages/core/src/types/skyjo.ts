@@ -62,7 +62,7 @@ export type SkyjoToDb = {
     cardPerRow: number
     cardPerColumn: number
     scoreToEndGame: number
-    multiplierForFirstPlayer: number
+    firstPlayerScorePenaltyMultiplier: number
   }
   selectedCardValue: number | null
   roundNumber: number

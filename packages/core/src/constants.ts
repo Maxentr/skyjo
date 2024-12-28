@@ -6,7 +6,7 @@ export class Constants {
     ALLOW_SKYJO_FOR_COLUMN: true,
     ALLOW_SKYJO_FOR_ROW: false,
     SCORE_TO_END_GAME: 100,
-    MULTIPLIER_FOR_FIRST_PLAYER: 2,
+    FIRST_PLAYER_SCORE_PENALTY_MULTIPLIER: 2,
     CARDS: {
       PER_ROW: 3,
       PER_COLUMN: 4,

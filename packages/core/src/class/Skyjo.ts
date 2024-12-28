@@ -362,7 +362,8 @@ export class Skyjo implements SkyjoInterface {
         cardPerRow: this.settings.cardPerRow,
         cardPerColumn: this.settings.cardPerColumn,
         scoreToEndGame: this.settings.scoreToEndGame,
-        multiplierForFirstPlayer: this.settings.multiplierForFirstPlayer,
+        firstPlayerScorePenaltyMultiplier:
+          this.settings.firstPlayerScorePenaltyMultiplier,
       },
       selectedCardValue: this.selectedCardValue,
       roundNumber: this.roundNumber,
@@ -565,7 +566,7 @@ export class Skyjo implements SkyjoInterface {
     if (opponentWithALowerOrEqualScore) {
       firstToFinishPlayer.scores[lastScoreIndex] =
         +firstToFinishPlayer.scores[lastScoreIndex] *
-        this.settings.multiplierForFirstPlayer
+        this.settings.firstPlayerScorePenaltyMultiplier
 
       firstToFinishPlayer.recalculateScore()
     }

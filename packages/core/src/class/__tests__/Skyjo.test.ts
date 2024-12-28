@@ -72,7 +72,7 @@ describe("Skyjo", () => {
           cardPerRow: 3,
           cardPerColumn: 4,
           scoreToEndGame: 100,
-          multiplierForFirstPlayer: 2,
+          firstPlayerScorePenaltyMultiplier: 2,
         },
 
         stateVersion: 0,
@@ -136,7 +136,7 @@ describe("Skyjo", () => {
           cardPerRow: 3,
           cardPerColumn: 4,
           scoreToEndGame: 100,
-          multiplierForFirstPlayer: 2,
+          firstPlayerScorePenaltyMultiplier: 2,
         },
 
         stateVersion: 0,
@@ -1044,7 +1044,7 @@ describe("Skyjo", () => {
           cardPerRow: 3,
           initialTurnedCount: 2,
           maxPlayers: 8,
-          multiplierForFirstPlayer: 2,
+          firstPlayerScorePenaltyMultiplier: 2,
           private: false,
           scoreToEndGame: 100,
         },

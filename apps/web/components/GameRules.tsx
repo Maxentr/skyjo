@@ -54,8 +54,8 @@ const GameRules = () => {
             })}
           </p>
           <p>
-            {t("multiplier-for-first-player", {
-              value: game?.settings.multiplierForFirstPlayer,
+            {t("first-player-score-penalty-multiplier", {
+              value: game?.settings.firstPlayerScorePenaltyMultiplier,
             })}
           </p>
           <p>
