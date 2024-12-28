@@ -80,19 +80,6 @@
       "description": "La page que vous recherchez n'existe pas.",
       "go-back-to-homepage": "Retour à l'accueil"
     },
-    "InactivityCheck": {
-      "warning": {
-        "title": "Êtes-vous toujours là ?",
-        "button": {
-          "label": "Oui",
-          "title": "Confirmer que votre présence"
-        }
-      },
-      "timeout": {
-        "title": "Vous avez été déconnecté du lobby pour cause d'inactivité",
-        "description": "Veuillez noter qu'en tant qu'administrateur d'une partie publique, votre inactivité empêche la partie de commencer, affectant l'expérience des autres joueurs."
-      }
-    },
     "Lobby": {
       "title": "Partie de {name}",
       "leave-to-home": "Retour à l'accueil",

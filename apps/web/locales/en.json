@@ -80,19 +80,6 @@
       "description": "The page you are looking for does not exist.",
       "go-back-to-homepage": "Go back to the homepage"
     },
-    "InactivityCheck": {
-      "warning": {
-        "title": "Are you still here?",
-        "button": {
-          "label": "Yes",
-          "title": "Confirm your presence"
-        }
-      },
-      "timeout": {
-        "title": "You have been disconnected from the lobby due to inactivity",
-        "description": "Please note that as an administrator of a public game, your inactivity prevents the game from starting, affecting the experience of other players."
-      }
-    },
     "Lobby": {
       "title": "{name}'s game",
       "leave-to-home": "Leave to homepage",

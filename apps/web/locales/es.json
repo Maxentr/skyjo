@@ -46,19 +46,6 @@
       "description": "La página que busca no existe.",
       "go-back-to-homepage": "Volver a la página principal"
     },
-    "InactivityCheck": {
-      "warning": {
-        "title": "¿Estás todavía aquí?",
-        "button": {
-          "label": "Sí",
-          "title": "Confirma tu presencia"
-        }
-      },
-      "timeout": {
-        "title": "Ha sido desconectado debido a la inactividad",
-        "description": "Por favor, tenga en cuenta que como administrador de un juego público, su inactividad impide que el juego comience, lo que afecta a la experiencia de otros jugadores."
-      }
-    },
     "Lobby": {
       "settings": {
         "private": {
