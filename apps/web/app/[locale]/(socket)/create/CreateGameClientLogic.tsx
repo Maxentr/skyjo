@@ -42,6 +42,8 @@ const CreateGameClientLogic = () => {
   const isPrivate = privateQueryParam === "true"
 
   useEffect(() => {
+    if (!socket) return
+
     // loading card animation
     const interval = setInterval(() => {
       setCard((prev) => generateRandomCard(!prev.isVisible))
@@ -63,7 +65,7 @@ const CreateGameClientLogic = () => {
     }
 
     return () => clearInterval(interval)
-  }, [])
+  }, [socket])
 
   const joinErrorDescription: Record<ErrorJoinMessage, string> = {
     [ErrorConstants.ERROR.GAME_NOT_FOUND]: tSocketError(
