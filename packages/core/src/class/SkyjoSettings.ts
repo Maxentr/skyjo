@@ -3,13 +3,13 @@ import type { SkyjoSettingsToJson } from "@/types/skyjoSettings.js"
 import { Constants } from "../constants.js"
 
 type UpdateSettings = {
-  allowSkyjoForColumn: boolean
-  allowSkyjoForRow: boolean
-  initialTurnedCount: number
-  cardPerRow: number
-  cardPerColumn: number
-  scoreToEndGame: number
-  multiplierForFirstPlayer: number
+  allowSkyjoForColumn?: boolean
+  allowSkyjoForRow?: boolean
+  initialTurnedCount?: number
+  cardPerRow?: number
+  cardPerColumn?: number
+  scoreToEndGame?: number
+  multiplierForFirstPlayer?: number
 }
 
 export interface SkyjoSettingsInterface {
@@ -63,14 +63,18 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     return this
   }
 
+  /* istanbul ignore next --@preserve */
   updateSettings(settings: UpdateSettings) {
-    this.allowSkyjoForColumn = settings.allowSkyjoForColumn
-    this.allowSkyjoForRow = settings.allowSkyjoForRow
-    this.initialTurnedCount = settings.initialTurnedCount
-    this.cardPerRow = settings.cardPerRow
-    this.cardPerColumn = settings.cardPerColumn
-    this.scoreToEndGame = settings.scoreToEndGame
-    this.multiplierForFirstPlayer = settings.multiplierForFirstPlayer
+    this.allowSkyjoForColumn =
+      settings.allowSkyjoForColumn ?? this.allowSkyjoForColumn
+    this.allowSkyjoForRow = settings.allowSkyjoForRow ?? this.allowSkyjoForRow
+    this.initialTurnedCount =
+      settings.initialTurnedCount ?? this.initialTurnedCount
+    this.cardPerRow = settings.cardPerRow ?? this.cardPerRow
+    this.cardPerColumn = settings.cardPerColumn ?? this.cardPerColumn
+    this.scoreToEndGame = settings.scoreToEndGame ?? this.scoreToEndGame
+    this.multiplierForFirstPlayer =
+      settings.multiplierForFirstPlayer ?? this.multiplierForFirstPlayer
 
     this.preventInvalidSettings()
   }

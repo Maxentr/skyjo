@@ -11,7 +11,7 @@ import {
   SkyjoSettings,
 } from "@skyjo/core"
 import { Constants as ErrorConstants } from "@skyjo/error"
-import type { GameSettings } from "@skyjo/shared/validations"
+import type { UpdateGameSettings } from "@skyjo/shared/validations"
 import { TEST_SOCKET_ID } from "@tests/constants-test.js"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -165,52 +165,6 @@ describe("LobbyService", () => {
     })
   })
 
-  describe("onUpdateSingleSettings", () => {
-    it("should throw if user is not admin", async () => {
-      const opponent = new SkyjoPlayer(
-        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
-        "socket456",
-      )
-
-      const game = new Skyjo(opponent.id, new SkyjoSettings(false))
-
-      game.addPlayer(opponent)
-
-      const player = new SkyjoPlayer(
-        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
-        TEST_SOCKET_ID,
-      )
-      game.addPlayer(player)
-      socket.data = { gameCode: game.code, playerId: player.id }
-
-      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
-
-      await expect(
-        service.onUpdateSingleSettings(socket, "allowSkyjoForColumn", true),
-      ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
-
-      expect(socket.emit).not.toHaveBeenCalled()
-    })
-
-    it("should change the game settings", async () => {
-      const player = new SkyjoPlayer(
-        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
-        TEST_SOCKET_ID,
-      )
-      const game = new Skyjo(player.id, new SkyjoSettings(false))
-      game.addPlayer(player)
-
-      socket.data = { gameCode: game.code, playerId: player.id }
-
-      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
-
-      await service.onUpdateSingleSettings(socket, "allowSkyjoForColumn", true)
-
-      expect(game.settings).toBeInstanceOf(SkyjoSettings)
-      expect(game.settings.allowSkyjoForColumn).toBeTruthy()
-    })
-  })
-
   describe("onSettingsChange", () => {
     it("should throw if user is not admin", async () => {
       const opponent = new SkyjoPlayer(
@@ -230,7 +184,7 @@ describe("LobbyService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      const newSettings: GameSettings = {
+      const newSettings: UpdateGameSettings = {
         allowSkyjoForColumn: true,
         allowSkyjoForRow: true,
         initialTurnedCount: 2,
@@ -259,7 +213,35 @@ describe("LobbyService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      const newSettings: GameSettings = {
+      const newSettings: UpdateGameSettings = {
+        allowSkyjoForColumn: false,
+      }
+
+      await service.onUpdateSettings(socket, newSettings)
+
+      expect(game.settings).toBeInstanceOf(SkyjoSettings)
+      expect(game.settings.toJson()).toStrictEqual({
+        ...game.settings,
+        ...newSettings,
+        private: game.settings.private,
+        maxPlayers: 8,
+        isConfirmed: game.settings.isConfirmed,
+      })
+    })
+
+    it("should change the game settings", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(false))
+      game.addPlayer(player)
+
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      const newSettings: UpdateGameSettings = {
         allowSkyjoForColumn: true,
         allowSkyjoForRow: true,
         initialTurnedCount: 2,

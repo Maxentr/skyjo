@@ -1,79 +1,24 @@
 import { Constants as CoreConstants } from "@skyjo/core"
 import { z } from "zod"
 
-// Individual property schemas
-export const updateGameSettingsAllowSkyjoForColumnSchema = z
-  .boolean()
-  .default(CoreConstants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN)
-export type UpdateGameSettingsAllowSkyjoForColumn = z.infer<
-  typeof updateGameSettingsAllowSkyjoForColumnSchema
->
-
-export const updateGameSettingsAllowSkyjoForRowSchema = z
-  .boolean()
-  .default(CoreConstants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_ROW)
-export type UpdateGameSettingsAllowSkyjoForRow = z.infer<
-  typeof updateGameSettingsAllowSkyjoForRowSchema
->
-
-export const updateGameSettingsInitialTurnedCountSchema = z
-  .number()
-  .int()
-  .min(0)
-  .default(CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.INITIAL_TURNED_COUNT)
-export type UpdateGameSettingsInitialTurnedCount = z.infer<
-  typeof updateGameSettingsInitialTurnedCountSchema
->
-
-export const updateGameSettingsCardPerRowSchema = z
-  .number()
-  .int()
-  .min(1)
-  .max(CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW)
-  .default(CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW)
-export type UpdateGameSettingsCardPerRow = z.infer<
-  typeof updateGameSettingsCardPerRowSchema
->
-
-export const updateGameSettingsCardPerColumnSchema = z
-  .number()
-  .int()
-  .min(1)
-  .max(CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN)
-  .default(CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN)
-export type UpdateGameSettingsCardPerColumn = z.infer<
-  typeof updateGameSettingsCardPerColumnSchema
->
-
-export const updateGameSettingsScoreToEndGameSchema = z
-  .number()
-  .int()
-  .min(1)
-  .max(10000000)
-  .default(CoreConstants.SKYJO_DEFAULT_SETTINGS.SCORE_TO_END_GAME)
-export type UpdateGameSettingsScoreToEndGame = z.infer<
-  typeof updateGameSettingsScoreToEndGameSchema
->
-
-export const updateGameSettingsMultiplierForFirstPlayerSchema = z
-  .number()
-  .int()
-  .min(1)
-  .max(10000000)
-  .default(CoreConstants.SKYJO_DEFAULT_SETTINGS.MULTIPLIER_FOR_FIRST_PLAYER)
-export type UpdateGameSettingsMultiplierForFirstPlayer = z.infer<
-  typeof updateGameSettingsMultiplierForFirstPlayerSchema
->
-
 export const updateGameSettingsSchema = z.object({
-  allowSkyjoForColumn: updateGameSettingsAllowSkyjoForColumnSchema,
-  allowSkyjoForRow: updateGameSettingsAllowSkyjoForRowSchema,
-  initialTurnedCount: updateGameSettingsInitialTurnedCountSchema,
-  cardPerRow: updateGameSettingsCardPerRowSchema,
-  cardPerColumn: updateGameSettingsCardPerColumnSchema,
-  scoreToEndGame: updateGameSettingsScoreToEndGameSchema,
-  multiplierForFirstPlayer: updateGameSettingsMultiplierForFirstPlayerSchema,
+  allowSkyjoForColumn: z.boolean().optional(),
+  allowSkyjoForRow: z.boolean().optional(),
+  initialTurnedCount: z.number().int().min(0).optional(),
+  cardPerRow: z
+    .number()
+    .int()
+    .min(1)
+    .max(CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW)
+    .optional(),
+  cardPerColumn: z
+    .number()
+    .int()
+    .min(1)
+    .max(CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN)
+    .optional(),
+  scoreToEndGame: z.number().int().min(1).max(10000000).optional(),
+  multiplierForFirstPlayer: z.number().int().min(1).max(10000000).optional(),
 })
 
-export type GameSettings = z.infer<typeof updateGameSettingsSchema>
 export type UpdateGameSettings = z.input<typeof updateGameSettingsSchema>

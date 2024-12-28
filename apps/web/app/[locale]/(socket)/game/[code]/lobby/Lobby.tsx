@@ -20,7 +20,7 @@ import { useRouter } from "@/i18n/routing"
 import { getAdmin, isAdmin } from "@/lib/skyjo"
 import { cn } from "@/lib/utils"
 import { Constants as CoreConstants } from "@skyjo/core"
-import { GameSettings } from "@skyjo/shared/validations"
+import { UpdateGameSettings } from "@skyjo/shared/validations"
 import { m } from "framer-motion"
 import {
   ArrowLeftIcon,
@@ -42,7 +42,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
   const { player, game, actions } = useSkyjo()
   const router = useRouter()
   const [gameSettingsLocalStorage, setGameSettingsLocalStorage] =
-    useLocalStorage<GameSettings>("gameSettings")
+    useLocalStorage<UpdateGameSettings>("gameSettings")
 
   const [isLoading, setIsLoading] = useState(false)
 

@@ -11,21 +11,7 @@ import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import type { ErrorJoinMessage } from "@skyjo/shared/types"
 import {
   type UpdateGameSettings,
-  type UpdateGameSettingsAllowSkyjoForColumn,
-  type UpdateGameSettingsAllowSkyjoForRow,
-  type UpdateGameSettingsCardPerColumn,
-  type UpdateGameSettingsCardPerRow,
-  type UpdateGameSettingsInitialTurnedCount,
-  type UpdateGameSettingsMultiplierForFirstPlayer,
-  type UpdateGameSettingsScoreToEndGame,
-  updateGameSettingsAllowSkyjoForColumnSchema,
-  updateGameSettingsAllowSkyjoForRowSchema,
-  updateGameSettingsCardPerColumnSchema,
-  updateGameSettingsCardPerRowSchema,
-  updateGameSettingsInitialTurnedCountSchema,
-  updateGameSettingsMultiplierForFirstPlayerSchema,
   updateGameSettingsSchema,
-  updateGameSettingsScoreToEndGameSchema,
 } from "@skyjo/shared/validations"
 import { RateLimiterMemory } from "rate-limiter-flexible"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
@@ -70,6 +56,14 @@ const lobbyRouter = (socket: SkyjoSocket) => {
 
   //#region update settings
   socket.on(
+    "game:reset-settings",
+    socketErrorWrapper(async () => {
+      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
+      await instance.onResetSettings(socket)
+    }),
+  )
+  socket.on(
     "game:settings",
     socketErrorWrapper(async (data: UpdateGameSettings) => {
       await consumeSocketRateLimiter(settingsRateLimiter)(socket)
@@ -77,118 +71,6 @@ const lobbyRouter = (socket: SkyjoSocket) => {
       const settings = updateGameSettingsSchema.parse(data)
       await instance.onUpdateSettings(socket, settings)
     }),
-  )
-  socket.on(
-    "game:settings:allow-skyjo-for-column",
-    socketErrorWrapper(async (data: UpdateGameSettingsAllowSkyjoForColumn) => {
-      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
-
-      const isAllowed = updateGameSettingsAllowSkyjoForColumnSchema.parse(
-        data,
-        {
-          path: ["allowSkyjoForColumn"],
-        },
-      )
-
-      await instance.onUpdateSingleSettings(
-        socket,
-        "allowSkyjoForColumn",
-        isAllowed,
-      )
-    }),
-  )
-  socket.on(
-    "game:settings:allow-skyjo-for-row",
-    socketErrorWrapper(async (data: UpdateGameSettingsAllowSkyjoForRow) => {
-      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
-
-      const isAllowed = updateGameSettingsAllowSkyjoForRowSchema.parse(data, {
-        path: ["allowSkyjoForRow"],
-      })
-      await instance.onUpdateSingleSettings(
-        socket,
-        "allowSkyjoForRow",
-        isAllowed,
-      )
-    }),
-  )
-  socket.on(
-    "game:settings:initial-turned-count",
-    socketErrorWrapper(async (data: UpdateGameSettingsInitialTurnedCount) => {
-      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
-
-      const initialTurnedCount =
-        updateGameSettingsInitialTurnedCountSchema.parse(data, {
-          path: ["initialTurnedCount"],
-        })
-      await instance.onUpdateSingleSettings(
-        socket,
-        "initialTurnedCount",
-        initialTurnedCount,
-      )
-    }),
-  )
-  socket.on(
-    "game:settings:card-per-row",
-    socketErrorWrapper(async (data: UpdateGameSettingsCardPerRow) => {
-      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
-
-      const cardPerRow = updateGameSettingsCardPerRowSchema.parse(data, {
-        path: ["cardPerRow"],
-      })
-      await instance.onUpdateSingleSettings(socket, "cardPerRow", cardPerRow)
-    }),
-  )
-  socket.on(
-    "game:settings:card-per-column",
-    socketErrorWrapper(async (data: UpdateGameSettingsCardPerColumn) => {
-      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
-
-      const cardPerColumn = updateGameSettingsCardPerColumnSchema.parse(data, {
-        path: ["cardPerColumn"],
-      })
-      await instance.onUpdateSingleSettings(
-        socket,
-        "cardPerColumn",
-        cardPerColumn,
-      )
-    }),
-  )
-  socket.on(
-    "game:settings:score-to-end-game",
-    socketErrorWrapper(async (data: UpdateGameSettingsScoreToEndGame) => {
-      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
-
-      const scoreToEndGame = updateGameSettingsScoreToEndGameSchema.parse(
-        data,
-        {
-          path: ["scoreToEndGame"],
-        },
-      )
-      await instance.onUpdateSingleSettings(
-        socket,
-        "scoreToEndGame",
-        scoreToEndGame,
-      )
-    }),
-  )
-  socket.on(
-    "game:settings:multiplier-for-first-player",
-    socketErrorWrapper(
-      async (data: UpdateGameSettingsMultiplierForFirstPlayer) => {
-        await consumeSocketRateLimiter(settingsRateLimiter)(socket)
-
-        const multiplierForFirstPlayer =
-          updateGameSettingsMultiplierForFirstPlayerSchema.parse(data, {
-            path: ["multiplierForFirstPlayer"],
-          })
-        await instance.onUpdateSingleSettings(
-          socket,
-          "multiplierForFirstPlayer",
-          multiplierForFirstPlayer,
-        )
-      },
-    ),
   )
   socket.on(
     "game:settings:toggle-validation",

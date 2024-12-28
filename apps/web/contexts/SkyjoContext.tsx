@@ -173,34 +173,9 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   ) => {
     if (!admin) return
 
-    switch (key) {
-      case "allowSkyjoForColumn":
-        socket!.emit(`game:settings:allow-skyjo-for-column`, value as boolean)
-        break
-      case "allowSkyjoForRow":
-        socket!.emit(`game:settings:allow-skyjo-for-row`, value as boolean)
-        break
-      case "initialTurnedCount":
-        socket!.emit(`game:settings:initial-turned-count`, value as number)
-        break
-      case "cardPerColumn":
-        socket!.emit(`game:settings:card-per-column`, value as number)
-        break
-      case "cardPerRow":
-        socket!.emit(`game:settings:card-per-row`, value as number)
-        break
-      case "scoreToEndGame":
-        socket!.emit(`game:settings:score-to-end-game`, value as number)
-        break
-      case "multiplierForFirstPlayer":
-        socket!.emit(
-          `game:settings:multiplier-for-first-player`,
-          value as number,
-        )
-        break
-      default:
-        throw new Error(`Unknown settings: ${key}`)
-    }
+    socket!.emit("game:settings", {
+      [key]: value,
+    })
   }
 
   const toggleSettingsValidation = () => {
@@ -218,7 +193,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const resetSettings = () => {
     if (!admin) return
 
-    socket!.emit("game:settings", {})
+    socket!.emit("game:reset-settings")
   }
 
   const startGame = () => {

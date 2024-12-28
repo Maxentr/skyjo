@@ -10,7 +10,7 @@ import {
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { Logger } from "@skyjo/logger"
-import type { GameSettings } from "@skyjo/shared/validations"
+import type { UpdateGameSettings } from "@skyjo/shared/validations"
 
 export class LobbyService extends BaseService {
   async onCreate(
@@ -41,33 +41,11 @@ export class LobbyService extends BaseService {
     await this.joinGame(socket, game, player)
   }
 
-  async onUpdateSingleSettings<T extends keyof Omit<SkyjoSettings, "private">>(
-    socket: SkyjoSocket,
-    key: T,
-    value: SkyjoSettings[T],
-  ) {
+  async onResetSettings(socket: SkyjoSocket) {
     const game = await this.redis.getGame(socket.data.gameCode)
-    if (!game.isAdmin(socket.data.playerId)) {
-      throw new CError(
-        `Player try to change game settings ${key} but is not the admin.`,
-        {
-          code: ErrorConstants.ERROR.NOT_ALLOWED,
-          level: "warn",
-          meta: {
-            game,
-            socket,
-            gameCode: game.code,
-            playerId: socket.data.playerId,
-          },
-        },
-      )
-    }
-
     const stateManager = new GameStateManager(game)
 
-    game.settings[key] = value
-    game.settings.preventInvalidSettings()
-
+    game.settings = new SkyjoSettings(game.settings.private)
     game.updatedAt = new Date()
 
     this.sendGameUpdateToSocketAndRoom(socket, {
@@ -77,7 +55,7 @@ export class LobbyService extends BaseService {
     await this.redis.updateGame(game)
   }
 
-  async onUpdateSettings(socket: SkyjoSocket, settings: GameSettings) {
+  async onUpdateSettings(socket: SkyjoSocket, settings: UpdateGameSettings) {
     const game = await this.redis.getGame(socket.data.gameCode)
     if (!game.isAdmin(socket.data.playerId)) {
       throw new CError(

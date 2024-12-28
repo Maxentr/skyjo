@@ -7,7 +7,7 @@ import { ClassValue } from "clsx"
 import { m, useAnimate, useAnimationControls } from "framer-motion"
 import { Trash2Icon } from "lucide-react"
 import { useTheme } from "next-themes"
-import { type JSX, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 const cardClass = cva(
   "text-black border-2 border-black flex justify-center items-center select-none focus-visible:outline-black focus-visible:-outline-offset-2",
@@ -116,6 +116,7 @@ const Card = ({
   useEffect(() => {
     const turnCard = async () => {
       const currentTheme = theme === "system" ? systemTheme : theme
+
       if (currentTheme === "light") {
         controls.set({
           rotateY: -180,
@@ -164,30 +165,22 @@ const Card = ({
     }
   }, [flipAnimation, card.isVisible, card.value, controls, animate, scope])
 
-  let cardContent: string | JSX.Element = ""
-
-  if (value === -98) {
-    cardContent = <Trash2Icon className={throwIconClass({ size })} />
-  } else if (card.isVisible && value !== null && value !== undefined) {
-    cardContent = value.toString()
-  }
+  const exitAnimationValue = exitAnimation
+    ? {
+        opacity: 0,
+        scale: 0,
+        transition: {
+          duration: 2,
+          ease: "easeInOut",
+        },
+      }
+    : undefined
 
   return (
     <m.button
       ref={scope}
       animate={controls}
-      exit={
-        exitAnimation
-          ? {
-              opacity: 0,
-              scale: 0,
-              transition: {
-                duration: 2,
-                ease: "easeInOut",
-              },
-            }
-          : undefined
-      }
+      exit={exitAnimationValue}
       className={cn(
         "ph-no-capture",
         cardClass({
@@ -201,7 +194,8 @@ const Card = ({
       title={title}
       disabled={disabled}
     >
-      {cardContent}
+      {value === -98 && <Trash2Icon className={throwIconClass({ size })} />}
+      {card.isVisible && value !== null && value}
     </m.button>
   )
 }
