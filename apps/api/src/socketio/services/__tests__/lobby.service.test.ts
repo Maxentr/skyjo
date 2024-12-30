@@ -191,7 +191,7 @@ describe("LobbyService", () => {
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
-    it("should throw if settings are already confirmed", async () => {
+    it("should throw if settings are already confirmed for a public game", async () => {
       const player = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
@@ -214,11 +214,45 @@ describe("LobbyService", () => {
         ErrorConstants.ERROR.NOT_ALLOWED,
       )
 
-      console.log(game.settings.toJson())
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
-    it("should change multiple game settings", async () => {
+    it("should reset game settings if settings are confirmed for a private game", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(true))
+      // custom settings
+      game.settings.cardPerColumn = 1
+      game.settings.cardPerRow = 1
+      game.settings.initialTurnedCount = 1
+      game.settings.scoreToEndGame = 1
+      game.settings.firstPlayerScorePenaltyMultiplier = 1
+      game.settings.allowSkyjoForColumn = true
+      game.settings.allowSkyjoForRow = true
+      game.settings.maxPlayers = 2
+
+      game.addPlayer(player)
+
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+      game.addPlayer(opponent)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await service.onResetSettings(socket)
+
+      expect(game.settings.toJson()).toStrictEqual(
+        new SkyjoSettings(true).toJson(),
+      )
+      expect(socket.emit).toHaveBeenCalled()
+    })
+
+    it("should reset game settings", async () => {
       const player = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
@@ -275,7 +309,7 @@ describe("LobbyService", () => {
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
-    it("should throw if settings are already confirmed", async () => {
+    it("should throw if settings are already confirmed for a public game", async () => {
       const player = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
@@ -304,6 +338,37 @@ describe("LobbyService", () => {
 
       console.log(game.settings.toJson())
       expect(socket.emit).not.toHaveBeenCalled()
+    })
+
+    it("should update game settings if settings are confirmed for a private game", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(true))
+      game.addPlayer(player)
+
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+      game.addPlayer(opponent)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      const newSettings: UpdateGameSettings = {
+        scoreToEndGame: 200,
+      }
+
+      await service.onUpdateSettings(socket, newSettings)
+
+      expect(game.settings.toJson()).toStrictEqual({
+        ...game.settings.toJson(),
+        ...newSettings,
+      })
+
+      expect(socket.emit).toHaveBeenCalled()
     })
 
     it("should change one game setting", async () => {

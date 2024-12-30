@@ -7,6 +7,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import RadioNumber from "@/components/ui/radio-number"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import {
@@ -395,10 +402,42 @@ const Lobby = ({ gameCode }: LobbyProps) => {
             )}
           </div>
           <div className="block bg-container dark:bg-dark-container border-2 border-black dark:border-dark-border rounded-2xl w-full lg:w-80 p-4 lg:p-8">
-            <h3 className="text-black dark:text-dark-font text-center text-xl mb-2 lg:mb-5">
-              {t("player-section.title")}
+            <h3 className="text-black dark:text-dark-font text-center text-xl">
+              {t("player-section.title", {
+                nbPlayers: game.players.length,
+                maxPlayers: game.settings.maxPlayers,
+              })}
             </h3>
-            <div className="flex flex-row flex-wrap justify-center gap-2">
+            {admin && (
+              <Select
+                value={game.settings.maxPlayers.toString()}
+                onValueChange={(value) =>
+                  actions.updateSingleSettings("maxPlayers", +value)
+                }
+                disabled={disableInput}
+              >
+                <SelectTrigger className="mt-2">
+                  <SelectValue
+                    placeholder={t("player-section.select.placeholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from(
+                    {
+                      length:
+                        CoreConstants.SKYJO_DEFAULT_SETTINGS.MAX_PLAYERS - 1,
+                    },
+                    (_, index) =>
+                      index + CoreConstants.SKYJO_DEFAULT_SETTINGS.MIN_PLAYERS,
+                  ).map((value) => (
+                    <SelectItem key={value} value={value.toString()}>
+                      {t("player-section.select.item", { value })}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            <div className="flex flex-row flex-wrap justify-center gap-2 mt-2 lg:mt-5">
               {game.players.map((player) => (
                 <UserAvatar key={player.id} player={player} size="small" />
               ))}

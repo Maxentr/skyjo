@@ -82,7 +82,7 @@
       },
       "start-game-button": "Iniciar el juego",
       "player-section": {
-        "title": "Jugadores"
+        "title": "Jugadores {nbPlayers}/{maxPlayers}"
       },
       "waiting-admin-to-confirm-game-settings": "Esperando a que el administrador valide la configuración",
       "title": "Partida de {name}",

@@ -89,12 +89,16 @@
         "private": {
           "tooltip": {
             "on": "This game is private, only people with the link can join",
-            "off": "This game is public, anyone can join"
+            "off": "This part is public, anyone can join after validating the parameters"
           }
         },
         "reset-settings": "Reset settings",
         "validation-warning": "Game settings cannot be modified once they have been validated",
         "validate-settings": "Validate settings",
+        "max-players": {
+          "label": "Maximum number of players",
+          "title": "Maximum number of players: {number}"
+        },
         "allow-skyjo-for-column": "Allow Skyjo for column",
         "allow-skyjo-for-row": "Allow Skyjo for row",
         "nb-columns": {
@@ -123,7 +127,11 @@
       "waiting-admin-to-start": "Waiting for the admin to start the game",
       "waiting-admin-to-confirm-game-settings": "Waiting for the admin to validate the settings",
       "player-section": {
-        "title": "Players"
+        "title": "Players {nbPlayers}/{maxPlayers}",
+        "select": {
+          "placeholder": "Select a number of players",
+          "item": "{value} players"
+        }
       }
     },
     "ResultsPage": {

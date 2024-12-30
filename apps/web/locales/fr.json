@@ -89,12 +89,16 @@
         "private": {
           "tooltip": {
             "on": "Cette partie est privée, seuls les personnes ayant le lien peuvent rejoindre",
-            "off": "Cette partie est publique, n'importe qui peut rejoindre"
+            "off": "Cette partie est publique, n'importe qui peut rejoindre après la validation des paramètres"
           }
         },
         "reset-settings": "Réinitialiser les paramètres",
         "validation-warning": "Les paramètres de la partie ne sont pas modifiables une fois qu'ils ont été validés",
         "validate-settings": "Valider les paramètres",
+        "max-players": {
+          "label": "Nombre maximum de joueurs",
+          "title": "Nombre maximum de joueurs: {number}"
+        },
         "allow-skyjo-for-column": "Autoriser les Skyjo pour les colonnes",
         "allow-skyjo-for-row": "Autoriser les Skyjo pour les lignes",
         "nb-columns": {
@@ -123,7 +127,11 @@
       "waiting-admin-to-start": "En attente du lancement de la partie par l'admin",
       "waiting-admin-to-confirm-game-settings": "En attente de la validation des paramètres par l'admin",
       "player-section": {
-        "title": "Joueurs"
+        "title": "Joueurs {nbPlayers}/{maxPlayers}",
+        "select": {
+          "placeholder": "Sélectionner un nombre de joueurs",
+          "item": "{value} joueurs"
+        }
       }
     },
     "ResultsPage": {

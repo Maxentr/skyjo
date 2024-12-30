@@ -3,6 +3,7 @@ import type { SkyjoSettingsToJson } from "@/types/skyjoSettings.js"
 import { Constants } from "../constants.js"
 
 type UpdateSettings = {
+  maxPlayers?: number
   allowSkyjoForColumn?: boolean
   allowSkyjoForRow?: boolean
   initialTurnedCount?: number
@@ -66,6 +67,7 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
 
   /* istanbul ignore next --@preserve */
   updateSettings(settings: UpdateSettings) {
+    this.maxPlayers = settings.maxPlayers ?? this.maxPlayers
     this.allowSkyjoForColumn =
       settings.allowSkyjoForColumn ?? this.allowSkyjoForColumn
     this.allowSkyjoForRow = settings.allowSkyjoForRow ?? this.allowSkyjoForRow

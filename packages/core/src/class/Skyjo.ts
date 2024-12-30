@@ -159,13 +159,19 @@ export class Skyjo implements SkyjoInterface {
   }
 
   haveAtLeastMinPlayersConnected() {
-    return this.getConnectedPlayers().length >= Constants.MIN_PLAYERS
+    return (
+      this.getConnectedPlayers().length >=
+      Constants.SKYJO_DEFAULT_SETTINGS.MIN_PLAYERS
+    )
   }
 
   start() {
-    if (this.getConnectedPlayers().length < Constants.MIN_PLAYERS) {
+    if (
+      this.getConnectedPlayers().length <
+      Constants.SKYJO_DEFAULT_SETTINGS.MIN_PLAYERS
+    ) {
       throw new CError(
-        `Game cannot start with less than ${Constants.MIN_PLAYERS} players`,
+        `Game cannot start with less than ${Constants.SKYJO_DEFAULT_SETTINGS.MIN_PLAYERS} players`,
         {
           code: ErrorConstants.ERROR.TOO_FEW_PLAYERS,
           level: "warn",

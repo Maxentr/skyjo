@@ -61,9 +61,9 @@ export class LobbyService extends BaseService {
       )
     }
 
-    if (game.settings.isConfirmed) {
+    if (game.settings.isConfirmed && !game.settings.private) {
       throw new CError(
-        `Player try to reset game settings but the settings are already confirmed.`,
+        `Player try to reset game settings for a public game but the settings are already confirmed.`,
         {
           code: ErrorConstants.ERROR.NOT_ALLOWED,
           level: "warn",
@@ -99,9 +99,9 @@ export class LobbyService extends BaseService {
       )
     }
 
-    if (game.settings.isConfirmed) {
+    if (game.settings.isConfirmed && !game.settings.private) {
       throw new CError(
-        `Player try to reset game settings but the settings are already confirmed.`,
+        `Player try to update game settings for a public game but the settings are already confirmed.`,
         {
           code: ErrorConstants.ERROR.NOT_ALLOWED,
           level: "warn",

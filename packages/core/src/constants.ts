@@ -1,7 +1,6 @@
 export class Constants {
-  static readonly MIN_PLAYERS = 2
-
   static readonly SKYJO_DEFAULT_SETTINGS = {
+    MIN_PLAYERS: 2,
     MAX_PLAYERS: 8,
     ALLOW_SKYJO_FOR_COLUMN: true,
     ALLOW_SKYJO_FOR_ROW: false,
