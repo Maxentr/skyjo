@@ -45,6 +45,32 @@ export class LobbyService extends BaseService {
     const game = await this.redis.getGame(socket.data.gameCode)
     const stateManager = new GameStateManager(game)
 
+    if (!game.isAdmin(socket.data.playerId)) {
+      throw new CError(
+        `Player try to change all game settings but is not the admin.`,
+        {
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
+          level: "warn",
+          meta: {
+            game,
+            socket,
+            gameCode: game.code,
+            playerId: socket.data.playerId,
+          },
+        },
+      )
+    }
+
+    if (game.settings.isConfirmed) {
+      throw new CError(
+        `Player try to reset game settings but the settings are already confirmed.`,
+        {
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
+          level: "warn",
+        },
+      )
+    }
+
     game.settings = new SkyjoSettings(game.settings.private)
     game.updatedAt = new Date()
 
@@ -69,6 +95,16 @@ export class LobbyService extends BaseService {
             gameCode: game.code,
             playerId: socket.data.playerId,
           },
+        },
+      )
+    }
+
+    if (game.settings.isConfirmed) {
+      throw new CError(
+        `Player try to reset game settings but the settings are already confirmed.`,
+        {
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
+          level: "warn",
         },
       )
     }

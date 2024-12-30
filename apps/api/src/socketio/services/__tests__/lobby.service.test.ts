@@ -165,6 +165,80 @@ describe("LobbyService", () => {
     })
   })
 
+  describe("onResetSettings", () => {
+    it("should throw if user is not admin", async () => {
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+
+      const game = new Skyjo(opponent.id, new SkyjoSettings(false))
+      game.addPlayer(opponent)
+
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      game.addPlayer(player)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await expect(service.onResetSettings(socket)).toThrowCErrorWithCode(
+        ErrorConstants.ERROR.NOT_ALLOWED,
+      )
+
+      expect(socket.emit).not.toHaveBeenCalled()
+    })
+
+    it("should throw if settings are already confirmed", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(false))
+      game.addPlayer(player)
+
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+      game.addPlayer(opponent)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      game.settings.isConfirmed = true
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await expect(service.onResetSettings(socket)).toThrowCErrorWithCode(
+        ErrorConstants.ERROR.NOT_ALLOWED,
+      )
+
+      console.log(game.settings.toJson())
+      expect(socket.emit).not.toHaveBeenCalled()
+    })
+
+    it("should change multiple game settings", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(false))
+      game.addPlayer(player)
+
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await service.onResetSettings(socket)
+
+      expect(game.settings).toBeInstanceOf(SkyjoSettings)
+      expect(game.settings.toJson()).toStrictEqual(
+        new SkyjoSettings(false).toJson(),
+      )
+    })
+  })
+
   describe("onSettingsChange", () => {
     it("should throw if user is not admin", async () => {
       const opponent = new SkyjoPlayer(
@@ -201,7 +275,38 @@ describe("LobbyService", () => {
       expect(socket.emit).not.toHaveBeenCalled()
     })
 
-    it("should change the game settings", async () => {
+    it("should throw if settings are already confirmed", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(false))
+      game.addPlayer(player)
+
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+      game.addPlayer(opponent)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      game.settings.isConfirmed = true
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      const newSettings: UpdateGameSettings = {
+        scoreToEndGame: 200,
+      }
+
+      await expect(
+        service.onUpdateSettings(socket, newSettings),
+      ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
+
+      console.log(game.settings.toJson())
+      expect(socket.emit).not.toHaveBeenCalled()
+    })
+
+    it("should change one game setting", async () => {
       const player = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
@@ -229,7 +334,7 @@ describe("LobbyService", () => {
       })
     })
 
-    it("should change the game settings", async () => {
+    it("should change multiple game settings", async () => {
       const player = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
         TEST_SOCKET_ID,
