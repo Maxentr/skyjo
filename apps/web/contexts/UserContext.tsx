@@ -71,7 +71,7 @@ const UserProvider = ({ children }: PropsWithChildren) => {
   }
 
   const getUser = () => {
-    return { username, avatar: getAvatar() }
+    return { username: username || "Ano", avatar: getAvatar() }
   }
 
   const value = useMemo(
