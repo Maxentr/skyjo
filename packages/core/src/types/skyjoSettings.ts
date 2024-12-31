@@ -1,3 +1,5 @@
+import type { FirstPlayerPenaltyType } from "@/constants.js"
+
 export type SkyjoSettingsToJson = {
   isConfirmed: boolean
   private: boolean
@@ -10,4 +12,6 @@ export type SkyjoSettingsToJson = {
   cardPerColumn: number
   scoreToEndGame: number
   firstPlayerScorePenaltyMultiplier: number
+  firstPlayerScoreFlatPenalty: number
+  firstPlayerPenaltyType: FirstPlayerPenaltyType
 }

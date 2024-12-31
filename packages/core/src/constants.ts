@@ -6,6 +6,8 @@ export class Constants {
     ALLOW_SKYJO_FOR_ROW: false,
     SCORE_TO_END_GAME: 100,
     FIRST_PLAYER_SCORE_PENALTY_MULTIPLIER: 2,
+    FIRST_PLAYER_SCORE_FLAT_PENALTY: 0,
+    FIRST_PLAYER_PENALTY_TYPE: "MULTIPLIER_ONLY",
     CARDS: {
       PER_ROW: 3,
       PER_COLUMN: 4,
@@ -93,6 +95,13 @@ export class Constants {
   static readonly KICK_VOTE_THRESHOLD = 0.6 // 60%
 
   static readonly KICK_VOTE_EXPIRATION_TIME = 30000 // 30 seconds
+
+  static readonly FIRST_PLAYER_PENALTY_TYPE = {
+    MULTIPLIER_ONLY: "MULTIPLIER_ONLY",
+    FLAT_ONLY: "FLAT_ONLY",
+    FLAT_THEN_MULTIPLIER: "FLAT_THEN_MULTIPLIER",
+    MULTIPLIER_THEN_FLAT: "MULTIPLIER_THEN_FLAT",
+  } as const
 }
 
 export type GameStatus =
@@ -113,3 +122,6 @@ export type SystemMessageType =
 
 export type ServerMessageType =
   (typeof Constants.SERVER_MESSAGE_TYPE)[keyof typeof Constants.SERVER_MESSAGE_TYPE]
+
+export type FirstPlayerPenaltyType =
+  (typeof Constants.FIRST_PLAYER_PENALTY_TYPE)[keyof typeof Constants.FIRST_PLAYER_PENALTY_TYPE]

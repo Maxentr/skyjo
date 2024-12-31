@@ -281,7 +281,7 @@ export class Skyjo implements SkyjoInterface {
       player.finalRoundScore()
     })
 
-    this.multiplyScoreForFirstPlayer()
+    this.checkFirstPlayerPenalty()
 
     this.roundStatus = Constants.ROUND_STATUS.OVER
 
@@ -542,7 +542,7 @@ export class Skyjo implements SkyjoInterface {
     this.getConnectedPlayers().forEach((player) => player.reset())
   }
 
-  private multiplyScoreForFirstPlayer() {
+  private checkFirstPlayerPenalty() {
     const lastScoreIndex = this.roundNumber - 1
     const firstToFinishPlayer = this.players.find(
       (player) => player.id === this.firstToFinishPlayerId,
@@ -551,31 +551,47 @@ export class Skyjo implements SkyjoInterface {
 
     const firstToFinishPlayerScore = firstToFinishPlayer.scores[lastScoreIndex]
 
-    if (
-      typeof firstToFinishPlayerScore === "number" &&
-      firstToFinishPlayerScore <= 0
-    ) {
-      return
-    }
+    if (typeof firstToFinishPlayerScore === "string") return
 
-    const playersWithoutFirstPlayerToFinish = this.getConnectedPlayers().filter(
-      (player) => player.id !== this.firstToFinishPlayerId,
-    )
-
-    const opponentWithALowerOrEqualScore =
-      playersWithoutFirstPlayerToFinish.some(
-        (player) =>
-          player.scores[lastScoreIndex] <= firstToFinishPlayerScore &&
-          player.scores[lastScoreIndex] !== "-",
+    const otherPlayersHaveLowerScore = this.players.every((player) => {
+      if (player.id === this.firstToFinishPlayerId) return true
+      return (
+        player.scores[lastScoreIndex] !== "-" &&
+        player.scores[lastScoreIndex] < firstToFinishPlayerScore
       )
+    })
 
-    if (opponentWithALowerOrEqualScore) {
-      firstToFinishPlayer.scores[lastScoreIndex] =
-        +firstToFinishPlayer.scores[lastScoreIndex] *
-        this.settings.firstPlayerScorePenaltyMultiplier
+    if (!otherPlayersHaveLowerScore) return
 
-      firstToFinishPlayer.recalculateScore()
+    const {
+      firstPlayerPenaltyType,
+      firstPlayerScorePenaltyMultiplier,
+      firstPlayerScoreFlatPenalty,
+    } = this.settings
+
+    let finalScore = firstToFinishPlayerScore
+    const isScorePositive = finalScore > 0
+
+    switch (firstPlayerPenaltyType) {
+      case Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY:
+        if (isScorePositive) finalScore *= firstPlayerScorePenaltyMultiplier
+
+        break
+      case Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_ONLY:
+        finalScore += firstPlayerScoreFlatPenalty
+        break
+      case Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_THEN_MULTIPLIER:
+        finalScore += firstPlayerScoreFlatPenalty
+        if (isScorePositive) finalScore *= firstPlayerScorePenaltyMultiplier
+        break
+      case Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_THEN_FLAT:
+        if (isScorePositive) finalScore *= firstPlayerScorePenaltyMultiplier
+        finalScore += firstPlayerScoreFlatPenalty
+        break
     }
+
+    firstToFinishPlayer.scores[lastScoreIndex] = finalScore
+    firstToFinishPlayer.recalculateScore()
   }
 
   private checkEndOfGame() {

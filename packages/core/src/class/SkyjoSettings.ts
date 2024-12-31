@@ -1,6 +1,6 @@
 import type { SkyjoToDb } from "@/types/skyjo.js"
 import type { SkyjoSettingsToJson } from "@/types/skyjoSettings.js"
-import { Constants } from "../constants.js"
+import { Constants, type FirstPlayerPenaltyType } from "../constants.js"
 
 type UpdateSettings = {
   maxPlayers?: number
@@ -11,6 +11,8 @@ type UpdateSettings = {
   cardPerColumn?: number
   scoreToEndGame?: number
   firstPlayerScorePenaltyMultiplier?: number
+  firstPlayerScoreFlatPenalty?: number
+  firstPlayerPenaltyType?: FirstPlayerPenaltyType
 }
 
 export interface SkyjoSettingsInterface {
@@ -42,6 +44,10 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
   scoreToEndGame: number = Constants.SKYJO_DEFAULT_SETTINGS.SCORE_TO_END_GAME
   firstPlayerScorePenaltyMultiplier: number =
     Constants.SKYJO_DEFAULT_SETTINGS.FIRST_PLAYER_SCORE_PENALTY_MULTIPLIER
+  firstPlayerScoreFlatPenalty: number =
+    Constants.SKYJO_DEFAULT_SETTINGS.FIRST_PLAYER_SCORE_FLAT_PENALTY
+  firstPlayerPenaltyType: FirstPlayerPenaltyType =
+    Constants.SKYJO_DEFAULT_SETTINGS.FIRST_PLAYER_PENALTY_TYPE
 
   constructor(isPrivate: boolean = false) {
     this.private = isPrivate
@@ -79,6 +85,10 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     this.firstPlayerScorePenaltyMultiplier =
       settings.firstPlayerScorePenaltyMultiplier ??
       this.firstPlayerScorePenaltyMultiplier
+    this.firstPlayerScoreFlatPenalty =
+      settings.firstPlayerScoreFlatPenalty ?? this.firstPlayerScoreFlatPenalty
+    this.firstPlayerPenaltyType =
+      settings.firstPlayerPenaltyType ?? this.firstPlayerPenaltyType
 
     this.preventInvalidSettings()
   }
@@ -123,6 +133,8 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
       cardPerColumn: this.cardPerColumn,
       scoreToEndGame: this.scoreToEndGame,
       firstPlayerScorePenaltyMultiplier: this.firstPlayerScorePenaltyMultiplier,
+      firstPlayerScoreFlatPenalty: this.firstPlayerScoreFlatPenalty,
+      firstPlayerPenaltyType: this.firstPlayerPenaltyType,
     } satisfies SkyjoSettingsToJson
   }
 }
