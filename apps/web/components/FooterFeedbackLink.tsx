@@ -2,11 +2,11 @@
 
 import { useFeedback } from "@/contexts/FeedbackContext"
 
-type FeedbackLinkProps = {
+type FooterFeedbackLinkProps = {
   text: string
 }
 
-const FeedbackLink = ({ text }: FeedbackLinkProps) => {
+const FooterFeedbackLink = ({ text }: FooterFeedbackLinkProps) => {
   const { openFeedback } = useFeedback()
 
   return (
@@ -19,4 +19,4 @@ const FeedbackLink = ({ text }: FeedbackLinkProps) => {
   )
 }
 
-export default FeedbackLink
+export { FooterFeedbackLink }

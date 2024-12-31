@@ -1,3 +1,4 @@
+import { RulesButton } from "@/app/[locale]/(socket)/RulesButton"
 import Footer from "@/components/Footer"
 import MenuDropdown from "@/components/MenuDropdown"
 import MovingArrow from "@/components/MovingArrow"
@@ -8,7 +9,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Button } from "@/components/ui/button"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
@@ -78,9 +78,7 @@ const IndexServerPage = (props: IndexServerPageProps) => {
           <p className="text-justify text-black dark:text-dark-font">
             {t("explanation.content")}
           </p>
-          <Link href="/rules" className="mt-8">
-            <Button>{t("explanation.button")}</Button>
-          </Link>
+          <RulesButton text={t("explanation.button")} />
         </section>
 
         <section className="container bg-body dark:bg-dark-body mt-16 mb-32 max-w-4xl flex flex-col items-center">
