@@ -28,7 +28,7 @@ export const TagsFilter = ({ selectedTags, onTagClick }: TagsFilterProps) => {
   const filteredTags = allTags.filter((tag) => !selectedTags.includes(tag))
 
   return (
-    <div className="flex flex-row items-center gap-1 mt-2 px-8">
+    <div className="flex flex-row items-center gap-1 mt-2">
       <p className="text-black dark:text-dark-font text-sm">{t("title")}</p>
       <div className="flex flex-row items-center gap-1">
         <AnimatePresence mode="popLayout">

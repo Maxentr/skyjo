@@ -3,16 +3,16 @@
 import { GamesList } from "@/app/[locale]/(socket)/search/GamesList"
 import { SearchHeader } from "@/app/[locale]/(socket)/search/SearchHeader"
 import { TagsFilter } from "@/app/[locale]/(socket)/search/TagsFilter"
-import { CreateGameButton } from "@/components/CreateGameButton"
 import MenuDropdown from "@/components/MenuDropdown"
 import { PublicGame, PublicGameTag } from "@skyjo/shared/types"
 import { useQuery } from "@tanstack/react-query"
 import { m } from "framer-motion"
 import { useState } from "react"
 
+const MAX_GAMES_PER_PAGE = 20
 const fetchPublicGames = async (page = 1): Promise<PublicGame[]> => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/games/public?nbPerPage=20&page=${page}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/games/public?nbPerPage=${MAX_GAMES_PER_PAGE}&page=${page}`,
   ).then((res) => res.json())
 
   if (response.error) {
@@ -52,7 +52,7 @@ export const SearchPage = () => {
 
   return (
     <m.div
-      className="relative h-svh w-full z-20 flex flex-col items-center mdh:justify-center overflow-auto"
+      className="relative min-h-svh w-full z-20 flex flex-col"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -61,14 +61,18 @@ export const SearchPage = () => {
         <MenuDropdown />
       </div>
 
-      <div className="w-full max-w-xl h-full flex flex-col justify-center p-4 sm:p-0">
+      <div className="w-full max-w-xl flex flex-grow self-center flex-col justify-center py-8 p-4">
         <m.div
-          className="bg-container dark:bg-dark-container border-2 border-black dark:border-dark-border rounded-2xl w-full flex flex-col gap-2"
+          className="bg-container dark:bg-dark-container border-2 border-black dark:border-dark-border rounded-2xl w-full flex flex-col gap-2 p-4 sm:p-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <SearchHeader onRefresh={refetch} isFetching={isFetching} />
+          <SearchHeader
+            onRefresh={refetch}
+            isFetching={isFetching}
+            buttonLoading={buttonLoading}
+          />
           <TagsFilter selectedTags={selectedTags} onTagClick={onTagClick} />
           <GamesList
             games={filteredGames}
@@ -77,12 +81,6 @@ export const SearchPage = () => {
             setButtonLoading={setButtonLoading}
             onTagClick={onTagClick}
             onJoinGameError={refetch}
-          />
-          <CreateGameButton
-            type="public"
-            className="w-fit mx-auto mb-8"
-            loading={buttonLoading}
-            setLoading={setButtonLoading}
           />
         </m.div>
       </div>

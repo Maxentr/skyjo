@@ -45,7 +45,10 @@
       "header": {
         "back": "Retour à la page d'accueil",
         "title": "Parties publiques",
-        "refresh": "Rafraîchir la liste des parties"
+        "refresh": "Rafraîchir la liste des parties",
+        "create-button": {
+          "title": "Créer une partie publique"
+        }
       },
       "tags": {
         "title": "Filtres :",

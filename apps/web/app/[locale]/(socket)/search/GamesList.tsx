@@ -29,7 +29,7 @@ export const GamesList = ({
   const isEmpty = games?.length === 0 && !isFetching
 
   return (
-    <div className="flex flex-col gap-4 items-center overflow-y-scroll max-h-[55svh] px-8 py-4">
+    <div className="flex flex-col gap-4 items-center py-4">
       <AnimatePresence>
         {isFetching && <LoadingPublicGames />}
         {isEmpty ? (

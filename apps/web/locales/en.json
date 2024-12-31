@@ -45,7 +45,10 @@
       "header": {
         "back": "Back to homepage",
         "title": "Public games",
-        "refresh": "Refresh the games list"
+        "refresh": "Refresh the games list",
+        "create-button": {
+          "title": "Create a public game"
+        }
       },
       "tags": {
         "title": "Filters:",
