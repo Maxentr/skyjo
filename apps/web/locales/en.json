@@ -120,9 +120,23 @@
           "label": "Number of points to end the game",
           "title": "{number} points will be required to end the game"
         },
+        "first-player-penalty-type": {
+          "label": "First player penalty type",
+          "description": "Penalty is applied if the first player to reveal all his cards does not have the smallest number of points (doesn't apply if score is less or equal to 0)",
+          "placeholder": "Select a penalty type",
+          "item": {
+            "multiplier-only": "Multiplier only",
+            "flat-only": "Flat only",
+            "flat-then-multiplier": "Flat then multiplier",
+            "multiplier-then-flat": "Multiplier then flat"
+          }
+        },
+        "first-player-flat-penalty": {
+          "label": "First player flat penalty",
+          "title": "The score of the first player will be added by {number} if it is not strictly inferior to the other scores of the game"
+        },
         "first-player-multiplier-penalty": {
           "label": "First player score penalty multiplier",
-          "description": "The score of the first player who has revealed all his cards will be multiplied by this number if it is not strictly inferior to the other scores of the game",
           "title": "The score of the first player will be multiplied by {number} if it is not strictly inferior to the other scores of the game"
         }
       },

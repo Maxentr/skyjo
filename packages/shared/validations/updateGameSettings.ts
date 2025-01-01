@@ -30,6 +30,13 @@ export const updateGameSettingsSchema = z.object({
     .min(1)
     .max(10000000)
     .optional(),
+  firstPlayerFlatPenalty: z.number().int().min(0).max(10000000).optional(),
+  firstPlayerPenaltyType: z
+    .number()
+    .int()
+    .min(CoreConstants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY)
+    .max(CoreConstants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_THEN_FLAT)
+    .optional(),
 })
 
 export type UpdateGameSettings = z.input<typeof updateGameSettingsSchema>
