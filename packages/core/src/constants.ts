@@ -1,4 +1,11 @@
 export class Constants {
+  static readonly FIRST_PLAYER_PENALTY_TYPE = {
+    MULTIPLIER_ONLY: 1,
+    FLAT_ONLY: 2,
+    FLAT_THEN_MULTIPLIER: 3,
+    MULTIPLIER_THEN_FLAT: 4,
+  } as const
+
   static readonly SKYJO_DEFAULT_SETTINGS = {
     MIN_PLAYERS: 2,
     MAX_PLAYERS: 8,
@@ -7,7 +14,8 @@ export class Constants {
     SCORE_TO_END_GAME: 100,
     FIRST_PLAYER_MULTIPLIER_PENALTY: 2,
     FIRST_PLAYER_FLAT_PENALTY: 0,
-    FIRST_PLAYER_PENALTY_TYPE: "MULTIPLIER_ONLY",
+    FIRST_PLAYER_PENALTY_TYPE:
+      Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
     CARDS: {
       PER_ROW: 3,
       PER_COLUMN: 4,
@@ -95,13 +103,6 @@ export class Constants {
   static readonly KICK_VOTE_THRESHOLD = 0.6 // 60%
 
   static readonly KICK_VOTE_EXPIRATION_TIME = 30000 // 30 seconds
-
-  static readonly FIRST_PLAYER_PENALTY_TYPE = {
-    MULTIPLIER_ONLY: "MULTIPLIER_ONLY",
-    FLAT_ONLY: "FLAT_ONLY",
-    FLAT_THEN_MULTIPLIER: "FLAT_THEN_MULTIPLIER",
-    MULTIPLIER_THEN_FLAT: "MULTIPLIER_THEN_FLAT",
-  } as const
 }
 
 export type GameStatus =
