@@ -183,7 +183,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </Label>
                 <RadioNumber
                   name="nb-columns"
-                  max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN}
+                  max={CoreConstants.DEFAULT_GAME_SETTINGS.CARDS.PER_COLUMN}
                   selected={game.settings.cardPerColumn}
                   onChange={(value) =>
                     actions.updateSingleSettings("cardPerColumn", value)
@@ -199,7 +199,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 <Label htmlFor="nb-rows">{t("settings.nb-rows.label")}</Label>
                 <RadioNumber
                   name="nb-rows"
-                  max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW}
+                  max={CoreConstants.DEFAULT_GAME_SETTINGS.CARDS.PER_ROW}
                   selected={game.settings.cardPerRow}
                   onChange={(value) =>
                     actions.updateSingleSettings("cardPerRow", value)
@@ -417,10 +417,10 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   {Array.from(
                     {
                       length:
-                        CoreConstants.SKYJO_DEFAULT_SETTINGS.MAX_PLAYERS - 1,
+                        CoreConstants.DEFAULT_GAME_SETTINGS.MAX_PLAYERS - 1,
                     },
                     (_, index) =>
-                      index + CoreConstants.SKYJO_DEFAULT_SETTINGS.MIN_PLAYERS,
+                      index + CoreConstants.DEFAULT_GAME_SETTINGS.MIN_PLAYERS,
                   ).map((value) => (
                     <SelectItem key={value} value={value.toString()}>
                       {t("player-section.select.item", { value })}

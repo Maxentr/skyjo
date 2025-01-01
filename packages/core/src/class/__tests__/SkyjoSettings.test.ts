@@ -16,22 +16,22 @@ describe("SkyjoSettings", () => {
     expect(defaultSettings.isConfirmed).toBeFalsy()
     expect(defaultSettings.private).toBeFalsy()
     expect(defaultSettings.allowSkyjoForColumn).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN,
+      Constants.DEFAULT_GAME_SETTINGS.ALLOW_SKYJO_FOR_COLUMN,
     )
     expect(defaultSettings.allowSkyjoForRow).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_ROW,
+      Constants.DEFAULT_GAME_SETTINGS.ALLOW_SKYJO_FOR_ROW,
     )
     expect(defaultSettings.initialTurnedCount).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.CARDS.INITIAL_TURNED_COUNT,
+      Constants.DEFAULT_GAME_SETTINGS.CARDS.INITIAL_TURNED_COUNT,
     )
     expect(defaultSettings.cardPerRow).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW,
+      Constants.DEFAULT_GAME_SETTINGS.CARDS.PER_ROW,
     )
     expect(defaultSettings.cardPerColumn).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN,
+      Constants.DEFAULT_GAME_SETTINGS.CARDS.PER_COLUMN,
     )
     expect(defaultSettings.maxPlayers).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.MAX_PLAYERS,
+      Constants.DEFAULT_GAME_SETTINGS.MAX_PLAYERS,
     )
   })
 

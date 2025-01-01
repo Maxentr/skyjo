@@ -6,7 +6,7 @@ export class Constants {
     MULTIPLIER_THEN_FLAT: 4,
   } as const
 
-  static readonly SKYJO_DEFAULT_SETTINGS = {
+  static readonly DEFAULT_GAME_SETTINGS = {
     MIN_PLAYERS: 2,
     MAX_PLAYERS: 8,
     ALLOW_SKYJO_FOR_COLUMN: true,
