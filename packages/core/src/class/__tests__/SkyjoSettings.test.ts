@@ -53,7 +53,7 @@ describe("SkyjoSettings", () => {
       firstPlayerMultiplierPenalty: 1,
       firstPlayerPenaltyType:
         Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
-      firstPlayerScoreFlatPenalty: 0,
+      firstPlayerFlatPenalty: 0,
       maxPlayers: 2,
       private: true,
     }
@@ -146,7 +146,7 @@ describe("SkyjoSettings", () => {
       firstPlayerMultiplierPenalty: 2,
       firstPlayerPenaltyType:
         Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
-      firstPlayerScoreFlatPenalty: 0,
+      firstPlayerFlatPenalty: 0,
     })
   })
 })

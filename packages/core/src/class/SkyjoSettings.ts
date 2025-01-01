@@ -11,7 +11,7 @@ type UpdateSettings = {
   cardPerColumn?: number
   scoreToEndGame?: number
   firstPlayerMultiplierPenalty?: number
-  firstPlayerScoreFlatPenalty?: number
+  firstPlayerFlatPenalty?: number
   firstPlayerPenaltyType?: FirstPlayerPenaltyType
 }
 
@@ -44,8 +44,8 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
   scoreToEndGame: number = Constants.SKYJO_DEFAULT_SETTINGS.SCORE_TO_END_GAME
   firstPlayerMultiplierPenalty: number =
     Constants.SKYJO_DEFAULT_SETTINGS.FIRST_PLAYER_MULTIPLIER_PENALTY
-  firstPlayerScoreFlatPenalty: number =
-    Constants.SKYJO_DEFAULT_SETTINGS.FIRST_PLAYER_SCORE_FLAT_PENALTY
+  firstPlayerFlatPenalty: number =
+    Constants.SKYJO_DEFAULT_SETTINGS.FIRST_PLAYER_FLAT_PENALTY
   firstPlayerPenaltyType: FirstPlayerPenaltyType =
     Constants.SKYJO_DEFAULT_SETTINGS.FIRST_PLAYER_PENALTY_TYPE
 
@@ -66,7 +66,7 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     this.cardPerColumn = settings.cardPerColumn
     this.scoreToEndGame = settings.scoreToEndGame
     this.firstPlayerMultiplierPenalty = settings.firstPlayerMultiplierPenalty
-    this.firstPlayerScoreFlatPenalty = settings.firstPlayerScoreFlatPenalty
+    this.firstPlayerFlatPenalty = settings.firstPlayerFlatPenalty
     this.firstPlayerPenaltyType = settings.firstPlayerPenaltyType
 
     return this
@@ -85,8 +85,8 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     this.scoreToEndGame = settings.scoreToEndGame ?? this.scoreToEndGame
     this.firstPlayerMultiplierPenalty =
       settings.firstPlayerMultiplierPenalty ?? this.firstPlayerMultiplierPenalty
-    this.firstPlayerScoreFlatPenalty =
-      settings.firstPlayerScoreFlatPenalty ?? this.firstPlayerScoreFlatPenalty
+    this.firstPlayerFlatPenalty =
+      settings.firstPlayerFlatPenalty ?? this.firstPlayerFlatPenalty
     this.firstPlayerPenaltyType =
       settings.firstPlayerPenaltyType ?? this.firstPlayerPenaltyType
 
@@ -133,7 +133,7 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
       cardPerColumn: this.cardPerColumn,
       scoreToEndGame: this.scoreToEndGame,
       firstPlayerMultiplierPenalty: this.firstPlayerMultiplierPenalty,
-      firstPlayerScoreFlatPenalty: this.firstPlayerScoreFlatPenalty,
+      firstPlayerFlatPenalty: this.firstPlayerFlatPenalty,
       firstPlayerPenaltyType: this.firstPlayerPenaltyType,
     } satisfies SkyjoSettingsToJson
   }

@@ -65,7 +65,7 @@ export type SkyjoToDb = {
     scoreToEndGame: number
     firstPlayerMultiplierPenalty: number
     firstPlayerPenaltyType: FirstPlayerPenaltyType
-    firstPlayerScoreFlatPenalty: number
+    firstPlayerFlatPenalty: number
   }
   selectedCardValue: number | null
   roundNumber: number
