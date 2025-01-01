@@ -1,6 +1,7 @@
 import type {
   Avatar,
   ConnectionStatus,
+  FirstPlayerPenaltyType,
   GameStatus,
   LastTurnStatus,
   RoundStatus,
@@ -62,7 +63,9 @@ export type SkyjoToDb = {
     cardPerRow: number
     cardPerColumn: number
     scoreToEndGame: number
-    firstPlayerScorePenaltyMultiplier: number
+    firstPlayerMultiplierPenalty: number
+    firstPlayerPenaltyType: FirstPlayerPenaltyType
+    firstPlayerScoreFlatPenalty: number
   }
   selectedCardValue: number | null
   roundNumber: number

@@ -368,8 +368,10 @@ export class Skyjo implements SkyjoInterface {
         cardPerRow: this.settings.cardPerRow,
         cardPerColumn: this.settings.cardPerColumn,
         scoreToEndGame: this.settings.scoreToEndGame,
-        firstPlayerScorePenaltyMultiplier:
-          this.settings.firstPlayerScorePenaltyMultiplier,
+        firstPlayerMultiplierPenalty:
+          this.settings.firstPlayerMultiplierPenalty,
+        firstPlayerPenaltyType: this.settings.firstPlayerPenaltyType,
+        firstPlayerScoreFlatPenalty: this.settings.firstPlayerScoreFlatPenalty,
       },
       selectedCardValue: this.selectedCardValue,
       roundNumber: this.roundNumber,
@@ -565,7 +567,7 @@ export class Skyjo implements SkyjoInterface {
 
     const {
       firstPlayerPenaltyType,
-      firstPlayerScorePenaltyMultiplier,
+      firstPlayerMultiplierPenalty,
       firstPlayerScoreFlatPenalty,
     } = this.settings
 
@@ -574,7 +576,7 @@ export class Skyjo implements SkyjoInterface {
 
     switch (firstPlayerPenaltyType) {
       case Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY:
-        if (isScorePositive) finalScore *= firstPlayerScorePenaltyMultiplier
+        if (isScorePositive) finalScore *= firstPlayerMultiplierPenalty
 
         break
       case Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_ONLY:
@@ -582,10 +584,10 @@ export class Skyjo implements SkyjoInterface {
         break
       case Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_THEN_MULTIPLIER:
         finalScore += firstPlayerScoreFlatPenalty
-        if (isScorePositive) finalScore *= firstPlayerScorePenaltyMultiplier
+        if (isScorePositive) finalScore *= firstPlayerMultiplierPenalty
         break
       case Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_THEN_FLAT:
-        if (isScorePositive) finalScore *= firstPlayerScorePenaltyMultiplier
+        if (isScorePositive) finalScore *= firstPlayerMultiplierPenalty
         finalScore += firstPlayerScoreFlatPenalty
         break
     }

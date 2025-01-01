@@ -11,7 +11,7 @@ export type SkyjoSettingsToJson = {
   cardPerRow: number
   cardPerColumn: number
   scoreToEndGame: number
-  firstPlayerScorePenaltyMultiplier: number
+  firstPlayerMultiplierPenalty: number
   firstPlayerScoreFlatPenalty: number
   firstPlayerPenaltyType: FirstPlayerPenaltyType
 }

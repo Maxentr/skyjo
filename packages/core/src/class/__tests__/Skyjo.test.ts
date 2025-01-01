@@ -72,7 +72,10 @@ describe("Skyjo", () => {
           cardPerRow: 3,
           cardPerColumn: 4,
           scoreToEndGame: 100,
-          firstPlayerScorePenaltyMultiplier: 2,
+          firstPlayerMultiplierPenalty: 2,
+          firstPlayerPenaltyType:
+            Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
+          firstPlayerScoreFlatPenalty: 0,
         },
 
         stateVersion: 0,
@@ -136,7 +139,10 @@ describe("Skyjo", () => {
           cardPerRow: 3,
           cardPerColumn: 4,
           scoreToEndGame: 100,
-          firstPlayerScorePenaltyMultiplier: 2,
+          firstPlayerMultiplierPenalty: 2,
+          firstPlayerPenaltyType:
+            Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
+          firstPlayerScoreFlatPenalty: 0,
         },
 
         stateVersion: 0,
@@ -1044,9 +1050,12 @@ describe("Skyjo", () => {
           cardPerRow: 3,
           initialTurnedCount: 2,
           maxPlayers: 8,
-          firstPlayerScorePenaltyMultiplier: 2,
           private: false,
           scoreToEndGame: 100,
+          firstPlayerMultiplierPenalty: 2,
+          firstPlayerPenaltyType:
+            Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
+          firstPlayerScoreFlatPenalty: 0,
         },
         stateVersion: skyjo.stateVersion,
         createdAt: skyjo.createdAt,

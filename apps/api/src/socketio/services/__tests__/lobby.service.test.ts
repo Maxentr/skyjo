@@ -228,7 +228,7 @@ describe("LobbyService", () => {
       game.settings.cardPerRow = 1
       game.settings.initialTurnedCount = 1
       game.settings.scoreToEndGame = 1
-      game.settings.firstPlayerScorePenaltyMultiplier = 1
+      game.settings.firstPlayerMultiplierPenalty = 1
       game.settings.allowSkyjoForColumn = true
       game.settings.allowSkyjoForRow = true
       game.settings.maxPlayers = 2
@@ -299,7 +299,7 @@ describe("LobbyService", () => {
         cardPerRow: 6,
         cardPerColumn: 8,
         scoreToEndGame: 100,
-        firstPlayerScorePenaltyMultiplier: 2,
+        firstPlayerMultiplierPenalty: 2,
       }
 
       await expect(
@@ -418,13 +418,14 @@ describe("LobbyService", () => {
         cardPerRow: 6,
         cardPerColumn: 8,
         scoreToEndGame: 100,
-        firstPlayerScorePenaltyMultiplier: 2,
+        firstPlayerMultiplierPenalty: 2,
       }
 
       await service.onUpdateSettings(socket, newSettings)
 
       expect(game.settings).toBeInstanceOf(SkyjoSettings)
       expect(game.settings.toJson()).toStrictEqual({
+        ...game.settings,
         ...newSettings,
         private: game.settings.private,
         maxPlayers: 8,

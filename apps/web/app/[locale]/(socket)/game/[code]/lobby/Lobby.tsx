@@ -250,8 +250,8 @@ const Lobby = ({ gameCode }: LobbyProps) => {
               </div>
               <div className="flex flex-col gap-1">
                 <div className="flex flex-row items-start gap-2">
-                  <Label htmlFor="first-player-score-penalty-multiplier">
-                    {t("settings.first-player-score-penalty-multiplier.label")}
+                  <Label htmlFor="first-player-multiplier-penalty">
+                    {t("settings.first-player-multiplier-penalty.label")}
                   </Label>
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
@@ -260,7 +260,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                       </TooltipTrigger>
                       <TooltipContent>
                         {t(
-                          "settings.first-player-score-penalty-multiplier.description",
+                          "settings.first-player-multiplier-penalty.description",
                         )}
                       </TooltipContent>
                     </Tooltip>
@@ -268,46 +268,38 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </div>
                 <div className="flex flex-row gap-2 items-center">
                   <Slider
-                    key={game.settings.firstPlayerScorePenaltyMultiplier}
-                    name={"first-player-score-penalty-multiplier"}
+                    key={game.settings.firstPlayerMultiplierPenalty}
+                    name={"first-player-multiplier-penalty"}
                     step={1}
                     min={1}
                     max={10}
-                    defaultValue={[
-                      game.settings.firstPlayerScorePenaltyMultiplier,
-                    ]}
+                    defaultValue={[game.settings.firstPlayerMultiplierPenalty]}
                     onValueCommit={(value) =>
                       actions.updateSingleSettings(
-                        "firstPlayerScorePenaltyMultiplier",
+                        "firstPlayerMultiplierPenalty",
                         +value,
                       )
                     }
-                    title={t(
-                      "settings.first-player-score-penalty-multiplier.title",
-                      {
-                        number: game.settings.firstPlayerScorePenaltyMultiplier,
-                      },
-                    )}
+                    title={t("settings.first-player-multiplier-penalty.title", {
+                      number: game.settings.firstPlayerMultiplierPenalty,
+                    })}
                     disabled={disableInput}
                   />
                   <Input
-                    name={"first-player-score-penalty-multiplier"}
+                    name={"first-player-multiplier-penalty"}
                     type="number"
                     min={1}
                     max={10}
-                    value={game.settings.firstPlayerScorePenaltyMultiplier}
+                    value={game.settings.firstPlayerMultiplierPenalty}
                     onChange={(e) =>
                       actions.updateSingleSettings(
-                        "firstPlayerScorePenaltyMultiplier",
+                        "firstPlayerMultiplierPenalty",
                         +e.target.value,
                       )
                     }
-                    title={t(
-                      "settings.first-player-score-penalty-multiplier.title",
-                      {
-                        number: game.settings.firstPlayerScorePenaltyMultiplier,
-                      },
-                    )}
+                    title={t("settings.first-player-multiplier-penalty.title", {
+                      number: game.settings.firstPlayerMultiplierPenalty,
+                    })}
                     disabled={disableInput}
                     className="w-16 text-center"
                   />
