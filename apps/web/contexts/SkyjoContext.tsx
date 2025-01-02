@@ -23,7 +23,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react"
 import { Socket } from "socket.io-client"
@@ -60,7 +59,7 @@ interface SkyjoProviderProps extends PropsWithChildren {
 }
 
 const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
-  const { socket, saveLastGame } = useSocket()
+  const { socket, addReconnectionDateToLastGame } = useSocket()
   const { sendMessage, setChat } = useChat()
   const router = useRouter()
   const { dismiss: dismissToast } = useToast()
@@ -97,29 +96,24 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     if (socket?.recovered) socket.emit("recover")
   }, [socket?.recovered])
 
-  const gameStatusRef = useRef(game?.status)
-
-  useEffect(() => {
-    gameStatusRef.current = game?.status
-
-    socket!.on("disconnect", onDisconnect)
-    return () => {
-      socket!.off("disconnect", onDisconnect)
-    }
-  }, [game?.status])
-
   useEffect(() => {
     const onUnload = () => {
-      if (gameStatusRef.current === CoreConstants.GAME_STATUS.PLAYING)
-        saveLastGame()
+      if (!game?.status) return
+
+      const inGame = game?.status === CoreConstants.GAME_STATUS.PLAYING
+      if (inGame) addReconnectionDateToLastGame()
     }
 
     window.addEventListener("beforeunload", onUnload)
 
+    socket!.on("disconnect", onDisconnect)
+
     return () => {
+      socket!.off("disconnect", onDisconnect)
       window.removeEventListener("beforeunload", onUnload)
     }
-  }, [])
+  }, [game?.status])
+
   //#endregion
 
   //#region listeners
