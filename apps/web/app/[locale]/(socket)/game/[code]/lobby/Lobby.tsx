@@ -26,7 +26,10 @@ import { useSkyjo } from "@/contexts/SkyjoContext"
 import { useRouter } from "@/i18n/routing"
 import { getAdmin, isAdmin } from "@/lib/skyjo"
 import { cn } from "@/lib/utils"
-import { Constants as CoreConstants } from "@skyjo/core"
+import {
+  Constants as CoreConstants,
+  type FirstPlayerPenaltyType,
+} from "@skyjo/core"
 import { UpdateGameSettings } from "@skyjo/shared/validations"
 import { m } from "framer-motion"
 import {
@@ -308,7 +311,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   onValueChange={(value) =>
                     actions.updateSingleSettings(
                       "firstPlayerPenaltyType",
-                      +value,
+                      +value as FirstPlayerPenaltyType,
                     )
                   }
                   disabled={disableInput}

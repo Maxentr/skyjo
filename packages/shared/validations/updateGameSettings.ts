@@ -32,10 +32,7 @@ export const updateGameSettingsSchema = z.object({
     .optional(),
   firstPlayerFlatPenalty: z.number().int().min(0).max(10000000).optional(),
   firstPlayerPenaltyType: z
-    .number()
-    .int()
-    .min(CoreConstants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY)
-    .max(CoreConstants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_THEN_FLAT)
+    .nativeEnum(CoreConstants.FIRST_PLAYER_PENALTY_TYPE)
     .optional(),
 })
 
