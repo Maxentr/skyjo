@@ -72,7 +72,7 @@ export class GameStateManager {
     const keys = Object.keys(oldState) as Array<keyof SkyjoToJson>
     keys.forEach((key) => {
       if (key === "settings" || key === "players") return
-      else if (oldState[key] !== newState[key]) {
+      else if (!isDeepStrictEqual(oldState[key], newState[key])) {
         gameChanges = {
           ...gameChanges,
           [key]: newState[key],
