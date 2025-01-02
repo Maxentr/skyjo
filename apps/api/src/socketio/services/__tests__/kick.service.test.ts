@@ -179,8 +179,17 @@ describe("KickService", () => {
 
       expect(socket.emit).toHaveBeenNthCalledWith(
         1,
+        "game:update",
+        expect.objectContaining({
+          removePlayers: [opponent2.id],
+        }),
+      )
+      expect(socket.emit).toHaveBeenNthCalledWith(
+        2,
         "kick:vote-success",
-        expect.objectContaining({}),
+        expect.objectContaining({
+          targetId: opponent2.id,
+        }),
       )
 
       expect(service["kickVotes"].get(game.id)).toBeUndefined()
@@ -197,12 +206,21 @@ describe("KickService", () => {
       expect(socket.emit).toHaveBeenNthCalledWith(
         1,
         "game:update",
-        expect.objectContaining({}),
+        expect.objectContaining({
+          updatePlayers: [
+            {
+              connectionStatus: CoreConstants.CONNECTION_STATUS.DISCONNECTED,
+              id: opponent2.id,
+            },
+          ],
+        }),
       )
       expect(socket.emit).toHaveBeenNthCalledWith(
         2,
         "kick:vote-success",
-        expect.objectContaining({}),
+        expect.objectContaining({
+          targetId: opponent2.id,
+        }),
       )
 
       expect(service["kickVotes"].get(game.id)).toBeUndefined()
@@ -224,7 +242,9 @@ describe("KickService", () => {
       expect(socket.emit).toHaveBeenNthCalledWith(
         1,
         "kick:vote-failed",
-        expect.objectContaining({}),
+        expect.objectContaining({
+          targetId: opponent2.id,
+        }),
       )
 
       expect(service["kickVotes"].get(game.id)).toBeUndefined()

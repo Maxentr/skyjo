@@ -201,10 +201,9 @@ export class KickService extends BaseService {
       )
     }
 
-    playerToKick.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
-    await this.redis.updatePlayer(game.code, playerToKick.toJson())
-
-    await this.handlePlayerDisconnection(socket, game, playerToKick)
+    await this.handlePlayerDisconnection(socket, game, playerToKick, {
+      force: true,
+    })
 
     this.sendToSocketAndRoom(socket, {
       room: game.code,
