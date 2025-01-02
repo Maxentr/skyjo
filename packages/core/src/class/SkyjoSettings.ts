@@ -1,6 +1,6 @@
 import type { SkyjoToDb } from "@/types/skyjo.js"
 import type { SkyjoSettingsToJson } from "@/types/skyjoSettings.js"
-import { Constants } from "../constants.js"
+import { Constants, type FirstPlayerPenaltyType } from "../constants.js"
 
 type UpdateSettings = {
   maxPlayers?: number
@@ -10,7 +10,9 @@ type UpdateSettings = {
   cardPerRow?: number
   cardPerColumn?: number
   scoreToEndGame?: number
-  firstPlayerScorePenaltyMultiplier?: number
+  firstPlayerMultiplierPenalty?: number
+  firstPlayerFlatPenalty?: number
+  firstPlayerPenaltyType?: FirstPlayerPenaltyType
 }
 
 export interface SkyjoSettingsInterface {
@@ -30,18 +32,22 @@ export interface SkyjoSettingsInterface {
 export class SkyjoSettings implements SkyjoSettingsInterface {
   isConfirmed: boolean = false
   private: boolean = false
-  maxPlayers: number = Constants.SKYJO_DEFAULT_SETTINGS.MAX_PLAYERS
+  maxPlayers: number = Constants.DEFAULT_GAME_SETTINGS.MAX_PLAYERS
   allowSkyjoForColumn: boolean =
-    Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN
+    Constants.DEFAULT_GAME_SETTINGS.ALLOW_SKYJO_FOR_COLUMN
   allowSkyjoForRow: boolean =
-    Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_ROW
+    Constants.DEFAULT_GAME_SETTINGS.ALLOW_SKYJO_FOR_ROW
   initialTurnedCount: number =
-    Constants.SKYJO_DEFAULT_SETTINGS.CARDS.INITIAL_TURNED_COUNT
-  cardPerRow: number = Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW
-  cardPerColumn: number = Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN
-  scoreToEndGame: number = Constants.SKYJO_DEFAULT_SETTINGS.SCORE_TO_END_GAME
-  firstPlayerScorePenaltyMultiplier: number =
-    Constants.SKYJO_DEFAULT_SETTINGS.FIRST_PLAYER_SCORE_PENALTY_MULTIPLIER
+    Constants.DEFAULT_GAME_SETTINGS.CARDS.INITIAL_TURNED_COUNT
+  cardPerRow: number = Constants.DEFAULT_GAME_SETTINGS.CARDS.PER_ROW
+  cardPerColumn: number = Constants.DEFAULT_GAME_SETTINGS.CARDS.PER_COLUMN
+  scoreToEndGame: number = Constants.DEFAULT_GAME_SETTINGS.SCORE_TO_END_GAME
+  firstPlayerMultiplierPenalty: number =
+    Constants.DEFAULT_GAME_SETTINGS.FIRST_PLAYER_MULTIPLIER_PENALTY
+  firstPlayerFlatPenalty: number =
+    Constants.DEFAULT_GAME_SETTINGS.FIRST_PLAYER_FLAT_PENALTY
+  firstPlayerPenaltyType: FirstPlayerPenaltyType =
+    Constants.DEFAULT_GAME_SETTINGS.FIRST_PLAYER_PENALTY_TYPE
 
   constructor(isPrivate: boolean = false) {
     this.private = isPrivate
@@ -59,8 +65,9 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     this.cardPerRow = settings.cardPerRow
     this.cardPerColumn = settings.cardPerColumn
     this.scoreToEndGame = settings.scoreToEndGame
-    this.firstPlayerScorePenaltyMultiplier =
-      settings.firstPlayerScorePenaltyMultiplier
+    this.firstPlayerMultiplierPenalty = settings.firstPlayerMultiplierPenalty
+    this.firstPlayerFlatPenalty = settings.firstPlayerFlatPenalty
+    this.firstPlayerPenaltyType = settings.firstPlayerPenaltyType
 
     return this
   }
@@ -76,9 +83,12 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     this.cardPerRow = settings.cardPerRow ?? this.cardPerRow
     this.cardPerColumn = settings.cardPerColumn ?? this.cardPerColumn
     this.scoreToEndGame = settings.scoreToEndGame ?? this.scoreToEndGame
-    this.firstPlayerScorePenaltyMultiplier =
-      settings.firstPlayerScorePenaltyMultiplier ??
-      this.firstPlayerScorePenaltyMultiplier
+    this.firstPlayerMultiplierPenalty =
+      settings.firstPlayerMultiplierPenalty ?? this.firstPlayerMultiplierPenalty
+    this.firstPlayerFlatPenalty =
+      settings.firstPlayerFlatPenalty ?? this.firstPlayerFlatPenalty
+    this.firstPlayerPenaltyType =
+      settings.firstPlayerPenaltyType ?? this.firstPlayerPenaltyType
 
     this.preventInvalidSettings()
   }
@@ -96,18 +106,17 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
   isClassicSettings() {
     return (
       this.allowSkyjoForColumn ===
-        Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN &&
+        Constants.DEFAULT_GAME_SETTINGS.ALLOW_SKYJO_FOR_COLUMN &&
       this.allowSkyjoForRow ===
-        Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_ROW &&
+        Constants.DEFAULT_GAME_SETTINGS.ALLOW_SKYJO_FOR_ROW &&
       this.initialTurnedCount ===
-        Constants.SKYJO_DEFAULT_SETTINGS.CARDS.INITIAL_TURNED_COUNT &&
-      this.cardPerRow === Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW &&
-      this.cardPerColumn ===
-        Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN &&
+        Constants.DEFAULT_GAME_SETTINGS.CARDS.INITIAL_TURNED_COUNT &&
+      this.cardPerRow === Constants.DEFAULT_GAME_SETTINGS.CARDS.PER_ROW &&
+      this.cardPerColumn === Constants.DEFAULT_GAME_SETTINGS.CARDS.PER_COLUMN &&
       this.scoreToEndGame ===
-        Constants.SKYJO_DEFAULT_SETTINGS.SCORE_TO_END_GAME &&
-      this.firstPlayerScorePenaltyMultiplier ===
-        Constants.SKYJO_DEFAULT_SETTINGS.FIRST_PLAYER_SCORE_PENALTY_MULTIPLIER
+        Constants.DEFAULT_GAME_SETTINGS.SCORE_TO_END_GAME &&
+      this.firstPlayerMultiplierPenalty ===
+        Constants.DEFAULT_GAME_SETTINGS.FIRST_PLAYER_MULTIPLIER_PENALTY
     )
   }
 
@@ -122,7 +131,9 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
       cardPerRow: this.cardPerRow,
       cardPerColumn: this.cardPerColumn,
       scoreToEndGame: this.scoreToEndGame,
-      firstPlayerScorePenaltyMultiplier: this.firstPlayerScorePenaltyMultiplier,
+      firstPlayerMultiplierPenalty: this.firstPlayerMultiplierPenalty,
+      firstPlayerFlatPenalty: this.firstPlayerFlatPenalty,
+      firstPlayerPenaltyType: this.firstPlayerPenaltyType,
     } satisfies SkyjoSettingsToJson
   }
 }

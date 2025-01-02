@@ -31,7 +31,6 @@ import { UpdateGameSettings } from "@skyjo/shared/validations"
 import { m } from "framer-motion"
 import {
   ArrowLeftIcon,
-  InfoIcon,
   LockIcon,
   TriangleAlertIcon,
   UnlockIcon,
@@ -100,6 +99,14 @@ const Lobby = ({ gameCode }: LobbyProps) => {
   const disableInput =
     !admin || (!game.settings.private && game.settings.isConfirmed)
 
+  const disableFlatPenalty =
+    game.settings.firstPlayerPenaltyType ===
+    CoreConstants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY
+
+  const disableMultiplierPenalty =
+    game.settings.firstPlayerPenaltyType ===
+    CoreConstants.FIRST_PLAYER_PENALTY_TYPE.FLAT_ONLY
+
   return (
     <m.div
       className="relative h-svh w-full z-20 flex flex-col md:items-center mdh:md:justify-center overflow-auto"
@@ -112,8 +119,8 @@ const Lobby = ({ gameCode }: LobbyProps) => {
       </div>
       <div className="flex flex-col gap-4 md:gap-8 items-center h-fit w-full md:max-w-3xl lg:max-w-4xl p-4 pb-20 md:pb-4">
         <div className="flex flex-col lg:flex-row gap-4 w-full">
-          <div className="bg-container dark:bg-dark-container border-2 border-black dark:border-dark-border rounded-2xl w-full p-4 sm:p-8">
-            <div className="flex flex-row justify-between items-center mb-6">
+          <div className="bg-container dark:bg-dark-container border-2 border-black dark:border-dark-border rounded-2xl w-full">
+            <div className="flex flex-row justify-between items-center mb-6 pt-4 sm:pt-8 px-4 sm:px-8">
               <button
                 title={t(
                   game.settings.private
@@ -148,7 +155,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
               </TooltipProvider>
             </div>
 
-            <div className="flex flex-col gap-4 lg:gap-3">
+            <div className="flex flex-col gap-4 lg:gap-3 px-4 sm:px-8 overflow-y-scroll max-h-[30svh] lg:max-h-[50svh]">
               <div className="flex flex-row items-center gap-2">
                 <Switch
                   id="skyjo-for-column"
@@ -183,7 +190,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </Label>
                 <RadioNumber
                   name="nb-columns"
-                  max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN}
+                  max={CoreConstants.DEFAULT_GAME_SETTINGS.CARDS.PER_COLUMN}
                   selected={game.settings.cardPerColumn}
                   onChange={(value) =>
                     actions.updateSingleSettings("cardPerColumn", value)
@@ -199,7 +206,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 <Label htmlFor="nb-rows">{t("settings.nb-rows.label")}</Label>
                 <RadioNumber
                   name="nb-rows"
-                  max={CoreConstants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW}
+                  max={CoreConstants.DEFAULT_GAME_SETTINGS.CARDS.PER_ROW}
                   selected={game.settings.cardPerRow}
                   onChange={(value) =>
                     actions.updateSingleSettings("cardPerRow", value)
@@ -249,71 +256,6 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 </div>
               </div>
               <div className="flex flex-col gap-1">
-                <div className="flex flex-row items-start gap-2">
-                  <Label htmlFor="first-player-score-penalty-multiplier">
-                    {t("settings.first-player-score-penalty-multiplier.label")}
-                  </Label>
-                  <TooltipProvider delayDuration={200}>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <InfoIcon className="h-4 w-4" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {t(
-                          "settings.first-player-score-penalty-multiplier.description",
-                        )}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <div className="flex flex-row gap-2 items-center">
-                  <Slider
-                    key={game.settings.firstPlayerScorePenaltyMultiplier}
-                    name={"first-player-score-penalty-multiplier"}
-                    step={1}
-                    min={1}
-                    max={10}
-                    defaultValue={[
-                      game.settings.firstPlayerScorePenaltyMultiplier,
-                    ]}
-                    onValueCommit={(value) =>
-                      actions.updateSingleSettings(
-                        "firstPlayerScorePenaltyMultiplier",
-                        +value,
-                      )
-                    }
-                    title={t(
-                      "settings.first-player-score-penalty-multiplier.title",
-                      {
-                        number: game.settings.firstPlayerScorePenaltyMultiplier,
-                      },
-                    )}
-                    disabled={disableInput}
-                  />
-                  <Input
-                    name={"first-player-score-penalty-multiplier"}
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={game.settings.firstPlayerScorePenaltyMultiplier}
-                    onChange={(e) =>
-                      actions.updateSingleSettings(
-                        "firstPlayerScorePenaltyMultiplier",
-                        +e.target.value,
-                      )
-                    }
-                    title={t(
-                      "settings.first-player-score-penalty-multiplier.title",
-                      {
-                        number: game.settings.firstPlayerScorePenaltyMultiplier,
-                      },
-                    )}
-                    disabled={disableInput}
-                    className="w-16 text-center"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col gap-1">
                 <Label htmlFor="score-to-end-game">
                   {t("settings.score-to-end-game.label")}
                 </Label>
@@ -353,9 +295,150 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   />
                 </div>
               </div>
+              <hr className="w-full border-black dark:border-dark-border my-3" />
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="first-player-penalty-type">
+                  {t("settings.first-player-penalty-type.label")}
+                </Label>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {t("settings.first-player-penalty-type.description")}
+                </p>
+                <Select
+                  value={game.settings.firstPlayerPenaltyType.toString()}
+                  onValueChange={(value) =>
+                    actions.updateSingleSettings(
+                      "firstPlayerPenaltyType",
+                      +value,
+                    )
+                  }
+                  disabled={disableInput}
+                >
+                  <SelectTrigger className="mt-2 w-fit">
+                    <SelectValue
+                      placeholder={t(
+                        "settings.first-player-penalty-type.placeholder",
+                      )}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      value={CoreConstants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY.toString()}
+                    >
+                      {t(
+                        "settings.first-player-penalty-type.item.multiplier-only",
+                      )}
+                    </SelectItem>
+                    <SelectItem
+                      value={CoreConstants.FIRST_PLAYER_PENALTY_TYPE.FLAT_ONLY.toString()}
+                    >
+                      {t("settings.first-player-penalty-type.item.flat-only")}
+                    </SelectItem>
+                    <SelectItem
+                      value={CoreConstants.FIRST_PLAYER_PENALTY_TYPE.FLAT_THEN_MULTIPLIER.toString()}
+                    >
+                      {t(
+                        "settings.first-player-penalty-type.item.flat-then-multiplier",
+                      )}
+                    </SelectItem>
+                    <SelectItem
+                      value={CoreConstants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_THEN_FLAT.toString()}
+                    >
+                      {t(
+                        "settings.first-player-penalty-type.item.multiplier-then-flat",
+                      )}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="first-player-multiplier-penalty">
+                  {t("settings.first-player-multiplier-penalty.label")}
+                </Label>
+                <div className="flex flex-row gap-2 items-center">
+                  <Slider
+                    key={game.settings.firstPlayerMultiplierPenalty}
+                    name={"first-player-multiplier-penalty"}
+                    step={1}
+                    min={1}
+                    max={10}
+                    defaultValue={[game.settings.firstPlayerMultiplierPenalty]}
+                    onValueCommit={(value) =>
+                      actions.updateSingleSettings(
+                        "firstPlayerMultiplierPenalty",
+                        +value,
+                      )
+                    }
+                    title={t("settings.first-player-multiplier-penalty.title", {
+                      number: game.settings.firstPlayerMultiplierPenalty,
+                    })}
+                    disabled={disableInput || disableMultiplierPenalty}
+                  />
+                  <Input
+                    name={"first-player-multiplier-penalty"}
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={game.settings.firstPlayerMultiplierPenalty}
+                    onChange={(e) =>
+                      actions.updateSingleSettings(
+                        "firstPlayerMultiplierPenalty",
+                        +e.target.value,
+                      )
+                    }
+                    title={t("settings.first-player-multiplier-penalty.title", {
+                      number: game.settings.firstPlayerMultiplierPenalty,
+                    })}
+                    disabled={disableInput || disableMultiplierPenalty}
+                    className="w-16 text-center"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="first-player-flat-penalty">
+                  {t("settings.first-player-flat-penalty.label")}
+                </Label>
+                <div className="flex flex-row gap-2 items-center">
+                  <Slider
+                    key={game.settings.firstPlayerFlatPenalty}
+                    name={"first-player-flat-penalty"}
+                    step={1}
+                    min={1}
+                    max={10}
+                    defaultValue={[game.settings.firstPlayerFlatPenalty]}
+                    onValueCommit={(value) =>
+                      actions.updateSingleSettings(
+                        "firstPlayerFlatPenalty",
+                        +value,
+                      )
+                    }
+                    title={t("settings.first-player-flat-penalty.title", {
+                      number: game.settings.firstPlayerFlatPenalty,
+                    })}
+                    disabled={disableInput || disableFlatPenalty}
+                  />
+                  <Input
+                    name={"first-player-flat-penalty"}
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={game.settings.firstPlayerFlatPenalty}
+                    onChange={(e) =>
+                      actions.updateSingleSettings(
+                        "firstPlayerFlatPenalty",
+                        +e.target.value,
+                      )
+                    }
+                    title={t("settings.first-player-flat-penalty.title", {
+                      number: game.settings.firstPlayerFlatPenalty,
+                    })}
+                    disabled={disableInput || disableFlatPenalty}
+                    className="w-16 text-center"
+                  />
+                </div>
+              </div>
             </div>
             {admin && !game.settings.private && (
-              <div className="flex flex-row justify-center gap-1 mt-6">
+              <div className="flex flex-row justify-center gap-1 mt-6 px-4 sm:px-8">
                 <TriangleAlertIcon className="size-5 text-red-500 dark:text-red-600" />
                 <p className="text-sm text-red-500 dark:text-red-600">
                   {t("settings.validation-warning")}
@@ -365,7 +448,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
             {admin ? (
               <div
                 className={cn(
-                  "flex flex-col sm:flex-row justify-center items-center gap-4 lg:gap-8",
+                  "flex flex-col sm:flex-row justify-center items-center gap-4 lg:gap-8 px-4 sm:px-8 mb-4 sm:mb-8",
                   game.settings.private ? "mt-6 lg:mt-8" : "mt-4",
                 )}
               >
@@ -392,7 +475,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                 )}
               </div>
             ) : (
-              <p className="text-center text-black dark:text-dark-font mt-6 lg:mt-8">
+              <p className="text-center text-black dark:text-dark-font mt-6 lg:mt-8 px-4 sm:px-8 mb-4 sm:mb-8">
                 {t(
                   game.settings.isConfirmed
                     ? "waiting-admin-to-start"
@@ -425,10 +508,10 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   {Array.from(
                     {
                       length:
-                        CoreConstants.SKYJO_DEFAULT_SETTINGS.MAX_PLAYERS - 1,
+                        CoreConstants.DEFAULT_GAME_SETTINGS.MAX_PLAYERS - 1,
                     },
                     (_, index) =>
-                      index + CoreConstants.SKYJO_DEFAULT_SETTINGS.MIN_PLAYERS,
+                      index + CoreConstants.DEFAULT_GAME_SETTINGS.MIN_PLAYERS,
                   ).map((value) => (
                     <SelectItem key={value} value={value.toString()}>
                       {t("player-section.select.item", { value })}

@@ -72,7 +72,10 @@ describe("Skyjo", () => {
           cardPerRow: 3,
           cardPerColumn: 4,
           scoreToEndGame: 100,
-          firstPlayerScorePenaltyMultiplier: 2,
+          firstPlayerMultiplierPenalty: 2,
+          firstPlayerPenaltyType:
+            Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
+          firstPlayerFlatPenalty: 0,
         },
 
         stateVersion: 0,
@@ -136,7 +139,10 @@ describe("Skyjo", () => {
           cardPerRow: 3,
           cardPerColumn: 4,
           scoreToEndGame: 100,
-          firstPlayerScorePenaltyMultiplier: 2,
+          firstPlayerMultiplierPenalty: 2,
+          firstPlayerPenaltyType:
+            Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
+          firstPlayerFlatPenalty: 0,
         },
 
         stateVersion: 0,
@@ -679,7 +685,7 @@ describe("Skyjo", () => {
       )
     })
 
-    it("should set next turn, end the round and not end the game", () => {
+    it("should set next turn, not end the round", () => {
       skyjo.start()
       skyjo.roundStatus = Constants.ROUND_STATUS.PLAYING
       skyjo.firstToFinishPlayerId = player.id
@@ -693,76 +699,151 @@ describe("Skyjo", () => {
       expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.PLAYING)
     })
 
-    it("should set next turn, end the round and not double score of the first player", () => {
+    it("should set next turn, end the round", () => {
       skyjo.start()
-      skyjo.firstToFinishPlayerId = player.id
       skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
-      player.hasPlayedLastTurn = true
-      skyjo.turn = 1
+      skyjo.firstToFinishPlayerId = player.id
+      skyjo.turn = 0
 
-      player.cards = [
-        [
-          new SkyjoCard(1, true),
-          new SkyjoCard(1, true),
-          new SkyjoCard(3, true),
-        ],
-      ]
-      opponent.cards = [
-        [
-          new SkyjoCard(1, true),
-          new SkyjoCard(1, true),
-          new SkyjoCard(4, true),
-        ],
-      ]
+      opponent.hasPlayedLastTurn = true
 
       skyjo.nextTurn()
 
       expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.PLAYING)
-      expect(player.score).toBe(1 + 1 + 3)
     })
+  })
 
-    it("should set next turn, end the round and double score of the first player", () => {
+  describe("endRound", () => {
+    it("should end the round and not apply penalty because first player has not been found", () => {
       skyjo.start()
-      skyjo.firstToFinishPlayerId = player.id
       skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
-      player.hasPlayedLastTurn = true
-      skyjo.turn = 1
+      skyjo.firstToFinishPlayerId = null
+      skyjo.turn = 0
 
       player.cards = [
         [
-          new SkyjoCard(1, true),
-          new SkyjoCard(1, true),
-          new SkyjoCard(3, true),
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
         ],
       ]
       opponent.cards = [
         [
+          new SkyjoCard(0, true),
+          new SkyjoCard(0, true),
           new SkyjoCard(1, true),
-          new SkyjoCard(1, true),
-          new SkyjoCard(2, true),
         ],
       ]
 
-      skyjo.nextTurn()
+      skyjo.endRound()
 
       expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.PLAYING)
-      expect(player.score).toBe((1 + 1 + 3) * 2)
+      expect(skyjo.firstToFinishPlayerId).toBeNull()
+      expect(player.scores[0]).toBe(30)
+      expect(opponent.scores[0]).toBe(1)
     })
 
-    it("should set next turn, end the round and not double score of the first player because it's 0", () => {
+    it("should end the round and not apply penalty because first player has disconnected", () => {
       skyjo.start()
-      skyjo.firstToFinishPlayerId = player.id
       skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
-      player.hasPlayedLastTurn = true
-      skyjo.turn = 1
+      skyjo.firstToFinishPlayerId = player.id
+      player.connectionStatus = Constants.CONNECTION_STATUS.DISCONNECTED
+      skyjo.turn = 0
+
+      player.cards = [
+        [
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
+        ],
+      ]
+      opponent.cards = [
+        [
+          new SkyjoCard(0, true),
+          new SkyjoCard(0, true),
+          new SkyjoCard(1, true),
+        ],
+      ]
+
+      skyjo.endRound()
+
+      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
+      expect(player.scores[0]).toBe("-")
+      expect(opponent.scores[0]).toBe(1)
+    })
+
+    it("should end the round and not apply penalty to the first player since no other player has a lower score", () => {
+      skyjo.start()
+      skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
+      skyjo.firstToFinishPlayerId = player.id
+      skyjo.turn = 0
 
       player.cards = [
         [
           new SkyjoCard(0, true),
-          new SkyjoCard(-2, true),
+          new SkyjoCard(0, true),
+          new SkyjoCard(1, true),
+        ],
+      ]
+      opponent.cards = [
+        [
+          new SkyjoCard(0, true),
+          new SkyjoCard(0, true),
           new SkyjoCard(2, true),
+        ],
+      ]
+
+      skyjo.endRound()
+
+      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
+      expect(player.scores[0]).toBe(1)
+      expect(opponent.scores[0]).toBe(2)
+    })
+
+    it("should end the round and apply only multiplier penalty to the first player", () => {
+      skyjo.start()
+      skyjo.settings.firstPlayerPenaltyType =
+        Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY
+      skyjo.settings.firstPlayerMultiplierPenalty = 2
+
+      skyjo.firstToFinishPlayerId = player.id
+
+      player.cards = [
+        [
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
+        ],
+      ]
+      opponent.cards = [
+        [
+          new SkyjoCard(0, true),
+          new SkyjoCard(0, true),
+          new SkyjoCard(1, true),
+        ],
+      ]
+
+      skyjo.endRound()
+
+      expect(player.scores[0]).toBe(
+        (10 + 11 + 9) * skyjo.settings.firstPlayerMultiplierPenalty,
+      )
+      expect(opponent.scores[0]).toBe(0 + 0 + 1)
+    })
+
+    it("should end the round and not apply multiplier penalty to the first player if the the score is not positive", () => {
+      skyjo.start()
+      skyjo.settings.firstPlayerPenaltyType =
+        Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY
+      skyjo.settings.firstPlayerMultiplierPenalty = 2
+
+      skyjo.firstToFinishPlayerId = player.id
+
+      player.cards = [
+        [
+          new SkyjoCard(0, true),
+          new SkyjoCard(-1, true),
+          new SkyjoCard(1, true),
         ],
       ]
       opponent.cards = [
@@ -773,73 +854,107 @@ describe("Skyjo", () => {
         ],
       ]
 
-      skyjo.nextTurn()
+      skyjo.endRound()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.PLAYING)
-      expect(player.score).toBe(0 + -2 + 2)
+      expect(player.scores[0]).toBe(0)
+      expect(opponent.scores[0]).toBe(-5)
     })
 
-    it("should set next turn, end the round and not double score of the first player because it's negative", () => {
+    it("should end the round and apply only flat penalty to the first player", () => {
       skyjo.start()
+      skyjo.settings.firstPlayerPenaltyType =
+        Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_ONLY
+      skyjo.settings.firstPlayerFlatPenalty = 10
+
       skyjo.firstToFinishPlayerId = player.id
-      skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
-      player.hasPlayedLastTurn = true
-      skyjo.turn = 1
 
       player.cards = [
         [
-          new SkyjoCard(0, true),
-          new SkyjoCard(0, true),
-          new SkyjoCard(-2, true),
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
         ],
       ]
       opponent.cards = [
         [
-          new SkyjoCard(-2, true),
-          new SkyjoCard(-2, true),
-          new SkyjoCard(-1, true),
+          new SkyjoCard(0, true),
+          new SkyjoCard(0, true),
+          new SkyjoCard(1, true),
         ],
       ]
 
-      skyjo.nextTurn()
+      skyjo.endRound()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.PLAYING)
-      expect(player.score).toBe(0 + 0 + -2)
+      expect(player.scores[0]).toBe(
+        10 + 11 + 9 + skyjo.settings.firstPlayerFlatPenalty,
+      )
+      expect(opponent.scores[0]).toBe(0 + 0 + 1)
     })
 
-    it("should set next turn, end the round, double score of the first player and end the game", () => {
+    it("should end the round and apply flat then multiplier penalty to the first player", () => {
       skyjo.start()
-      skyjo.roundNumber = 2
-      skyjo.firstToFinishPlayerId = player.id
-      skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
-      player.hasPlayedLastTurn = true
-      skyjo.turn = 1
+      skyjo.settings.firstPlayerPenaltyType =
+        Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_THEN_MULTIPLIER
+      skyjo.settings.firstPlayerFlatPenalty = 20
+      skyjo.settings.firstPlayerMultiplierPenalty = 3
 
-      player.scores = [90]
+      skyjo.firstToFinishPlayerId = player.id
+
       player.cards = [
         [
-          new SkyjoCard(1, true),
-          new SkyjoCard(1, true),
-          new SkyjoCard(3, true),
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
         ],
       ]
-
-      opponent.scores = [45]
       opponent.cards = [
         [
+          new SkyjoCard(0, true),
+          new SkyjoCard(0, true),
           new SkyjoCard(1, true),
-          new SkyjoCard(1, true),
-          new SkyjoCard(2, true),
         ],
       ]
 
-      skyjo.nextTurn()
+      skyjo.endRound()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.FINISHED)
-      expect(player.score).toBe(90 + (1 + 1 + 3) * 2)
+      expect(player.scores[0]).toBe(
+        (10 + 11 + 9 + skyjo.settings.firstPlayerFlatPenalty) *
+          skyjo.settings.firstPlayerMultiplierPenalty,
+      )
+      expect(opponent.scores[0]).toBe(0 + 0 + 1)
+    })
+
+    it("should end the round and apply multiplier then flat penalty to the first player", () => {
+      skyjo.start()
+      skyjo.settings.firstPlayerPenaltyType =
+        Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_THEN_FLAT
+      skyjo.settings.firstPlayerFlatPenalty = 20
+      skyjo.settings.firstPlayerMultiplierPenalty = 3
+
+      skyjo.firstToFinishPlayerId = player.id
+
+      player.cards = [
+        [
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
+        ],
+      ]
+      opponent.cards = [
+        [
+          new SkyjoCard(0, true),
+          new SkyjoCard(0, true),
+          new SkyjoCard(1, true),
+        ],
+      ]
+
+      skyjo.endRound()
+
+      expect(player.scores[0]).toBe(
+        (10 + 11 + 9) * skyjo.settings.firstPlayerMultiplierPenalty +
+          skyjo.settings.firstPlayerFlatPenalty,
+      )
+      expect(opponent.scores[0]).toBe(0 + 0 + 1)
     })
   })
 
@@ -1044,9 +1159,12 @@ describe("Skyjo", () => {
           cardPerRow: 3,
           initialTurnedCount: 2,
           maxPlayers: 8,
-          firstPlayerScorePenaltyMultiplier: 2,
           private: false,
           scoreToEndGame: 100,
+          firstPlayerMultiplierPenalty: 2,
+          firstPlayerPenaltyType:
+            Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
+          firstPlayerFlatPenalty: 0,
         },
         stateVersion: skyjo.stateVersion,
         createdAt: skyjo.createdAt,

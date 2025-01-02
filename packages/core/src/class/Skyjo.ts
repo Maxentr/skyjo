@@ -161,17 +161,17 @@ export class Skyjo implements SkyjoInterface {
   haveAtLeastMinPlayersConnected() {
     return (
       this.getConnectedPlayers().length >=
-      Constants.SKYJO_DEFAULT_SETTINGS.MIN_PLAYERS
+      Constants.DEFAULT_GAME_SETTINGS.MIN_PLAYERS
     )
   }
 
   start() {
     if (
       this.getConnectedPlayers().length <
-      Constants.SKYJO_DEFAULT_SETTINGS.MIN_PLAYERS
+      Constants.DEFAULT_GAME_SETTINGS.MIN_PLAYERS
     ) {
       throw new CError(
-        `Game cannot start with less than ${Constants.SKYJO_DEFAULT_SETTINGS.MIN_PLAYERS} players`,
+        `Game cannot start with less than ${Constants.DEFAULT_GAME_SETTINGS.MIN_PLAYERS} players`,
         {
           code: ErrorConstants.ERROR.TOO_FEW_PLAYERS,
           level: "warn",
@@ -281,7 +281,7 @@ export class Skyjo implements SkyjoInterface {
       player.finalRoundScore()
     })
 
-    this.multiplyScoreForFirstPlayer()
+    this.checkFirstPlayerPenalty()
 
     this.roundStatus = Constants.ROUND_STATUS.OVER
 
@@ -368,8 +368,10 @@ export class Skyjo implements SkyjoInterface {
         cardPerRow: this.settings.cardPerRow,
         cardPerColumn: this.settings.cardPerColumn,
         scoreToEndGame: this.settings.scoreToEndGame,
-        firstPlayerScorePenaltyMultiplier:
-          this.settings.firstPlayerScorePenaltyMultiplier,
+        firstPlayerMultiplierPenalty:
+          this.settings.firstPlayerMultiplierPenalty,
+        firstPlayerPenaltyType: this.settings.firstPlayerPenaltyType,
+        firstPlayerFlatPenalty: this.settings.firstPlayerFlatPenalty,
       },
       selectedCardValue: this.selectedCardValue,
       roundNumber: this.roundNumber,
@@ -542,7 +544,7 @@ export class Skyjo implements SkyjoInterface {
     this.getConnectedPlayers().forEach((player) => player.reset())
   }
 
-  private multiplyScoreForFirstPlayer() {
+  private checkFirstPlayerPenalty() {
     const lastScoreIndex = this.roundNumber - 1
     const firstToFinishPlayer = this.players.find(
       (player) => player.id === this.firstToFinishPlayerId,
@@ -551,31 +553,50 @@ export class Skyjo implements SkyjoInterface {
 
     const firstToFinishPlayerScore = firstToFinishPlayer.scores[lastScoreIndex]
 
-    if (
-      typeof firstToFinishPlayerScore === "number" &&
-      firstToFinishPlayerScore <= 0
-    ) {
-      return
-    }
+    if (typeof firstToFinishPlayerScore === "string") return
 
-    const playersWithoutFirstPlayerToFinish = this.getConnectedPlayers().filter(
-      (player) => player.id !== this.firstToFinishPlayerId,
-    )
-
-    const opponentWithALowerOrEqualScore =
-      playersWithoutFirstPlayerToFinish.some(
-        (player) =>
-          player.scores[lastScoreIndex] <= firstToFinishPlayerScore &&
-          player.scores[lastScoreIndex] !== "-",
+    const otherPlayersHaveLowerScore = this.players.every((player) => {
+      if (player.id === this.firstToFinishPlayerId) return true
+      return (
+        player.scores[lastScoreIndex] !== "-" &&
+        player.scores[lastScoreIndex] < firstToFinishPlayerScore
       )
+    })
 
-    if (opponentWithALowerOrEqualScore) {
-      firstToFinishPlayer.scores[lastScoreIndex] =
-        +firstToFinishPlayer.scores[lastScoreIndex] *
-        this.settings.firstPlayerScorePenaltyMultiplier
+    if (!otherPlayersHaveLowerScore) return
 
-      firstToFinishPlayer.recalculateScore()
+    let finalScore = firstToFinishPlayerScore
+
+    switch (this.settings.firstPlayerPenaltyType) {
+      case Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY:
+        finalScore = this.multiplierPenalty(finalScore)
+        break
+      case Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_ONLY:
+        finalScore = this.flatPenalty(finalScore)
+        break
+      case Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_THEN_MULTIPLIER:
+        finalScore = this.flatPenalty(finalScore)
+        finalScore = this.multiplierPenalty(finalScore)
+        break
+      case Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_THEN_FLAT:
+        finalScore = this.multiplierPenalty(finalScore)
+        finalScore = this.flatPenalty(finalScore)
+        break
     }
+
+    firstToFinishPlayer.scores[lastScoreIndex] = finalScore
+    firstToFinishPlayer.recalculateScore()
+  }
+
+  private multiplierPenalty(score: number) {
+    const isScorePositive = score > 0
+    if (!isScorePositive) return score
+
+    return score * this.settings.firstPlayerMultiplierPenalty
+  }
+
+  private flatPenalty(score: number) {
+    return score + this.settings.firstPlayerFlatPenalty
   }
 
   private checkEndOfGame() {

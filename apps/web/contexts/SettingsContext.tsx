@@ -52,7 +52,7 @@ type Settings = {
 }
 type SettingsKeys = keyof Settings
 
-const DEFAULT_SETTINGS: Settings = {
+const DEFAULT_GAME_SETTINGS: Settings = {
   locale: "en",
   audio: true,
   volume: 50,
@@ -73,7 +73,7 @@ const SettingsContext = createContext<SettingsContext | undefined>(undefined)
 type SettingsProviderProps = PropsWithChildren<{ locale: Locales }>
 const SettingsProvider = ({ children, locale }: SettingsProviderProps) => {
   const [settings, setSettings] = useLocalStorage<Settings>("userSettings", {
-    ...DEFAULT_SETTINGS,
+    ...DEFAULT_GAME_SETTINGS,
     locale,
   })
 
@@ -83,11 +83,11 @@ const SettingsProvider = ({ children, locale }: SettingsProviderProps) => {
     // check all settings keys, if not present in settings, add them
     if (!settings) return
 
-    Object.keys(DEFAULT_SETTINGS).forEach((defaultKey) => {
+    Object.keys(DEFAULT_GAME_SETTINGS).forEach((defaultKey) => {
       const k = defaultKey as SettingsKeys
 
       if (settings[k] === undefined)
-        setSettings({ ...settings, [k]: DEFAULT_SETTINGS[k] })
+        setSettings({ ...settings, [k]: DEFAULT_GAME_SETTINGS[k] })
     })
   }, [settings])
 

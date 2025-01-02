@@ -1,11 +1,21 @@
 export class Constants {
-  static readonly SKYJO_DEFAULT_SETTINGS = {
+  static readonly FIRST_PLAYER_PENALTY_TYPE = {
+    MULTIPLIER_ONLY: 1,
+    FLAT_ONLY: 2,
+    FLAT_THEN_MULTIPLIER: 3,
+    MULTIPLIER_THEN_FLAT: 4,
+  } as const
+
+  static readonly DEFAULT_GAME_SETTINGS = {
     MIN_PLAYERS: 2,
     MAX_PLAYERS: 8,
     ALLOW_SKYJO_FOR_COLUMN: true,
     ALLOW_SKYJO_FOR_ROW: false,
     SCORE_TO_END_GAME: 100,
-    FIRST_PLAYER_SCORE_PENALTY_MULTIPLIER: 2,
+    FIRST_PLAYER_MULTIPLIER_PENALTY: 2,
+    FIRST_PLAYER_FLAT_PENALTY: 0,
+    FIRST_PLAYER_PENALTY_TYPE:
+      Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
     CARDS: {
       PER_ROW: 3,
       PER_COLUMN: 4,
@@ -113,3 +123,6 @@ export type SystemMessageType =
 
 export type ServerMessageType =
   (typeof Constants.SERVER_MESSAGE_TYPE)[keyof typeof Constants.SERVER_MESSAGE_TYPE]
+
+export type FirstPlayerPenaltyType =
+  (typeof Constants.FIRST_PLAYER_PENALTY_TYPE)[keyof typeof Constants.FIRST_PLAYER_PENALTY_TYPE]

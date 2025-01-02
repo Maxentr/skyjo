@@ -120,9 +120,23 @@
           "label": "Nombre de points pour finir la partie",
           "title": "{number} points seront nécessaires pour finir la partie"
         },
-        "first-player-score-penalty-multiplier": {
+        "first-player-penalty-type": {
+          "label": "Type de pénalité pour le premier joueur",
+          "description": "La pénalité est appliquée si le premier joueur à retourner toutes ses cartes n'a pas le plus petit nombre de points (ne s'applique pas si le score est inférieur ou égal à 0)",
+          "placeholder": "Sélectionner un type de pénalité",
+          "item": {
+            "multiplier-only": "Multiplicateur seulement",
+            "flat-only": "Pénalité plate seulement",
+            "flat-then-multiplier": "Pénalité plate puis multiplicateur",
+            "multiplier-then-flat": "Multiplicateur puis pénalité plate"
+          }
+        },
+        "first-player-flat-penalty": {
+          "label": "Pénalité plate pour le premier joueur",
+          "title": "Le score du premier joueur sera ajouté par {number} si il n'est pas strictement inférieur aux autres scores de la partie"
+        },
+        "first-player-multiplier-penalty": {
           "label": "Multiplicateur de pénalité pour le score du premier joueur",
-          "description": "Le score du premier joueur qui a retourné toutes ses cartes sera multiplié par ce nombre si il n'est pas strictement inférieur aux autres scores de la partie",
           "title": "Le score du premier joueur sera multiplié par {number} si il n'est pas strictement inférieur aux autres scores de la partie"
         }
       },
@@ -316,7 +330,7 @@
       "card-per-column": "Nombre de colonnes : {value}",
       "card-per-row": "Nombre de lignes : {value}",
       "initial-turned-count": "Nombre de cartes à retourner au début : {value}",
-      "first-player-score-penalty-multiplier": "Multiplicateur de pénalité pour le premier joueur si il n'a pas le plus petit nombre de points : {value}",
+      "first-player-multiplier-penalty": "Multiplicateur de pénalité pour le premier joueur si il n'a pas le plus petit nombre de points : {value}",
       "score-to-end-game": "Nombre de points pour finir la partie : {value}"
     },
     "GameStoppedDialog": {

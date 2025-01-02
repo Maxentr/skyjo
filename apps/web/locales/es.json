@@ -73,7 +73,7 @@
           "label": "Número de puntos para terminar el juego",
           "title": "{number} puntos serán necesarios para terminar el juego"
         },
-        "first-player-score-penalty-multiplier": {
+        "first-player-multiplier-penalty": {
           "title": "La puntuación del primer jugador se multiplicará por {number} si no es estrictamente inferior a las otras puntuaciones del juego",
           "description": "La puntuación del primer jugador que haya revelado todas sus cartas se multiplicará por este número si no es estrictamente inferior a las demás puntuaciones del juego"
         },

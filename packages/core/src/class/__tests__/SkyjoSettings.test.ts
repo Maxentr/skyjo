@@ -16,22 +16,22 @@ describe("SkyjoSettings", () => {
     expect(defaultSettings.isConfirmed).toBeFalsy()
     expect(defaultSettings.private).toBeFalsy()
     expect(defaultSettings.allowSkyjoForColumn).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_COLUMN,
+      Constants.DEFAULT_GAME_SETTINGS.ALLOW_SKYJO_FOR_COLUMN,
     )
     expect(defaultSettings.allowSkyjoForRow).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.ALLOW_SKYJO_FOR_ROW,
+      Constants.DEFAULT_GAME_SETTINGS.ALLOW_SKYJO_FOR_ROW,
     )
     expect(defaultSettings.initialTurnedCount).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.CARDS.INITIAL_TURNED_COUNT,
+      Constants.DEFAULT_GAME_SETTINGS.CARDS.INITIAL_TURNED_COUNT,
     )
     expect(defaultSettings.cardPerRow).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_ROW,
+      Constants.DEFAULT_GAME_SETTINGS.CARDS.PER_ROW,
     )
     expect(defaultSettings.cardPerColumn).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.CARDS.PER_COLUMN,
+      Constants.DEFAULT_GAME_SETTINGS.CARDS.PER_COLUMN,
     )
     expect(defaultSettings.maxPlayers).toBe(
-      Constants.SKYJO_DEFAULT_SETTINGS.MAX_PLAYERS,
+      Constants.DEFAULT_GAME_SETTINGS.MAX_PLAYERS,
     )
   })
 
@@ -50,7 +50,10 @@ describe("SkyjoSettings", () => {
       cardPerRow: 3,
       cardPerColumn: 4,
       scoreToEndGame: 101,
-      firstPlayerScorePenaltyMultiplier: 1,
+      firstPlayerMultiplierPenalty: 1,
+      firstPlayerPenaltyType:
+        Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
+      firstPlayerFlatPenalty: 0,
       maxPlayers: 2,
       private: true,
     }
@@ -70,7 +73,7 @@ describe("SkyjoSettings", () => {
       cardPerRow: 6,
       cardPerColumn: 8,
       scoreToEndGame: 100,
-      firstPlayerScorePenaltyMultiplier: 2,
+      firstPlayerMultiplierPenalty: 2,
     }
 
     settings.updateSettings(newSettings)
@@ -81,7 +84,7 @@ describe("SkyjoSettings", () => {
     expect(settings.cardPerRow).toBe(6)
     expect(settings.cardPerColumn).toBe(8)
     expect(settings.scoreToEndGame).toBe(100)
-    expect(settings.firstPlayerScorePenaltyMultiplier).toBe(2)
+    expect(settings.firstPlayerMultiplierPenalty).toBe(2)
   })
 
   describe("preventInvalidSettings", () => {
@@ -140,7 +143,10 @@ describe("SkyjoSettings", () => {
       cardPerColumn: 4,
       maxPlayers: 8,
       scoreToEndGame: 100,
-      firstPlayerScorePenaltyMultiplier: 2,
+      firstPlayerMultiplierPenalty: 2,
+      firstPlayerPenaltyType:
+        Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY,
+      firstPlayerFlatPenalty: 0,
     })
   })
 })
