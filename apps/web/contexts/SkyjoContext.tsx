@@ -97,11 +97,17 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   }, [socket?.recovered])
 
   useEffect(() => {
-    const onUnload = () => {
+    const onUnload = (event: BeforeUnloadEvent) => {
       if (!game?.status) return
 
       const inGame = game?.status === CoreConstants.GAME_STATUS.PLAYING
       if (inGame) addReconnectionDateToLastGame()
+
+      const isGameInProgress =
+        game?.status !== CoreConstants.GAME_STATUS.FINISHED &&
+        game?.status !== CoreConstants.GAME_STATUS.STOPPED
+
+      if (isGameInProgress) event.preventDefault()
     }
 
     window.addEventListener("beforeunload", onUnload)
