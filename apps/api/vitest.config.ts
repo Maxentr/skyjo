@@ -22,6 +22,7 @@ export default defineConfig({
 
         // socketio
         "src/socketio/utils/socketErrorWrapper.ts",
+        "src/socketio/utils/rateLimiter.ts",
 
         // default
         ...coverageConfigDefaults.exclude,
