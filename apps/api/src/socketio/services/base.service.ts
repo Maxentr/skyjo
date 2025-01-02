@@ -164,15 +164,19 @@ export abstract class BaseService {
     socket: SkyjoSocket,
     game: Skyjo,
     player: SkyjoPlayer,
+    params: {
+      force: boolean
+    } = {
+      force: false,
+    },
   ) {
     const stateManager = new GameStateManager(game)
 
-    if (
-      !player ||
+    const isConnected =
+      player &&
       player.connectionStatus === CoreConstants.CONNECTION_STATUS.CONNECTED
-    ) {
-      return
-    }
+
+    if (isConnected && !params.force) return
 
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
 
@@ -180,6 +184,10 @@ export abstract class BaseService {
       game.removePlayer(player.id)
       await this.redis.removePlayer(game.code, player.id)
 
+      this.sendGameUpdateToSocketAndRoom(socket, {
+        room: game.code,
+        stateManager,
+      })
       return
     }
 
@@ -212,6 +220,7 @@ export abstract class BaseService {
       this.restartRound(socket, game)
     }
 
+    console.log("stateManager")
     this.sendGameUpdateToSocketAndRoom(socket, {
       room: game.code,
       stateManager,
