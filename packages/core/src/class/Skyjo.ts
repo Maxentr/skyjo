@@ -565,35 +565,38 @@ export class Skyjo implements SkyjoInterface {
 
     if (!otherPlayersHaveLowerScore) return
 
-    const {
-      firstPlayerPenaltyType,
-      firstPlayerMultiplierPenalty,
-      firstPlayerFlatPenalty,
-    } = this.settings
-
     let finalScore = firstToFinishPlayerScore
-    const isScorePositive = finalScore > 0
 
-    switch (firstPlayerPenaltyType) {
+    switch (this.settings.firstPlayerPenaltyType) {
       case Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY:
-        if (isScorePositive) finalScore *= firstPlayerMultiplierPenalty
-
+        finalScore = this.multiplierPenalty(finalScore)
         break
       case Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_ONLY:
-        finalScore += firstPlayerFlatPenalty
+        finalScore = this.flatPenalty(finalScore)
         break
       case Constants.FIRST_PLAYER_PENALTY_TYPE.FLAT_THEN_MULTIPLIER:
-        finalScore += firstPlayerFlatPenalty
-        if (isScorePositive) finalScore *= firstPlayerMultiplierPenalty
+        finalScore = this.flatPenalty(finalScore)
+        finalScore = this.multiplierPenalty(finalScore)
         break
       case Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_THEN_FLAT:
-        if (isScorePositive) finalScore *= firstPlayerMultiplierPenalty
-        finalScore += firstPlayerFlatPenalty
+        finalScore = this.multiplierPenalty(finalScore)
+        finalScore = this.flatPenalty(finalScore)
         break
     }
 
     firstToFinishPlayer.scores[lastScoreIndex] = finalScore
     firstToFinishPlayer.recalculateScore()
+  }
+
+  private multiplierPenalty(score: number) {
+    const isScorePositive = score > 0
+    if (!isScorePositive) return score
+
+    return score * this.settings.firstPlayerMultiplierPenalty
+  }
+
+  private flatPenalty(score: number) {
+    return score + this.settings.firstPlayerFlatPenalty
   }
 
   private checkEndOfGame() {
