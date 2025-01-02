@@ -1,4 +1,4 @@
-import { createRateLimiterMiddleware } from "@/http/middlewares/rate-limiter.js"
+import { createRateLimiterMiddleware } from "@/http/middlewares/rateLimiter.js"
 import { zValidator } from "@hono/zod-validator"
 import { getPublicGamesQuerySchema } from "@skyjo/shared/validations"
 import { Hono } from "hono"

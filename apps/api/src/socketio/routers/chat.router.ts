@@ -1,5 +1,5 @@
 import { ChatService } from "@/socketio/services/chat.service.js"
-import { consumeSocketRateLimiter } from "@/socketio/utils/rate-limiter.js"
+import { consumeSocketRateLimiter } from "@/socketio/utils/rateLimiter.js"
 import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   type SendChatMessage,

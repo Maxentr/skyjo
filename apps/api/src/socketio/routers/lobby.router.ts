@@ -1,5 +1,5 @@
 import { LobbyService } from "@/socketio/services/lobby.service.js"
-import { consumeSocketRateLimiter } from "@/socketio/utils/rate-limiter.js"
+import { consumeSocketRateLimiter } from "@/socketio/utils/rateLimiter.js"
 import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   type CreatePlayer,
