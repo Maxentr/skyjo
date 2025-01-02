@@ -22,10 +22,8 @@ export const mockRedis = (service: BaseService) => {
   service["redis"].getGame = vi.fn(() =>
     Promise.reject(new Error("This is the default mock of getGame")),
   )
-  service["redis"].getPublicGamesWithFreePlace = vi.fn(() =>
-    Promise.reject(
-      new Error("This is the default mock of getPublicGameWithFreePlace"),
-    ),
+  service["redis"].getPublicGames = vi.fn(() =>
+    Promise.reject(new Error("This is the default mock of getPublicGames")),
   )
   service["redis"].canReconnectPlayer = vi.fn(() =>
     Promise.reject(new Error("This is the default mock of canReconnectPlayer")),
