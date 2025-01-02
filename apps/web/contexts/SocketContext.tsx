@@ -31,7 +31,7 @@ export type SkyjoSocket = Socket<ServerToClientEvents, ClientToServerEvents>
 type SocketContext = {
   socket: SkyjoSocket | null
   getLastGameIfPossible: () => LastGame | null
-  saveLastGame: () => void
+  addReconnectionDateToLastGame: () => void
   clearLastGame: () => void
 }
 const SocketContext = createContext<SocketContext | undefined>(undefined)
@@ -72,7 +72,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   }, [socket])
 
   //#region reconnection
-  const saveLastGame = () => {
+  const addReconnectionDateToLastGame = () => {
     if (typeof window === "undefined") return
 
     const lastGameString = localStorage.getItem("lastGame")
@@ -139,7 +139,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   }
 
   const onConnectionLost = (reason: Socket.DisconnectReason) => {
-    if (reason === "ping timeout") saveLastGame()
+    if (reason === "ping timeout") addReconnectionDateToLastGame()
 
     if (socket?.active) {
       toast({
@@ -189,7 +189,7 @@ const SocketProvider = ({ children }: PropsWithChildren) => {
   const value = useMemo(
     () => ({
       socket,
-      saveLastGame,
+      addReconnectionDateToLastGame,
       getLastGameIfPossible,
       clearLastGame,
     }),
