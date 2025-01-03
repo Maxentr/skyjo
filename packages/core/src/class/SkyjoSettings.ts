@@ -116,7 +116,9 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
       this.scoreToEndGame ===
         Constants.DEFAULT_GAME_SETTINGS.SCORE_TO_END_GAME &&
       this.firstPlayerMultiplierPenalty ===
-        Constants.DEFAULT_GAME_SETTINGS.FIRST_PLAYER_MULTIPLIER_PENALTY
+        Constants.DEFAULT_GAME_SETTINGS.FIRST_PLAYER_MULTIPLIER_PENALTY &&
+      this.firstPlayerPenaltyType ===
+        Constants.DEFAULT_GAME_SETTINGS.FIRST_PLAYER_PENALTY_TYPE
     )
   }
 
