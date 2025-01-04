@@ -192,11 +192,12 @@ export abstract class BaseService {
 
     if (game.getCurrentPlayer()?.id === player.id) game.nextTurn()
 
-    if (
+    const needPlayersToRevealCards =
       game.roundStatus ===
       CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
-    )
-      game.checkAllPlayersRevealedCards(game.settings.initialTurnedCount)
+    if (needPlayersToRevealCards && game.haveAllPlayersRevealedCards()) {
+      game.startRoundAfterInitialReveal()
+    }
 
     game.checkEndOfRound()
 

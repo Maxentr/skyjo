@@ -29,18 +29,6 @@ interface SkyjoInterface {
   stateVersion: number
   createdAt: Date
   updatedAt: Date
-
-  start(): void
-  checkAllPlayersRevealedCards(count: number): void
-  drawCard(): void
-  pickFromDiscard(): void
-  discardCard(value: number): void
-  replaceCard(column: number, row: number): void
-  turnCard(player: SkyjoPlayer, column: number, row: number): void
-  nextTurn(): void
-  resetRound(): void
-  toJson(): SkyjoToJson
-  serializeGame(): SkyjoToDb
 }
 
 export class Skyjo implements SkyjoInterface {
@@ -198,15 +186,15 @@ export class Skyjo implements SkyjoInterface {
     this.turn = Math.floor(Math.random() * this.players.length)
   }
 
-  checkAllPlayersRevealedCards(count: number) {
-    const allPlayersTurnedCards = this.getConnectedPlayers().every((player) =>
-      player.hasRevealedCardCount(count),
+  haveAllPlayersRevealedCards() {
+    return this.getConnectedPlayers().every((player) =>
+      player.hasRevealedCardCount(this.settings.initialTurnedCount),
     )
+  }
 
-    if (allPlayersTurnedCards) {
-      this.roundStatus = Constants.ROUND_STATUS.PLAYING
-      this.setFirstPlayerToStart()
-    }
+  startRoundAfterInitialReveal() {
+    this.roundStatus = Constants.ROUND_STATUS.PLAYING
+    this.setFirstPlayerToStart()
   }
 
   drawCard() {

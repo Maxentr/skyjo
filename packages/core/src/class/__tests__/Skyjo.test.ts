@@ -272,23 +272,37 @@ describe("Skyjo", () => {
     })
   })
 
-  describe("checkAllPlayersRevealedCards", () => {
-    it("should check all players revealed cards and not start the game", () => {
-      skyjo.checkAllPlayersRevealedCards(skyjo.settings.initialTurnedCount)
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
-      )
+  describe("haveAllPlayersRevealedCards", () => {
+    it("should check all players revealed cards and return false if not all players have revealed cards", () => {
+      skyjo.start()
+      skyjo.settings.initialTurnedCount = 2
+
+      expect(skyjo.haveAllPlayersRevealedCards()).toBeFalsy()
     })
 
-    it("should check all players revealed cards, start the game and make the player with the highest current score start", () => {
+    it("should check all players revealed cards and return true if all players have revealed cards", () => {
       skyjo.start()
+      skyjo.settings.initialTurnedCount = 2
+      skyjo.players.forEach((player) => {
+        player.cards[0][0] = new SkyjoCard(10, true)
+        player.cards[0][1] = new SkyjoCard(10, true)
+      })
+
+      expect(skyjo.haveAllPlayersRevealedCards()).toBeTruthy()
+    })
+  })
+
+  describe("startRoundAfterInitialReveal", () => {
+    it("should start the game and make the player with the highest current score start", () => {
+      skyjo.start()
+      skyjo.settings.initialTurnedCount = 2
       // player 1 has 10 and player 2 has 9 for the second card
       skyjo.players.forEach((player, i) => {
         player.cards[0][0] = new SkyjoCard(10, true)
         player.cards[0][1] = new SkyjoCard(1 - i, true)
       })
 
-      skyjo.checkAllPlayersRevealedCards(skyjo.settings.initialTurnedCount)
+      skyjo.startRoundAfterInitialReveal()
 
       expect(skyjo.roundStatus).toBe<RoundStatus>(
         Constants.ROUND_STATUS.PLAYING,
@@ -296,7 +310,7 @@ describe("Skyjo", () => {
       expect(skyjo.turn).toBe(0)
     })
 
-    it("should check all players revealed cards, start the game and make the player with the highest card start when two players have the same current score", () => {
+    it("should start the game and make the player with the highest card start when two players have the same current score", () => {
       skyjo.start()
 
       skyjo.players[0].cards[0][0] = new SkyjoCard(10, true)
@@ -305,7 +319,7 @@ describe("Skyjo", () => {
       skyjo.players[1].cards[0][0] = new SkyjoCard(9, true)
       skyjo.players[1].cards[0][1] = new SkyjoCard(11, true)
 
-      skyjo.checkAllPlayersRevealedCards(skyjo.settings.initialTurnedCount)
+      skyjo.startRoundAfterInitialReveal()
 
       expect(skyjo.roundStatus).toBe<RoundStatus>(
         Constants.ROUND_STATUS.PLAYING,
@@ -313,7 +327,7 @@ describe("Skyjo", () => {
       expect(skyjo.turn).toBe(1)
     })
 
-    it("should check all players revealed cards, start the game and make the player with the highest card start while ignoring players who are not connected", () => {
+    it("should start the game and make the player with the highest card start while ignoring players who are not connected", () => {
       const opponent2 = new SkyjoPlayer(
         { username: "player3", avatar: Constants.AVATARS.TURTLE },
         "socketId789",
@@ -344,7 +358,7 @@ describe("Skyjo", () => {
       skyjo.players[3].cards[0][0] = new SkyjoCard(9, true)
       skyjo.players[3].cards[0][1] = new SkyjoCard(12, true)
 
-      skyjo.checkAllPlayersRevealedCards(skyjo.settings.initialTurnedCount)
+      skyjo.startRoundAfterInitialReveal()
 
       expect(skyjo.roundStatus).toBe<RoundStatus>(
         Constants.ROUND_STATUS.PLAYING,
