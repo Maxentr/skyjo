@@ -27,6 +27,10 @@ jobs:
         run: pnpm install
       - name: Build Project
         run: pnpm build --filter @skyjo/web
+      - name: Set version env var in Vercel
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          vercel env add npm_package_version $TAG production --token=${{ secrets.VERCEL_TOKEN }} --yes
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
