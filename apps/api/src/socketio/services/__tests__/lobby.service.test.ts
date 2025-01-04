@@ -5,7 +5,7 @@ import {
   Constants as CoreConstants,
   type CreatePlayer,
   type GameStatus,
-  type RoundStatus,
+  type RoundPhase,
   Skyjo,
   SkyjoPlayer,
   SkyjoSettings,
@@ -629,8 +629,8 @@ describe("LobbyService", () => {
       await service.onGameStart(socket)
 
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+      expect(game.roundPhase).toBe<RoundPhase>(
+        CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
       )
     })
   })

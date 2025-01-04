@@ -18,7 +18,7 @@ const EndRoundDialog = () => {
   const [open, setOpen] = useState(false)
 
   const isRoundOver =
-    game.roundStatus === CoreConstants.ROUND_STATUS.OVER &&
+    game.roundPhase === CoreConstants.ROUND_PHASE.OVER &&
     game.status === CoreConstants.GAME_STATUS.PLAYING
 
   useEffect(() => {

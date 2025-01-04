@@ -28,8 +28,8 @@ const GamePage = () => {
 
   const isPlayerTurn = isCurrentUserTurn(game, player)
   const roundInProgress =
-    game.roundStatus === CoreConstants.ROUND_STATUS.MAIN ||
-    game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP
+    game.roundPhase === CoreConstants.ROUND_PHASE.MAIN ||
+    game.roundPhase === CoreConstants.ROUND_PHASE.LAST_LAP
 
   const isFirstPlayerGame = firstGame ?? true
 

@@ -4,7 +4,7 @@ import type {
   FirstPlayerPenaltyType,
   GameStatus,
   LastTurnStatus,
-  RoundStatus,
+  RoundPhase,
   TurnStatus,
 } from "@/constants.js"
 import type { SkyjoPlayerScores, SkyjoPlayerToJson } from "./skyjoPlayer.js"
@@ -18,7 +18,7 @@ export type SkyjoToJson = {
   turn: number
   settings: SkyjoSettingsToJson
   selectedCardValue: number | null
-  roundStatus: RoundStatus
+  roundPhase: RoundPhase
   turnStatus: TurnStatus
   lastDiscardCardValue?: number
   lastTurnStatus: LastTurnStatus
@@ -69,7 +69,7 @@ export type SkyjoToDb = {
   }
   selectedCardValue: number | null
   roundNumber: number
-  roundStatus: RoundStatus
+  roundPhase: RoundPhase
   turnStatus: TurnStatus
   lastTurnStatus: LastTurnStatus
   firstToFinishPlayerId: string | null

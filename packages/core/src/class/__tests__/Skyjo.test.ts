@@ -8,7 +8,7 @@ import {
   Constants,
   type GameStatus,
   type LastTurnStatus,
-  type RoundStatus,
+  type RoundPhase,
   type TurnStatus,
 } from "../../constants.js"
 import type { SkyjoToDb } from "../../types/skyjo.js"
@@ -53,7 +53,7 @@ describe("Skyjo", () => {
         turn: 0,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
         lastTurnStatus: Constants.LAST_TURN_STATUS.TURN,
-        roundStatus: Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+        roundPhase: Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
         roundNumber: 1,
         discardPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         drawPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -102,7 +102,7 @@ describe("Skyjo", () => {
         turn: 0,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
         lastTurnStatus: Constants.LAST_TURN_STATUS.TURN,
-        roundStatus: Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+        roundPhase: Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
         roundNumber: 1,
         discardPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         drawPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -254,8 +254,8 @@ describe("Skyjo", () => {
       skyjo.start()
 
       expect(skyjo.isPlaying()).toBeTruthy()
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+      expect(skyjo.roundPhase).toBe<RoundPhase>(
+        Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
       )
     })
 
@@ -264,7 +264,7 @@ describe("Skyjo", () => {
       skyjo.start()
 
       expect(skyjo.isPlaying()).toBeTruthy()
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.MAIN)
     })
   })
 
@@ -300,7 +300,7 @@ describe("Skyjo", () => {
 
       skyjo.startRoundAfterInitialReveal()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.MAIN)
       expect(skyjo.turn).toBe(0)
     })
 
@@ -315,7 +315,7 @@ describe("Skyjo", () => {
 
       skyjo.startRoundAfterInitialReveal()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.MAIN)
       expect(skyjo.turn).toBe(1)
     })
 
@@ -352,7 +352,7 @@ describe("Skyjo", () => {
 
       skyjo.startRoundAfterInitialReveal()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.MAIN)
       expect(skyjo.turn).toBe(1)
     })
   })
@@ -700,26 +700,24 @@ describe("Skyjo", () => {
 
       expect(skyjo.firstToFinishPlayerId).toBe(player.id)
       expect(skyjo.isPlaying()).toBeTruthy()
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.LAST_LAP,
-      )
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.LAST_LAP)
     })
 
     it("should set next turn, not end the round", () => {
       skyjo.start()
-      skyjo.roundStatus = Constants.ROUND_STATUS.MAIN
+      skyjo.roundPhase = Constants.ROUND_PHASE.MAIN
       skyjo.firstToFinishPlayerId = player.id
       skyjo.turn = 0
 
       skyjo.nextTurn()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.MAIN)
       expect(skyjo.isPlaying()).toBeTruthy()
     })
 
     it("should set next turn, end the round", () => {
       skyjo.start()
-      skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
+      skyjo.roundPhase = Constants.ROUND_PHASE.LAST_LAP
       skyjo.firstToFinishPlayerId = player.id
       skyjo.turn = 0
 
@@ -727,14 +725,14 @@ describe("Skyjo", () => {
 
       skyjo.nextTurn()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.OVER)
     })
   })
 
   describe("endRound", () => {
     it("should end the round and not apply penalty because first player has not been found", () => {
       skyjo.start()
-      skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
+      skyjo.roundPhase = Constants.ROUND_PHASE.LAST_LAP
       skyjo.firstToFinishPlayerId = null
       skyjo.turn = 0
 
@@ -755,7 +753,7 @@ describe("Skyjo", () => {
 
       skyjo.endRound()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.OVER)
       expect(skyjo.firstToFinishPlayerId).toBeNull()
       expect(player.scores[0]).toBe(30)
       expect(opponent.scores[0]).toBe(1)
@@ -763,7 +761,7 @@ describe("Skyjo", () => {
 
     it("should end the round and not apply penalty because first player has disconnected", () => {
       skyjo.start()
-      skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
+      skyjo.roundPhase = Constants.ROUND_PHASE.LAST_LAP
       skyjo.firstToFinishPlayerId = player.id
       player.connectionStatus = Constants.CONNECTION_STATUS.DISCONNECTED
       skyjo.turn = 0
@@ -785,14 +783,14 @@ describe("Skyjo", () => {
 
       skyjo.endRound()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.OVER)
       expect(player.scores[0]).toBe("-")
       expect(opponent.scores[0]).toBe(1)
     })
 
     it("should end the round and not apply penalty to the first player since no other player has a lower score", () => {
       skyjo.start()
-      skyjo.roundStatus = Constants.ROUND_STATUS.LAST_LAP
+      skyjo.roundPhase = Constants.ROUND_PHASE.LAST_LAP
       skyjo.firstToFinishPlayerId = player.id
       skyjo.turn = 0
 
@@ -813,7 +811,7 @@ describe("Skyjo", () => {
 
       skyjo.endRound()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.OVER)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.OVER)
       expect(player.scores[0]).toBe(1)
       expect(opponent.scores[0]).toBe(2)
     })
@@ -1054,8 +1052,8 @@ describe("Skyjo", () => {
         expect(player.cards.flat()).toHaveLength(CARDS_PER_PLAYER)
         expect(player.hasRevealedCardCount(0)).toBeTruthy()
       })
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+      expect(skyjo.roundPhase).toBe<RoundPhase>(
+        Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
       )
       expect(skyjo.turnStatus).toBe<TurnStatus>(
         Constants.TURN_STATUS.CHOOSE_A_PILE,
@@ -1088,7 +1086,7 @@ describe("Skyjo", () => {
         expect(player.cards.flat()).toHaveLength(CARDS_PER_PLAYER)
         expect(player.hasRevealedCardCount(0)).toBeTruthy()
       })
-      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
+      expect(skyjo.roundPhase).toBe<RoundPhase>(Constants.ROUND_PHASE.MAIN)
       expect(skyjo.turnStatus).toBe<TurnStatus>(
         Constants.TURN_STATUS.CHOOSE_A_PILE,
       )
@@ -1145,7 +1143,7 @@ describe("Skyjo", () => {
       expect(gameToJson).toStrictEqual({
         code: skyjo.code,
         status: Constants.GAME_STATUS.LOBBY,
-        roundStatus: Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+        roundPhase: Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
         adminId: player.id,
         players: skyjo.players.map((player) => player.toJson()),
         selectedCardValue: null,
@@ -1176,7 +1174,7 @@ describe("Skyjo", () => {
         firstToFinishPlayerId: skyjo.firstToFinishPlayerId,
         selectedCardValue: skyjo.selectedCardValue,
         roundNumber: skyjo.roundNumber,
-        roundStatus: skyjo.roundStatus,
+        roundPhase: skyjo.roundPhase,
         turn: skyjo.turn,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
         lastTurnStatus: Constants.LAST_TURN_STATUS.TURN,

@@ -4,7 +4,7 @@ import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import {
   Constants as CoreConstants,
   type GameStatus,
-  type RoundStatus,
+  type RoundPhase,
   Skyjo,
   SkyjoCard,
   SkyjoPlayer,
@@ -190,8 +190,8 @@ describe("GameService", () => {
 
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+      expect(game.roundPhase).toBe<RoundPhase>(
+        CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
       )
     })
 
@@ -225,8 +225,8 @@ describe("GameService", () => {
 
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+      expect(game.roundPhase).toBe<RoundPhase>(
+        CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
       )
     })
   })
@@ -894,22 +894,18 @@ describe("GameService", () => {
       game.firstToFinishPlayerId = opponent.id
       opponent.hasPlayedLastTurn = true
       game.turnStatus = CoreConstants.TURN_STATUS.TURN_A_CARD
-      game.roundStatus = CoreConstants.ROUND_STATUS.LAST_LAP
+      game.roundPhase = CoreConstants.ROUND_PHASE.LAST_LAP
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion)
 
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.OVER,
-      )
+      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.OVER)
       expect(game.isPlaying()).toBeTruthy()
 
       vi.runAllTimers()
 
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.MAIN,
-      )
+      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
       expect(game.isPlaying()).toBeTruthy()
 
       vi.useRealTimers()
@@ -955,23 +951,21 @@ describe("GameService", () => {
       opponent.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
       opponent2.hasPlayedLastTurn = true
       game.turnStatus = CoreConstants.TURN_STATUS.TURN_A_CARD
-      game.roundStatus = CoreConstants.ROUND_STATUS.LAST_LAP
+      game.roundPhase = CoreConstants.ROUND_PHASE.LAST_LAP
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion)
 
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.OVER,
-      )
+      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.OVER)
       expect(game.isPlaying()).toBeTruthy()
 
       const updateGameSpy = vi.spyOn(service["redis"], "updateGame")
       vi.runAllTimers()
 
       updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
-        expect(game.roundStatus).toBe<RoundStatus>(
-          CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+        expect(game.roundPhase).toBe<RoundPhase>(
+          CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
         )
         expect(game.isPlaying()).toBeTruthy()
       })

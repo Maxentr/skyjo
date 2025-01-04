@@ -4,7 +4,7 @@ import {
   Constants,
   type GameStatus,
   type LastTurnStatus,
-  type RoundStatus,
+  type RoundPhase,
   type TurnStatus,
 } from "../constants.js"
 import { SkyjoCard } from "./SkyjoCard.js"
@@ -24,7 +24,7 @@ interface SkyjoInterface {
   firstToFinishPlayerId: string | null
   turnStatus: TurnStatus
   lastTurnStatus: LastTurnStatus
-  roundStatus: RoundStatus
+  roundPhase: RoundPhase
 
   stateVersion: number
   createdAt: Date
@@ -45,7 +45,7 @@ export class Skyjo implements SkyjoInterface {
   selectedCardValue: number | null = null
   turnStatus: TurnStatus = Constants.TURN_STATUS.CHOOSE_A_PILE
   lastTurnStatus: LastTurnStatus = Constants.LAST_TURN_STATUS.TURN
-  roundStatus: RoundStatus = Constants.ROUND_STATUS.TURNING_INITIAL_CARDS
+  roundPhase: RoundPhase = Constants.ROUND_PHASE.TURNING_INITIAL_CARDS
   roundNumber: number = 1
   firstToFinishPlayerId: string | null = null
 
@@ -76,7 +76,7 @@ export class Skyjo implements SkyjoInterface {
     this.selectedCardValue = game.selectedCardValue
     this.turnStatus = game.turnStatus
     this.lastTurnStatus = game.lastTurnStatus
-    this.roundStatus = game.roundStatus
+    this.roundPhase = game.roundPhase
     this.roundNumber = game.roundNumber
 
     this.firstToFinishPlayerId = game.firstToFinishPlayerId
@@ -198,7 +198,7 @@ export class Skyjo implements SkyjoInterface {
     this.resetRound()
     this.lastTurnStatus = Constants.LAST_TURN_STATUS.TURN
     if (this.settings.initialTurnedCount === 0)
-      this.roundStatus = Constants.ROUND_STATUS.MAIN
+      this.roundPhase = Constants.ROUND_PHASE.MAIN
 
     this.status = Constants.GAME_STATUS.PLAYING
     this.turn = Math.floor(Math.random() * this.players.length)
@@ -211,7 +211,7 @@ export class Skyjo implements SkyjoInterface {
   }
 
   startRoundAfterInitialReveal() {
-    this.roundStatus = Constants.ROUND_STATUS.MAIN
+    this.roundPhase = Constants.ROUND_PHASE.MAIN
     this.setFirstPlayerToStart()
   }
 
@@ -267,7 +267,7 @@ export class Skyjo implements SkyjoInterface {
 
     this.checkAndSetFirstPlayerToFinish(currentPlayer)
 
-    if (this.roundStatus === Constants.ROUND_STATUS.LAST_LAP) {
+    if (this.roundPhase === Constants.ROUND_PHASE.LAST_LAP) {
       currentPlayer.hasPlayedLastTurn = true
       this.lastTurnStatus = Constants.LAST_TURN_STATUS.TURN
       currentPlayer.turnAllCards()
@@ -296,15 +296,13 @@ export class Skyjo implements SkyjoInterface {
 
     this.checkFirstPlayerPenalty()
 
-    this.roundStatus = Constants.ROUND_STATUS.OVER
+    this.roundPhase = Constants.ROUND_PHASE.OVER
 
     this.checkEndOfGame()
   }
 
   shouldRestartRound() {
-    return (
-      this.roundStatus === Constants.ROUND_STATUS.OVER && !this.isFinished()
-    )
+    return this.roundPhase === Constants.ROUND_PHASE.OVER && !this.isFinished()
   }
 
   startNewRound() {
@@ -340,7 +338,7 @@ export class Skyjo implements SkyjoInterface {
       turn: this.turn,
       lastDiscardCardValue: this.discardPile[this.discardPile.length - 1],
       selectedCardValue: this.selectedCardValue,
-      roundStatus: this.roundStatus,
+      roundPhase: this.roundPhase,
       turnStatus: this.turnStatus,
       lastTurnStatus: this.lastTurnStatus,
       settings: this.settings.toJson(),
@@ -394,7 +392,7 @@ export class Skyjo implements SkyjoInterface {
       },
       selectedCardValue: this.selectedCardValue,
       roundNumber: this.roundNumber,
-      roundStatus: this.roundStatus,
+      roundPhase: this.roundPhase,
       turnStatus: this.turnStatus,
       lastTurnStatus: this.lastTurnStatus,
       firstToFinishPlayerId: this.firstToFinishPlayerId,
@@ -458,8 +456,8 @@ export class Skyjo implements SkyjoInterface {
     this.turnStatus = Constants.TURN_STATUS.CHOOSE_A_PILE
 
     if (this.settings.initialTurnedCount === 0)
-      this.roundStatus = Constants.ROUND_STATUS.MAIN
-    else this.roundStatus = Constants.ROUND_STATUS.TURNING_INITIAL_CARDS
+      this.roundPhase = Constants.ROUND_PHASE.MAIN
+    else this.roundPhase = Constants.ROUND_PHASE.TURNING_INITIAL_CARDS
   }
 
   private reloadDrawPile() {
@@ -534,7 +532,7 @@ export class Skyjo implements SkyjoInterface {
 
     if (hasPlayerFinished && !this.firstToFinishPlayerId) {
       this.firstToFinishPlayerId = player.id
-      this.roundStatus = Constants.ROUND_STATUS.LAST_LAP
+      this.roundPhase = Constants.ROUND_PHASE.LAST_LAP
     }
   }
 
@@ -624,7 +622,7 @@ export class Skyjo implements SkyjoInterface {
         (player) => player.score >= this.settings.scoreToEndGame,
       )
     ) {
-      this.roundStatus = Constants.ROUND_STATUS.OVER
+      this.roundPhase = Constants.ROUND_PHASE.OVER
       this.status = Constants.GAME_STATUS.FINISHED
     }
   }

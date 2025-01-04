@@ -30,7 +30,7 @@ export class Constants {
     STOPPED: 4,
   } as const
 
-  static readonly ROUND_STATUS = {
+  static readonly ROUND_PHASE = {
     TURNING_INITIAL_CARDS: 1,
     MAIN: 2,
     LAST_LAP: 3,
@@ -107,8 +107,8 @@ export class Constants {
 
 export type GameStatus =
   (typeof Constants.GAME_STATUS)[keyof typeof Constants.GAME_STATUS]
-export type RoundStatus =
-  (typeof Constants.ROUND_STATUS)[keyof typeof Constants.ROUND_STATUS]
+export type RoundPhase =
+  (typeof Constants.ROUND_PHASE)[keyof typeof Constants.ROUND_PHASE]
 
 export type TurnStatus =
   (typeof Constants.TURN_STATUS)[keyof typeof Constants.TURN_STATUS]

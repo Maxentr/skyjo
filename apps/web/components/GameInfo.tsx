@@ -17,7 +17,7 @@ const GameInfo = () => {
 
     if (
       game.status === CoreConstants.GAME_STATUS.PLAYING &&
-      game.roundStatus === CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS
+      game.roundPhase === CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS
     ) {
       if (hasRevealedCardCount(player, game.settings.initialTurnedCount)) {
         return t("waiting-opponents-to-turn-cards", {
@@ -48,7 +48,7 @@ const GameInfo = () => {
   return (
     <div className="absolute -top-6 sm:-top-8 lg:-top-11 text-center text-sm animate-scale flex flex-col items-center">
       <AnimatePresence>
-        {game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP && (
+        {game.roundPhase === CoreConstants.ROUND_PHASE.LAST_LAP && (
           <m.p
             key="game-info-last-turn"
             initial={{
@@ -74,10 +74,10 @@ const GameInfo = () => {
           </m.p>
         )}
         {isPlayerTurn &&
-          (game.roundStatus ===
-            CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS ||
-            game.roundStatus === CoreConstants.ROUND_STATUS.MAIN ||
-            game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP) && (
+          (game.roundPhase ===
+            CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS ||
+            game.roundPhase === CoreConstants.ROUND_PHASE.MAIN ||
+            game.roundPhase === CoreConstants.ROUND_PHASE.LAST_LAP) && (
             <m.p
               key="game-info-text"
               className="text-nowrap text-sm text-black dark:text-dark-font"

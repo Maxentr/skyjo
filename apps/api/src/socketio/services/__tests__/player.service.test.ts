@@ -5,7 +5,7 @@ import {
   type ConnectionStatus,
   Constants as CoreConstants,
   type GameStatus,
-  type RoundStatus,
+  type RoundPhase,
   Skyjo,
   SkyjoCard,
   SkyjoPlayer,
@@ -194,7 +194,7 @@ describe("PlayerService", () => {
       opponent.turnCard(0, 0)
       opponent.turnCard(0, 1)
 
-      game.roundStatus = CoreConstants.ROUND_STATUS.OVER
+      game.roundPhase = CoreConstants.ROUND_PHASE.OVER
       game.status = CoreConstants.GAME_STATUS.FINISHED
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
@@ -202,9 +202,7 @@ describe("PlayerService", () => {
       await service.onLeave(socket)
 
       expect(game.isFinished()).toBeTruthy()
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.OVER,
-      )
+      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.OVER)
       expect(game.players.length).toBe(1)
     })
 
@@ -256,8 +254,8 @@ describe("PlayerService", () => {
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+      expect(game.roundPhase).toBe<RoundPhase>(
+        CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
       )
       expect(game.players.length).toBe(3)
 
@@ -272,9 +270,7 @@ describe("PlayerService", () => {
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
         expect(game.isPlaying()).toBeTruthy()
-        expect(game.roundStatus).toBe<RoundStatus>(
-          CoreConstants.ROUND_STATUS.MAIN,
-        )
+        expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
         expect(game.players.length).toBe(3)
       })
 
@@ -316,9 +312,7 @@ describe("PlayerService", () => {
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.MAIN,
-      )
+      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
       expect(game.players.length).toBe(3)
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
@@ -332,9 +326,7 @@ describe("PlayerService", () => {
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
         expect(game.isPlaying()).toBeTruthy()
-        expect(game.roundStatus).toBe<RoundStatus>(
-          CoreConstants.ROUND_STATUS.MAIN,
-        )
+        expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
         expect(game.players.length).toBe(3)
       })
 
@@ -377,9 +369,7 @@ describe("PlayerService", () => {
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.MAIN,
-      )
+      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
       expect(game.players.length).toBe(3)
       expect(game.turn).toBe(1)
 
@@ -394,9 +384,7 @@ describe("PlayerService", () => {
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
         expect(game.isPlaying()).toBeTruthy()
-        expect(game.roundStatus).toBe<RoundStatus>(
-          CoreConstants.ROUND_STATUS.MAIN,
-        )
+        expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
         expect(game.players.length).toBe(3)
         expect(game.turn).toBe(2)
       })
@@ -486,7 +474,7 @@ describe("PlayerService", () => {
 
       game.start()
 
-      game.roundStatus = CoreConstants.ROUND_STATUS.LAST_LAP
+      game.roundPhase = CoreConstants.ROUND_PHASE.LAST_LAP
       game.firstToFinishPlayerId = opponent.id
 
       opponent.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
@@ -503,8 +491,8 @@ describe("PlayerService", () => {
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.LAST_LAP,
+      expect(game.roundPhase).toBe<RoundPhase>(
+        CoreConstants.ROUND_PHASE.LAST_LAP,
       )
       expect(game.players.length).toBe(3)
 
@@ -519,8 +507,8 @@ describe("PlayerService", () => {
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
         expect(game.isPlaying()).toBeTruthy()
-        expect(game.roundStatus).toBe<RoundStatus>(
-          CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS,
+        expect(game.roundPhase).toBe<RoundPhase>(
+          CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
         )
         expect(game.roundNumber).toBe(2)
         expect(game.players.length).toBe(3)
