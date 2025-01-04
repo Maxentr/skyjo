@@ -61,24 +61,32 @@ export const VoteKickProvider = ({ children }: PropsWithChildren) => {
     else showVoteWithAction(kickVote, voteToKick)
   }
 
-  const onKickVoteFailed = (kickVote: KickVoteToJson) => {
+  const onKickVoteFailed = (
+    playerToKickId: string,
+    playerToKickName: string,
+  ) => {
     setKickVoteInProgress(false)
 
-    const isPlayerToKick = kickVote.targetId === player.id
+    const isPlayerToKick = playerToKickId === player.id
 
     if (isPlayerToKick) showVoteAgainstYouFailed()
-    else showVoteFailed(kickVote)
+    else showVoteFailed(playerToKickName)
   }
 
-  const onKickVoteSuccess = (kickVote: KickVoteToJson) => {
+  const onKickVoteSuccess = (
+    playerToKickId: string,
+    playerToKickName: string,
+  ) => {
     setKickVoteInProgress(false)
 
-    const isPlayerToKick = kickVote.targetId === player.id
+    const isPlayerToKick = playerToKickId === player.id
+
+    console.log("onKickVoteSuccess", playerToKickId, player.id)
 
     if (isPlayerToKick) {
       showVoteAgainstYouSucceeded()
       router.replace("/")
-    } else showVoteSucceeded(kickVote)
+    } else showVoteSucceeded(playerToKickName)
   }
 
   const initKickVoteListeners = () => {

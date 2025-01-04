@@ -8,6 +8,9 @@ export interface ClientToServerKickEvents {
 
 export interface ServerToClientKickEvents {
   "kick:vote": (data: KickVoteToJson) => void
-  "kick:vote-success": (data: KickVoteToJson) => void
-  "kick:vote-failed": (data: KickVoteToJson) => void
+  "kick:vote-success": (
+    playerToKickId: string,
+    playerToKickName: string,
+  ) => void
+  "kick:vote-failed": (playerToKickId: string, playerToKickName: string) => void
 }

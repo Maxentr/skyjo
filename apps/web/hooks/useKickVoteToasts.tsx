@@ -37,13 +37,17 @@ export const useKickVoteToasts = () => {
         <div className="flex flex-row items-center gap-2">
           <ToastAction
             onClick={() => voteToKick(true)}
-            altText={t("player-has-not-voted.kick-button.alt")}
+            altText={t("player-has-not-voted.kick-button.alt", {
+              playerName: playerToKickName,
+            })}
           >
             {t("player-has-not-voted.kick-button.label")}
           </ToastAction>
           <ToastAction
             onClick={() => voteToKick(false)}
-            altText={t("player-has-not-voted.ignore-button.alt")}
+            altText={t("player-has-not-voted.ignore-button.alt", {
+              playerName: playerToKickName,
+            })}
             className="bg-gray-200"
           >
             {t("player-has-not-voted.ignore-button.label")}
@@ -82,14 +86,13 @@ export const useKickVoteToasts = () => {
     })
   }
 
-  const showVoteFailed = (kickVote: KickVoteToJson) => {
-    const playerToKickName = getPlayerToKick(kickVote.targetId)?.name
+  const showVoteFailed = (kickedPlayerName: string) => {
     toast({
       title: t("vote-failed.title", {
-        playerName: playerToKickName,
+        playerName: kickedPlayerName,
       }),
       description: t("vote-failed.description", {
-        playerName: playerToKickName,
+        playerName: kickedPlayerName,
       }),
       duration: 5000,
     })
@@ -102,13 +105,11 @@ export const useKickVoteToasts = () => {
     })
   }
 
-  const showVoteSucceeded = (kickVote: KickVoteToJson) => {
-    const playerToKickName = getPlayerToKick(kickVote.targetId)?.name
-
+  const showVoteSucceeded = (kickedPlayerName: string) => {
     toast({
-      title: t("vote-succeeded.title", { playerName: playerToKickName }),
+      title: t("vote-succeeded.title", { playerName: kickedPlayerName }),
       description: t("vote-succeeded.description", {
-        playerName: playerToKickName,
+        playerName: kickedPlayerName,
       }),
       duration: 5000,
     })

@@ -163,10 +163,13 @@ export class KickService extends BaseService {
       if (kickVote.hasReachedRequiredVotes()) {
         await this.kickPlayer(socket, game, kickVote)
       } else {
+        const playerToKick = game.getPlayerById(kickVote.targetId)
+        if (!playerToKick) return
+
         this.sendToSocketAndRoom(socket, {
           room: game.code,
           event: "kick:vote-failed",
-          data: [kickVote.toJson()],
+          data: [playerToKick.id, playerToKick.name],
         })
       }
     } else {
@@ -201,14 +204,14 @@ export class KickService extends BaseService {
       )
     }
 
-    await this.handlePlayerDisconnection(socket, game, playerToKick, {
-      force: true,
-    })
-
     this.sendToSocketAndRoom(socket, {
       room: game.code,
       event: "kick:vote-success",
-      data: [kickVote.toJson()],
+      data: [playerToKick.id, playerToKick.name],
+    })
+
+    await this.handlePlayerDisconnection(socket, game, playerToKick, {
+      force: true,
     })
   }
   //#endregion
