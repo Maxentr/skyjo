@@ -179,7 +179,7 @@ export abstract class BaseService {
       return
     }
 
-    if (!game.haveAtLeastMinPlayersConnected()) {
+    if (!game.hasMinPlayersConnected()) {
       game.status = CoreConstants.GAME_STATUS.STOPPED
 
       this.sendGameUpdateToSocketAndRoom(socket, {

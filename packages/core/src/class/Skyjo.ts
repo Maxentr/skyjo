@@ -165,7 +165,7 @@ export class Skyjo implements SkyjoInterface {
     return this.players[this.turn].id === playerId
   }
 
-  haveAtLeastMinPlayersConnected() {
+  hasMinPlayersConnected() {
     return (
       this.getConnectedPlayers().length >=
       Constants.DEFAULT_GAME_SETTINGS.MIN_PLAYERS

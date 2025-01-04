@@ -232,14 +232,14 @@ describe("Skyjo", () => {
     })
   })
 
-  describe("haveAtLeastMinPlayersConnected", () => {
+  describe("hasMinPlayersConnected", () => {
     it("should return true if there are at least min players connected", () => {
-      expect(skyjo.haveAtLeastMinPlayersConnected()).toBeTruthy()
+      expect(skyjo.hasMinPlayersConnected()).toBeTruthy()
     })
 
     it("should return false if there are less than min players connected", () => {
       skyjo.removePlayer(player.id)
-      expect(skyjo.haveAtLeastMinPlayersConnected()).toBeFalsy()
+      expect(skyjo.hasMinPlayersConnected()).toBeFalsy()
     })
   })
   //#endregion
