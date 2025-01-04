@@ -137,10 +137,7 @@ export abstract class BaseService {
   protected async finishTurn(socket: SkyjoSocket, game: Skyjo) {
     game.nextTurn()
 
-    if (
-      game.roundStatus === CoreConstants.ROUND_STATUS.OVER &&
-      game.status !== CoreConstants.GAME_STATUS.FINISHED
-    ) {
+    if (game.shouldRestartRound()) {
       this.restartRound(socket, game)
     }
 
@@ -180,6 +177,8 @@ export abstract class BaseService {
 
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
 
+    if (game.isAdmin(player.id)) await this.changeAdmin(game)
+
     if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
       game.removePlayer(player.id)
       await this.redis.removePlayer(game.code, player.id)
@@ -202,10 +201,6 @@ export abstract class BaseService {
       return
     }
 
-    player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
-
-    if (game.isAdmin(player.id)) await this.changeAdmin(game)
-
     if (game.getCurrentPlayer()?.id === player.id) game.nextTurn()
 
     if (
@@ -216,11 +211,10 @@ export abstract class BaseService {
 
     game.checkEndOfRound()
 
-    if (game.roundStatus === CoreConstants.ROUND_STATUS.OVER) {
+    if (game.shouldRestartRound()) {
       this.restartRound(socket, game)
     }
 
-    console.log("stateManager")
     this.sendGameUpdateToSocketAndRoom(socket, {
       room: game.code,
       stateManager,

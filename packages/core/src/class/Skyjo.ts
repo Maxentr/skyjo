@@ -288,6 +288,13 @@ export class Skyjo implements SkyjoInterface {
     this.checkEndOfGame()
   }
 
+  shouldRestartRound() {
+    return (
+      this.roundStatus === Constants.ROUND_STATUS.OVER &&
+      this.status !== Constants.GAME_STATUS.FINISHED
+    )
+  }
+
   startNewRound() {
     this.roundNumber++
     this.initializeRound()

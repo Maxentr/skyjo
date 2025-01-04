@@ -162,14 +162,19 @@ describe("KickService", () => {
       )
     })
 
-    it("should add a vote to the kick vote and broadcast the success and change the admin if target is the current admin", async () => {
-      game.status = CoreConstants.GAME_STATUS.PLAYING
-      game.adminId = opponent2.id
-      await service.onInitiateKickVote(socket, opponent2.id)
-      await service.onVoteToKick(opponent1Socket, true)
+    for (const key of Object.keys(CoreConstants.GAME_STATUS)) {
+      it(`should add a vote to the kick vote and broadcast the success and change the admin if target is the current admin in ${key}`, async () => {
+        game.status =
+          CoreConstants.GAME_STATUS[
+            key as keyof typeof CoreConstants.GAME_STATUS
+          ]
+        game.adminId = opponent2.id
+        await service.onInitiateKickVote(socket, opponent2.id)
+        await service.onVoteToKick(opponent1Socket, true)
 
-      expect(game.adminId).not.toBe(opponent2.id)
-    })
+        expect(game.adminId).not.toBe(opponent2.id)
+      })
+    }
 
     it("should add a vote to the kick vote, broadcast the success and remove the player if game is not playing", async () => {
       game.status = CoreConstants.GAME_STATUS.FINISHED
