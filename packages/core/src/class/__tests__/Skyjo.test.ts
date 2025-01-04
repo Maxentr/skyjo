@@ -800,37 +800,6 @@ describe("Skyjo", () => {
       expect(opponent.scores[0]).toBe(2)
     })
 
-    it("should end the round and apply only multiplier penalty to the first player", () => {
-      skyjo.start()
-      skyjo.settings.firstPlayerPenaltyType =
-        Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY
-      skyjo.settings.firstPlayerMultiplierPenalty = 2
-
-      skyjo.firstToFinishPlayerId = player.id
-
-      player.cards = [
-        [
-          new SkyjoCard(10, true),
-          new SkyjoCard(11, true),
-          new SkyjoCard(9, true),
-        ],
-      ]
-      opponent.cards = [
-        [
-          new SkyjoCard(0, true),
-          new SkyjoCard(0, true),
-          new SkyjoCard(1, true),
-        ],
-      ]
-
-      skyjo.endRound()
-
-      expect(player.scores[0]).toBe(
-        (10 + 11 + 9) * skyjo.settings.firstPlayerMultiplierPenalty,
-      )
-      expect(opponent.scores[0]).toBe(0 + 0 + 1)
-    })
-
     it("should end the round and not apply multiplier penalty to the first player if the the score is not positive", () => {
       skyjo.start()
       skyjo.settings.firstPlayerPenaltyType =
@@ -858,6 +827,89 @@ describe("Skyjo", () => {
 
       expect(player.scores[0]).toBe(0)
       expect(opponent.scores[0]).toBe(-5)
+    })
+
+    it("should end the round and apply penalty to the first player if score is equal to another player", () => {
+      skyjo.start()
+
+      skyjo.firstToFinishPlayerId = player.id
+
+      player.cards = [
+        [
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
+        ],
+      ]
+      opponent.cards = [
+        [
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
+        ],
+      ]
+
+      skyjo.endRound()
+
+      expect(player.scores[0]).not.toBe(10 + 11 + 9)
+      expect(opponent.scores[0]).toBe(10 + 11 + 9)
+    })
+
+    it("should end the round and apply penalty to the first player if a player has a lower score than the first player", () => {
+      skyjo.start()
+
+      skyjo.firstToFinishPlayerId = player.id
+
+      player.cards = [
+        [
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
+        ],
+      ]
+      opponent.cards = [
+        [
+          new SkyjoCard(10, true),
+          new SkyjoCard(10, true),
+          new SkyjoCard(9, true),
+        ],
+      ]
+
+      skyjo.endRound()
+
+      expect(player.scores[0]).not.toBe(10 + 11 + 9)
+      expect(opponent.scores[0]).toBe(10 + 10 + 9)
+    })
+
+    it("should end the round and apply multiplier only penalty to the first player", () => {
+      skyjo.start()
+      skyjo.settings.firstPlayerPenaltyType =
+        Constants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY
+      skyjo.settings.firstPlayerMultiplierPenalty = 2
+
+      skyjo.firstToFinishPlayerId = player.id
+
+      player.cards = [
+        [
+          new SkyjoCard(10, true),
+          new SkyjoCard(11, true),
+          new SkyjoCard(9, true),
+        ],
+      ]
+      opponent.cards = [
+        [
+          new SkyjoCard(10, true),
+          new SkyjoCard(10, true),
+          new SkyjoCard(9, true),
+        ],
+      ]
+
+      skyjo.endRound()
+
+      expect(player.scores[0]).toBe(
+        (10 + 11 + 9) * skyjo.settings.firstPlayerMultiplierPenalty,
+      )
+      expect(opponent.scores[0]).toBe(10 + 10 + 9)
     })
 
     it("should end the round and apply only flat penalty to the first player", () => {

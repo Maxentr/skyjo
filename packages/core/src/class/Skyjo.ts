@@ -562,13 +562,15 @@ export class Skyjo implements SkyjoInterface {
 
     if (typeof firstToFinishPlayerScore === "string") return
 
-    const otherPlayersHaveLowerScore = this.players.every((player) => {
-      if (player.id === this.firstToFinishPlayerId) return true
-      return (
-        player.scores[lastScoreIndex] !== "-" &&
-        player.scores[lastScoreIndex] < firstToFinishPlayerScore
-      )
-    })
+    const otherPlayersHaveLowerScore = this.getConnectedPlayers().some(
+      (player) => {
+        if (player.id === this.firstToFinishPlayerId) return false
+        return (
+          player.scores[lastScoreIndex] !== "-" &&
+          player.scores[lastScoreIndex] <= firstToFinishPlayerScore
+        )
+      },
+    )
 
     if (!otherPlayersHaveLowerScore) return
 
