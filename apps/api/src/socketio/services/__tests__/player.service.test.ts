@@ -114,7 +114,7 @@ describe("PlayerService", () => {
 
       await service.onLeave(socket)
 
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.LOBBY)
+      expect(game.isInLobby()).toBeTruthy()
       expect(game.players.length).toBe(1)
     })
 
@@ -163,7 +163,7 @@ describe("PlayerService", () => {
       expect(player.connectionStatus).toBe<ConnectionStatus>(
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
       expect(game.players.length).toBe(3)
     })
 
@@ -201,7 +201,7 @@ describe("PlayerService", () => {
 
       await service.onLeave(socket)
 
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.FINISHED)
+      expect(game.isFinished()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.OVER,
       )
@@ -255,7 +255,7 @@ describe("PlayerService", () => {
       expect(player.connectionStatus).toBe<ConnectionStatus>(
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
       )
@@ -271,7 +271,7 @@ describe("PlayerService", () => {
         expect(player.connectionStatus).toBe<ConnectionStatus>(
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
-        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+        expect(game.isPlaying()).toBeTruthy()
         expect(game.roundStatus).toBe<RoundStatus>(
           CoreConstants.ROUND_STATUS.PLAYING,
         )
@@ -315,7 +315,7 @@ describe("PlayerService", () => {
       expect(player.connectionStatus).toBe<ConnectionStatus>(
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.PLAYING,
       )
@@ -331,7 +331,7 @@ describe("PlayerService", () => {
         expect(player.connectionStatus).toBe<ConnectionStatus>(
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
-        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+        expect(game.isPlaying()).toBeTruthy()
         expect(game.roundStatus).toBe<RoundStatus>(
           CoreConstants.ROUND_STATUS.PLAYING,
         )
@@ -376,7 +376,7 @@ describe("PlayerService", () => {
       expect(player.connectionStatus).toBe<ConnectionStatus>(
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.PLAYING,
       )
@@ -393,7 +393,7 @@ describe("PlayerService", () => {
         expect(player.connectionStatus).toBe<ConnectionStatus>(
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
-        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+        expect(game.isPlaying()).toBeTruthy()
         expect(game.roundStatus).toBe<RoundStatus>(
           CoreConstants.ROUND_STATUS.PLAYING,
         )
@@ -440,7 +440,7 @@ describe("PlayerService", () => {
       expect(player.connectionStatus).toBe<ConnectionStatus>(
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
       expect(game.players.length).toBe(2)
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
@@ -453,7 +453,7 @@ describe("PlayerService", () => {
         expect(player.connectionStatus).toBe<ConnectionStatus>(
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
-        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.STOPPED)
+        expect(game.isStopped()).toBeTruthy()
         expect(game.players.length).toBe(2)
       })
 
@@ -502,7 +502,7 @@ describe("PlayerService", () => {
       expect(player.connectionStatus).toBe<ConnectionStatus>(
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.LAST_LAP,
       )
@@ -518,7 +518,7 @@ describe("PlayerService", () => {
         expect(player.connectionStatus).toBe<ConnectionStatus>(
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
-        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+        expect(game.isPlaying()).toBeTruthy()
         expect(game.roundStatus).toBe<RoundStatus>(
           CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
         )

@@ -189,7 +189,7 @@ describe("GameService", () => {
       )
 
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
       )
@@ -224,7 +224,7 @@ describe("GameService", () => {
       )
 
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
       )
@@ -903,14 +903,14 @@ describe("GameService", () => {
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.OVER,
       )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
 
       vi.runAllTimers()
 
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.PLAYING,
       )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
 
       vi.useRealTimers()
     })
@@ -964,7 +964,7 @@ describe("GameService", () => {
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.OVER,
       )
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
 
       const updateGameSpy = vi.spyOn(service["redis"], "updateGame")
       vi.runAllTimers()
@@ -973,7 +973,7 @@ describe("GameService", () => {
         expect(game.roundStatus).toBe<RoundStatus>(
           CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
         )
-        expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+        expect(game.isPlaying()).toBeTruthy()
       })
 
       vi.useRealTimers()
@@ -1027,7 +1027,7 @@ describe("GameService", () => {
 
       expect(socket.emit).toHaveBeenCalledOnce()
       expect(player.wantsReplay).toBeTruthy()
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.FINISHED)
+      expect(game.isFinished()).toBeTruthy()
     })
 
     it("should ask to replay the game and restart it", async () => {
@@ -1060,7 +1060,7 @@ describe("GameService", () => {
       game.players.forEach((player) => {
         expect(player.wantsReplay).toBeFalsy()
       })
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.LOBBY)
+      expect(game.isInLobby()).toBeTruthy()
     })
   })
 })

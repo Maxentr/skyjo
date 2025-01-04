@@ -149,6 +149,25 @@ export class Skyjo implements SkyjoInterface {
     return this.getConnectedPlayers().length >= this.settings.maxPlayers
   }
 
+  //#region status
+  /* istanbul ignore else --@preserve */
+  isInLobby() {
+    return this.status === Constants.GAME_STATUS.LOBBY
+  }
+  /* istanbul ignore else --@preserve */
+  isPlaying() {
+    return this.status === Constants.GAME_STATUS.PLAYING
+  }
+  /* istanbul ignore else --@preserve */
+  isFinished() {
+    return this.status === Constants.GAME_STATUS.FINISHED
+  }
+  /* istanbul ignore else --@preserve */
+  isStopped() {
+    return this.status === Constants.GAME_STATUS.STOPPED
+  }
+  //#endregion
+
   checkTurn(playerId: string) {
     return this.players[this.turn].id === playerId
   }
@@ -285,8 +304,7 @@ export class Skyjo implements SkyjoInterface {
 
   shouldRestartRound() {
     return (
-      this.roundStatus === Constants.ROUND_STATUS.OVER &&
-      this.status !== Constants.GAME_STATUS.FINISHED
+      this.roundStatus === Constants.ROUND_STATUS.OVER && !this.isFinished()
     )
   }
 

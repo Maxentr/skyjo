@@ -2,7 +2,6 @@ import { BaseService } from "@/socketio/services/base.service.js"
 import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import { GameStateManager } from "@/socketio/utils/GameStateManager.js"
 import {
-  Constants as CoreConstants,
   type CreatePlayer,
   Skyjo,
   SkyjoPlayer,
@@ -219,7 +218,7 @@ export class LobbyService extends BaseService {
     game: Skyjo,
     player: SkyjoPlayer,
   ) {
-    if (game.status !== CoreConstants.GAME_STATUS.LOBBY) {
+    if (!game.isInLobby()) {
       throw new CError(
         `Player try to join a game but the game is not in the lobby.`,
         {

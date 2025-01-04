@@ -255,7 +255,7 @@ describe("Skyjo", () => {
     it("should start the game with default settings", () => {
       skyjo.start()
 
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.PLAYING)
+      expect(skyjo.isPlaying()).toBeTruthy()
       expect(skyjo.roundStatus).toBe<RoundStatus>(
         Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
       )
@@ -265,7 +265,7 @@ describe("Skyjo", () => {
       skyjo.settings.initialTurnedCount = 0
       skyjo.start()
 
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.PLAYING)
+      expect(skyjo.isPlaying()).toBeTruthy()
       expect(skyjo.roundStatus).toBe<RoundStatus>(
         Constants.ROUND_STATUS.PLAYING,
       )
@@ -709,7 +709,7 @@ describe("Skyjo", () => {
       skyjo.nextTurn()
 
       expect(skyjo.firstToFinishPlayerId).toBe(player.id)
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.PLAYING)
+      expect(skyjo.isPlaying()).toBeTruthy()
       expect(skyjo.roundStatus).toBe<RoundStatus>(
         Constants.ROUND_STATUS.LAST_LAP,
       )
@@ -726,7 +726,7 @@ describe("Skyjo", () => {
       expect(skyjo.roundStatus).toBe<RoundStatus>(
         Constants.ROUND_STATUS.PLAYING,
       )
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.PLAYING)
+      expect(skyjo.isPlaying()).toBeTruthy()
     })
 
     it("should set next turn, end the round", () => {
@@ -1117,7 +1117,7 @@ describe("Skyjo", () => {
 
       skyjo.restartGameIfAllPlayersWantReplay()
 
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.FINISHED)
+      expect(skyjo.isFinished()).toBeTruthy()
     })
 
     it("should restart the game", () => {
@@ -1128,7 +1128,7 @@ describe("Skyjo", () => {
 
       skyjo.restartGameIfAllPlayersWantReplay()
 
-      expect(skyjo.status).toBe<GameStatus>(Constants.GAME_STATUS.LOBBY)
+      expect(skyjo.isInLobby()).toBeTruthy()
     })
   })
 

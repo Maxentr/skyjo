@@ -168,7 +168,7 @@ export abstract class BaseService {
 
     if (game.isAdmin(player.id)) game.changeAdmin()
 
-    if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
+    if (!game.isPlaying()) {
       game.removePlayer(player.id)
       await this.redis.removePlayer(game.code, player.id)
 

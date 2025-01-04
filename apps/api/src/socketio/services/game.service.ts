@@ -50,7 +50,7 @@ export class GameService extends BaseService {
     }
 
     if (
-      game.status !== CoreConstants.GAME_STATUS.PLAYING ||
+      !game.isPlaying() ||
       game.roundStatus !==
         CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
     ) {
@@ -184,7 +184,7 @@ export class GameService extends BaseService {
     await this.checkStateVersion(socket, clientStateVersion)
 
     const game = await this.redis.getGame(socket.data.gameCode)
-    if (game.status !== CoreConstants.GAME_STATUS.FINISHED) {
+    if (!game.isFinished()) {
       throw new CError(
         `Player try to replay but the game is not finished. This error should never happen.`,
         {
@@ -279,7 +279,7 @@ export class GameService extends BaseService {
 
     // TODO remove this condition in 1.36.0 if game sync works and this error never happens in last versions
     if (
-      game.status !== CoreConstants.GAME_STATUS.PLAYING ||
+      !game.isPlaying() ||
       (game.roundStatus !== CoreConstants.ROUND_STATUS.PLAYING &&
         game.roundStatus !== CoreConstants.ROUND_STATUS.LAST_LAP)
     ) {

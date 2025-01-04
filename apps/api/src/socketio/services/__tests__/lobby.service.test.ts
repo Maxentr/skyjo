@@ -628,7 +628,7 @@ describe("LobbyService", () => {
 
       await service.onGameStart(socket)
 
-      expect(game.status).toBe<GameStatus>(CoreConstants.GAME_STATUS.PLAYING)
+      expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
         CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
       )

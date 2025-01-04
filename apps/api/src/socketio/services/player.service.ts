@@ -41,38 +41,27 @@ export class PlayerService extends BaseService {
         ? CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
         : CoreConstants.CONNECTION_STATUS.LEAVE
 
-      await this.redis.updateGame(game)
-
       if (game.isAdmin(player.id)) game.changeAdmin()
 
-      if (
-        game.status === CoreConstants.GAME_STATUS.LOBBY ||
-        game.status === CoreConstants.GAME_STATUS.STOPPED ||
-        game.status === CoreConstants.GAME_STATUS.FINISHED
-      )
+      if (game.isPlaying()) {
+        this.startDisconnectionTimeout(player, timeout, () =>
+          this.updateGameAfterTimeoutExpired(socket),
+        )
+      } else {
         game.removePlayer(player.id)
 
-      if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
         game.restartGameIfAllPlayersWantReplay()
-
-        const promises: Promise<void>[] = []
 
         if (game.getConnectedPlayers().length === 0) {
           await this.redis.removeGame(game.code)
         } else {
-          const updateGame = this.redis.updateGame(game)
-          promises.push(updateGame)
+          await this.redis.updateGame(game)
         }
 
         this.sendGameUpdateToSocketAndRoom(socket, {
           room: game.code,
           stateManager,
         })
-        await Promise.all(promises)
-      } else {
-        this.startDisconnectionTimeout(player, timeout, () =>
-          this.updateGameAfterTimeoutExpired(socket),
-        )
       }
 
       this.sendLeaveMessageToRoom(socket, game, player, timeout)
@@ -149,7 +138,7 @@ export class PlayerService extends BaseService {
   ) {
     let message: ServerMessageType
 
-    if (game.status === CoreConstants.GAME_STATUS.PLAYING) {
+    if (game.isPlaying()) {
       message = timeout
         ? CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_TIMEOUT_CAN_RECONNECT
         : CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT_CAN_RECONNECT

@@ -163,7 +163,7 @@ export class GameRepository extends RedisClient {
     await client.json.set(key, "$", json)
 
     const ttl =
-      !game.settings.private && game.status === CoreConstants.GAME_STATUS.LOBBY
+      !game.settings.private && game.isInLobby()
         ? GameRepository.PUBLIC_GAME_IN_LOBBY_TTL
         : GameRepository.GAME_TTL
 
@@ -174,7 +174,7 @@ export class GameRepository extends RedisClient {
   private isGameEligibleToPublicGames(game: Skyjo) {
     return (
       !game.settings.private &&
-      game.status === CoreConstants.GAME_STATUS.LOBBY &&
+      game.isInLobby() &&
       !game.isFull() &&
       game.settings.isConfirmed
     )
