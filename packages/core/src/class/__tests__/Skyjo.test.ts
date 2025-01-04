@@ -53,7 +53,7 @@ describe("Skyjo", () => {
         turn: 0,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
         lastTurnStatus: Constants.LAST_TURN_STATUS.TURN,
-        roundPhase: Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+        roundPhase: Constants.ROUND_PHASE.TURN_CARDS,
         roundNumber: 1,
         discardPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         drawPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -102,7 +102,7 @@ describe("Skyjo", () => {
         turn: 0,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
         lastTurnStatus: Constants.LAST_TURN_STATUS.TURN,
-        roundPhase: Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+        roundPhase: Constants.ROUND_PHASE.TURN_CARDS,
         roundNumber: 1,
         discardPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         drawPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -255,7 +255,7 @@ describe("Skyjo", () => {
 
       expect(skyjo.isPlaying()).toBeTruthy()
       expect(skyjo.roundPhase).toBe<RoundPhase>(
-        Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+        Constants.ROUND_PHASE.TURN_CARDS,
       )
     })
 
@@ -1053,7 +1053,7 @@ describe("Skyjo", () => {
         expect(player.hasRevealedCardCount(0)).toBeTruthy()
       })
       expect(skyjo.roundPhase).toBe<RoundPhase>(
-        Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+        Constants.ROUND_PHASE.TURN_CARDS,
       )
       expect(skyjo.turnStatus).toBe<TurnStatus>(
         Constants.TURN_STATUS.CHOOSE_A_PILE,
@@ -1143,7 +1143,7 @@ describe("Skyjo", () => {
       expect(gameToJson).toStrictEqual({
         code: skyjo.code,
         status: Constants.GAME_STATUS.LOBBY,
-        roundPhase: Constants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+        roundPhase: Constants.ROUND_PHASE.TURN_CARDS,
         adminId: player.id,
         players: skyjo.players.map((player) => player.toJson()),
         selectedCardValue: null,

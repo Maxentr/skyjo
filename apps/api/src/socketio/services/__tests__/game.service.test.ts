@@ -191,7 +191,7 @@ describe("GameService", () => {
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
       expect(game.isPlaying()).toBeTruthy()
       expect(game.roundPhase).toBe<RoundPhase>(
-        CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+        CoreConstants.ROUND_PHASE.TURN_CARDS,
       )
     })
 
@@ -226,7 +226,7 @@ describe("GameService", () => {
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
       expect(game.isPlaying()).toBeTruthy()
       expect(game.roundPhase).toBe<RoundPhase>(
-        CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+        CoreConstants.ROUND_PHASE.TURN_CARDS,
       )
     })
   })
@@ -965,7 +965,7 @@ describe("GameService", () => {
 
       updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
         expect(game.roundPhase).toBe<RoundPhase>(
-          CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+          CoreConstants.ROUND_PHASE.TURN_CARDS,
         )
         expect(game.isPlaying()).toBeTruthy()
       })

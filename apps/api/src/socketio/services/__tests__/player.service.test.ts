@@ -255,7 +255,7 @@ describe("PlayerService", () => {
       )
       expect(game.isPlaying()).toBeTruthy()
       expect(game.roundPhase).toBe<RoundPhase>(
-        CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+        CoreConstants.ROUND_PHASE.TURN_CARDS,
       )
       expect(game.players.length).toBe(3)
 
@@ -508,7 +508,7 @@ describe("PlayerService", () => {
         )
         expect(game.isPlaying()).toBeTruthy()
         expect(game.roundPhase).toBe<RoundPhase>(
-          CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS,
+          CoreConstants.ROUND_PHASE.TURN_CARDS,
         )
         expect(game.roundNumber).toBe(2)
         expect(game.players.length).toBe(3)

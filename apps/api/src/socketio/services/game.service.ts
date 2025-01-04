@@ -51,7 +51,7 @@ export class GameService extends BaseService {
 
     if (
       !game.isPlaying() ||
-      game.roundPhase !== CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS
+      game.roundPhase !== CoreConstants.ROUND_PHASE.TURN_CARDS
     ) {
       await this.sendGameToSocket(socket, game)
       throw new CError(

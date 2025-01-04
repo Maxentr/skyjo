@@ -71,7 +71,7 @@ export const isCurrentUserTurn = (
 ) => {
   if (!player || !game) return false
   if (
-    game.roundPhase === CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS &&
+    game.roundPhase === CoreConstants.ROUND_PHASE.TURN_CARDS &&
     game.status === CoreConstants.GAME_STATUS.PLAYING
   )
     return true
@@ -99,7 +99,7 @@ export const hasRevealedCardCount = (
 export const canTurnInitialCard = (game: SkyjoToJson) => {
   return (
     game.status === CoreConstants.GAME_STATUS.PLAYING &&
-    game.roundPhase === CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS
+    game.roundPhase === CoreConstants.ROUND_PHASE.TURN_CARDS
   )
 }
 

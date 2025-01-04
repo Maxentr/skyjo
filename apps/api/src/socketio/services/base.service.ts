@@ -193,7 +193,7 @@ export abstract class BaseService {
     if (game.getCurrentPlayer()?.id === player.id) game.nextTurn()
 
     const needPlayersToRevealCards =
-      game.roundPhase === CoreConstants.ROUND_PHASE.TURNING_INITIAL_CARDS
+      game.roundPhase === CoreConstants.ROUND_PHASE.TURN_CARDS
     if (needPlayersToRevealCards && game.haveAllPlayersRevealedCards()) {
       game.startRoundAfterInitialReveal()
     }

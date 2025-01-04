@@ -31,7 +31,7 @@ export class Constants {
   } as const
 
   static readonly ROUND_PHASE = {
-    TURNING_INITIAL_CARDS: 1,
+    TURN_CARDS: 1,
     MAIN: 2,
     LAST_LAP: 3,
     OVER: 4,
