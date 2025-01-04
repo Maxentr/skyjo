@@ -105,7 +105,7 @@ const CardTable = ({
                   game?.lastTurnStatus === CoreConstants.LAST_TURN_STATUS.TURN
                 }
                 exitAnimation={
-                  game.roundStatus === CoreConstants.ROUND_STATUS.PLAYING ||
+                  game.roundStatus === CoreConstants.ROUND_STATUS.MAIN ||
                   game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP
                 }
               />

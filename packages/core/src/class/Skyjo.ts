@@ -198,7 +198,7 @@ export class Skyjo implements SkyjoInterface {
     this.resetRound()
     this.lastTurnStatus = Constants.LAST_TURN_STATUS.TURN
     if (this.settings.initialTurnedCount === 0)
-      this.roundStatus = Constants.ROUND_STATUS.PLAYING
+      this.roundStatus = Constants.ROUND_STATUS.MAIN
 
     this.status = Constants.GAME_STATUS.PLAYING
     this.turn = Math.floor(Math.random() * this.players.length)
@@ -211,7 +211,7 @@ export class Skyjo implements SkyjoInterface {
   }
 
   startRoundAfterInitialReveal() {
-    this.roundStatus = Constants.ROUND_STATUS.PLAYING
+    this.roundStatus = Constants.ROUND_STATUS.MAIN
     this.setFirstPlayerToStart()
   }
 
@@ -458,7 +458,7 @@ export class Skyjo implements SkyjoInterface {
     this.turnStatus = Constants.TURN_STATUS.CHOOSE_A_PILE
 
     if (this.settings.initialTurnedCount === 0)
-      this.roundStatus = Constants.ROUND_STATUS.PLAYING
+      this.roundStatus = Constants.ROUND_STATUS.MAIN
     else this.roundStatus = Constants.ROUND_STATUS.TURNING_INITIAL_CARDS
   }
 

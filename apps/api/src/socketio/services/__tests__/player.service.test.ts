@@ -273,7 +273,7 @@ describe("PlayerService", () => {
         )
         expect(game.isPlaying()).toBeTruthy()
         expect(game.roundStatus).toBe<RoundStatus>(
-          CoreConstants.ROUND_STATUS.PLAYING,
+          CoreConstants.ROUND_STATUS.MAIN,
         )
         expect(game.players.length).toBe(3)
       })
@@ -317,7 +317,7 @@ describe("PlayerService", () => {
       )
       expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.PLAYING,
+        CoreConstants.ROUND_STATUS.MAIN,
       )
       expect(game.players.length).toBe(3)
 
@@ -333,7 +333,7 @@ describe("PlayerService", () => {
         )
         expect(game.isPlaying()).toBeTruthy()
         expect(game.roundStatus).toBe<RoundStatus>(
-          CoreConstants.ROUND_STATUS.PLAYING,
+          CoreConstants.ROUND_STATUS.MAIN,
         )
         expect(game.players.length).toBe(3)
       })
@@ -378,7 +378,7 @@ describe("PlayerService", () => {
       )
       expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.PLAYING,
+        CoreConstants.ROUND_STATUS.MAIN,
       )
       expect(game.players.length).toBe(3)
       expect(game.turn).toBe(1)
@@ -395,7 +395,7 @@ describe("PlayerService", () => {
         )
         expect(game.isPlaying()).toBeTruthy()
         expect(game.roundStatus).toBe<RoundStatus>(
-          CoreConstants.ROUND_STATUS.PLAYING,
+          CoreConstants.ROUND_STATUS.MAIN,
         )
         expect(game.players.length).toBe(3)
         expect(game.turn).toBe(2)

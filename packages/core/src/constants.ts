@@ -32,7 +32,7 @@ export class Constants {
 
   static readonly ROUND_STATUS = {
     TURNING_INITIAL_CARDS: 1,
-    PLAYING: 2,
+    MAIN: 2,
     LAST_LAP: 3,
     OVER: 4,
   } as const

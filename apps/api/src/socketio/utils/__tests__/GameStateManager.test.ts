@@ -38,13 +38,13 @@ describe("GameStateManager", () => {
 
       it("detects multiple basic field changes", () => {
         game.status = CoreConstants.GAME_STATUS.PLAYING
-        game.roundStatus = CoreConstants.ROUND_STATUS.PLAYING
+        game.roundStatus = CoreConstants.ROUND_STATUS.MAIN
         game.turn = 1
 
         expect(manager.getChanges()).toEqual({
           game: {
             status: CoreConstants.GAME_STATUS.PLAYING,
-            roundStatus: CoreConstants.ROUND_STATUS.PLAYING,
+            roundStatus: CoreConstants.ROUND_STATUS.MAIN,
             turn: 1,
             stateVersion: 1,
           },

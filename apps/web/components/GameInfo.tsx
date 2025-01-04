@@ -76,7 +76,7 @@ const GameInfo = () => {
         {isPlayerTurn &&
           (game.roundStatus ===
             CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS ||
-            game.roundStatus === CoreConstants.ROUND_STATUS.PLAYING ||
+            game.roundStatus === CoreConstants.ROUND_STATUS.MAIN ||
             game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP) && (
             <m.p
               key="game-info-text"

@@ -264,9 +264,7 @@ describe("Skyjo", () => {
       skyjo.start()
 
       expect(skyjo.isPlaying()).toBeTruthy()
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.PLAYING,
-      )
+      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
     })
   })
 
@@ -302,9 +300,7 @@ describe("Skyjo", () => {
 
       skyjo.startRoundAfterInitialReveal()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.PLAYING,
-      )
+      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
       expect(skyjo.turn).toBe(0)
     })
 
@@ -319,9 +315,7 @@ describe("Skyjo", () => {
 
       skyjo.startRoundAfterInitialReveal()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.PLAYING,
-      )
+      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
       expect(skyjo.turn).toBe(1)
     })
 
@@ -358,9 +352,7 @@ describe("Skyjo", () => {
 
       skyjo.startRoundAfterInitialReveal()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.PLAYING,
-      )
+      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
       expect(skyjo.turn).toBe(1)
     })
   })
@@ -715,15 +707,13 @@ describe("Skyjo", () => {
 
     it("should set next turn, not end the round", () => {
       skyjo.start()
-      skyjo.roundStatus = Constants.ROUND_STATUS.PLAYING
+      skyjo.roundStatus = Constants.ROUND_STATUS.MAIN
       skyjo.firstToFinishPlayerId = player.id
       skyjo.turn = 0
 
       skyjo.nextTurn()
 
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.PLAYING,
-      )
+      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
       expect(skyjo.isPlaying()).toBeTruthy()
     })
 
@@ -1098,9 +1088,7 @@ describe("Skyjo", () => {
         expect(player.cards.flat()).toHaveLength(CARDS_PER_PLAYER)
         expect(player.hasRevealedCardCount(0)).toBeTruthy()
       })
-      expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.PLAYING,
-      )
+      expect(skyjo.roundStatus).toBe<RoundStatus>(Constants.ROUND_STATUS.MAIN)
       expect(skyjo.turnStatus).toBe<TurnStatus>(
         Constants.TURN_STATUS.CHOOSE_A_PILE,
       )

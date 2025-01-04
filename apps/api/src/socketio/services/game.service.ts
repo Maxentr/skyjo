@@ -279,7 +279,7 @@ export class GameService extends BaseService {
     // TODO remove this condition in 1.36.0 if game sync works and this error never happens in last versions
     if (
       !game.isPlaying() ||
-      (game.roundStatus !== CoreConstants.ROUND_STATUS.PLAYING &&
+      (game.roundStatus !== CoreConstants.ROUND_STATUS.MAIN &&
         game.roundStatus !== CoreConstants.ROUND_STATUS.LAST_LAP)
     ) {
       await this.sendGameToSocket(socket, game)

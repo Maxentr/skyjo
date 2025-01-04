@@ -908,7 +908,7 @@ describe("GameService", () => {
       vi.runAllTimers()
 
       expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.PLAYING,
+        CoreConstants.ROUND_STATUS.MAIN,
       )
       expect(game.isPlaying()).toBeTruthy()
 
