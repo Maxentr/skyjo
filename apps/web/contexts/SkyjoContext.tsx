@@ -180,7 +180,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   ) => {
     if (!admin) return
 
-    socket!.emit("game:settings", {
+    socket!.emit("game:update-settings", {
       [key]: value,
     })
   }
@@ -194,7 +194,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const updateSettings = (settings: UpdateGameSettings) => {
     if (!admin) return
 
-    socket!.emit("game:settings", settings)
+    socket!.emit("game:update-settings", settings)
   }
 
   const resetSettings = () => {

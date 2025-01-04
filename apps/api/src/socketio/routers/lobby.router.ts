@@ -75,7 +75,7 @@ const lobbyRouter = (socket: SkyjoSocket) => {
     }),
   )
   socket.on(
-    "game:settings",
+    "game:update-settings",
     socketErrorWrapper(async (data: UpdateGameSettings) => {
       await consumeSocketRateLimiter(settingsRateLimiter)(socket)
 

@@ -6,6 +6,6 @@ import type {
 export interface ClientToServerSettingsEvents {
   "game:reset-settings": () => void
   "game:update-max-players": (maxPlayers: UpdateMaxPlayers) => void
-  "game:settings": (settings: UpdateGameSettings) => void
+  "game:update-settings": (settings: UpdateGameSettings) => void
   "game:settings:toggle-validation": () => void
 }
