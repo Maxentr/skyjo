@@ -45,8 +45,7 @@ export class Skyjo implements SkyjoInterface {
   selectedCardValue: number | null = null
   turnStatus: TurnStatus = Constants.TURN_STATUS.CHOOSE_A_PILE
   lastTurnStatus: LastTurnStatus = Constants.LAST_TURN_STATUS.TURN
-  roundStatus: RoundStatus =
-    Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
+  roundStatus: RoundStatus = Constants.ROUND_STATUS.TURNING_INITIAL_CARDS
   roundNumber: number = 1
   firstToFinishPlayerId: string | null = null
 
@@ -460,9 +459,7 @@ export class Skyjo implements SkyjoInterface {
 
     if (this.settings.initialTurnedCount === 0)
       this.roundStatus = Constants.ROUND_STATUS.PLAYING
-    else
-      this.roundStatus =
-        Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
+    else this.roundStatus = Constants.ROUND_STATUS.TURNING_INITIAL_CARDS
   }
 
   private reloadDrawPile() {

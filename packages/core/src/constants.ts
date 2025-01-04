@@ -31,7 +31,7 @@ export class Constants {
   } as const
 
   static readonly ROUND_STATUS = {
-    WAITING_PLAYERS_TO_TURN_INITIAL_CARDS: 1,
+    TURNING_INITIAL_CARDS: 1,
     PLAYING: 2,
     LAST_LAP: 3,
     OVER: 4,

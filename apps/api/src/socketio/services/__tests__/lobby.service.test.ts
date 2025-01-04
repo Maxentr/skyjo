@@ -630,7 +630,7 @@ describe("LobbyService", () => {
 
       expect(game.isPlaying()).toBeTruthy()
       expect(game.roundStatus).toBe<RoundStatus>(
-        CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS,
       )
     })
   })

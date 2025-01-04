@@ -17,8 +17,7 @@ const GameInfo = () => {
 
     if (
       game.status === CoreConstants.GAME_STATUS.PLAYING &&
-      game.roundStatus ===
-        CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS
+      game.roundStatus === CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS
     ) {
       if (hasRevealedCardCount(player, game.settings.initialTurnedCount)) {
         return t("waiting-opponents-to-turn-cards", {
@@ -76,7 +75,7 @@ const GameInfo = () => {
         )}
         {isPlayerTurn &&
           (game.roundStatus ===
-            CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS ||
+            CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS ||
             game.roundStatus === CoreConstants.ROUND_STATUS.PLAYING ||
             game.roundStatus === CoreConstants.ROUND_STATUS.LAST_LAP) && (
             <m.p

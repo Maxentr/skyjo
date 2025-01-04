@@ -53,8 +53,7 @@ describe("Skyjo", () => {
         turn: 0,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
         lastTurnStatus: Constants.LAST_TURN_STATUS.TURN,
-        roundStatus:
-          Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        roundStatus: Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
         roundNumber: 1,
         discardPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         drawPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -103,8 +102,7 @@ describe("Skyjo", () => {
         turn: 0,
         turnStatus: Constants.TURN_STATUS.CHOOSE_A_PILE,
         lastTurnStatus: Constants.LAST_TURN_STATUS.TURN,
-        roundStatus:
-          Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        roundStatus: Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
         roundNumber: 1,
         discardPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         drawPile: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
@@ -257,7 +255,7 @@ describe("Skyjo", () => {
 
       expect(skyjo.isPlaying()).toBeTruthy()
       expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
       )
     })
 
@@ -1067,7 +1065,7 @@ describe("Skyjo", () => {
         expect(player.hasRevealedCardCount(0)).toBeTruthy()
       })
       expect(skyjo.roundStatus).toBe<RoundStatus>(
-        Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
       )
       expect(skyjo.turnStatus).toBe<TurnStatus>(
         Constants.TURN_STATUS.CHOOSE_A_PILE,
@@ -1159,8 +1157,7 @@ describe("Skyjo", () => {
       expect(gameToJson).toStrictEqual({
         code: skyjo.code,
         status: Constants.GAME_STATUS.LOBBY,
-        roundStatus:
-          Constants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS,
+        roundStatus: Constants.ROUND_STATUS.TURNING_INITIAL_CARDS,
         adminId: player.id,
         players: skyjo.players.map((player) => player.toJson()),
         selectedCardValue: null,

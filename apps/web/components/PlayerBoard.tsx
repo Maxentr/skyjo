@@ -18,8 +18,7 @@ const PlayerBoard = ({ player, isPlayerTurn }: PlayerBoardProps) => {
   const tp = useTranslations("components.PlayerBoard")
 
   const showSelectionAnimation =
-    game.roundStatus ===
-      CoreConstants.ROUND_STATUS.WAITING_PLAYERS_TO_TURN_INITIAL_CARDS ||
+    game.roundStatus === CoreConstants.ROUND_STATUS.TURNING_INITIAL_CARDS ||
     (isPlayerTurn &&
       (game.turnStatus === CoreConstants.TURN_STATUS.TURN_A_CARD ||
         game.turnStatus === CoreConstants.TURN_STATUS.REPLACE_A_CARD ||
