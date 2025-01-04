@@ -26,7 +26,7 @@ describe("ChatService", () => {
     expect(ChatService).toBeDefined()
   })
 
-  describe("on message", () => {
+  describe("onMessage", () => {
     it("should throw if player is not in the game", async () => {
       const opponent = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
@@ -70,6 +70,50 @@ describe("ChatService", () => {
       })
 
       expect(socket.emit).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe("onWizz", () => {
+    it("should throw if player is not in the game", async () => {
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+      const game = new Skyjo(opponent.id, new SkyjoSettings(false))
+      game.addPlayer(opponent)
+
+      socket.data.gameCode = game.code
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await expect(service.onWizz(socket, opponent.name)).toThrowCErrorWithCode(
+        ErrorConstants.ERROR.PLAYER_NOT_FOUND,
+      )
+
+      expect(socket.emit).not.toHaveBeenCalled()
+    })
+
+    it("should send a message", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(false))
+      game.addPlayer(player)
+      socket.data.gameCode = game.code
+      socket.data.playerId = player.id
+
+      const opponent = new SkyjoPlayer(
+        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socketId132312",
+      )
+      game.addPlayer(opponent)
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await service.onWizz(socket, opponent.name)
+
+      expect(socket.to).toHaveBeenCalledOnce()
     })
   })
 })
