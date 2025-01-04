@@ -11,7 +11,9 @@ import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import type { ErrorJoinMessage } from "@skyjo/shared/types"
 import {
   type UpdateGameSettings,
+  type UpdateMaxPlayers,
   updateGameSettingsSchema,
+  updateMaxPlayersSchema,
 } from "@skyjo/shared/validations"
 import { RateLimiterMemory } from "rate-limiter-flexible"
 import type { SkyjoSocket } from "../types/skyjoSocket.js"
@@ -61,6 +63,15 @@ const lobbyRouter = (socket: SkyjoSocket) => {
       await consumeSocketRateLimiter(settingsRateLimiter)(socket)
 
       await instance.onResetSettings(socket)
+    }),
+  )
+  socket.on(
+    "game:update-max-players",
+    socketErrorWrapper(async (data: UpdateMaxPlayers) => {
+      await consumeSocketRateLimiter(settingsRateLimiter)(socket)
+
+      const maxPlayers = updateMaxPlayersSchema.parse(data)
+      await instance.onUpdateMaxPlayers(socket, maxPlayers)
     }),
   )
   socket.on(

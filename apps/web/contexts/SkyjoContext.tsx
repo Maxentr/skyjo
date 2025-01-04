@@ -14,7 +14,7 @@ import {
 } from "@skyjo/core"
 import type { SkyjoOperation } from "@skyjo/shared/types"
 import { applyOperations } from "@skyjo/shared/utils"
-import { UpdateGameSettings } from "@skyjo/shared/validations"
+import { UpdateGameSettings, UpdateMaxPlayers } from "@skyjo/shared/validations"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import {
@@ -34,6 +34,7 @@ type SkyjoContext = {
   player: SkyjoPlayerToJson
   opponents: Opponents
   actions: {
+    updateMaxPlayers: (maxPlayers: UpdateMaxPlayers) => void
     updateSingleSettings: <T extends keyof UpdateGameSettings>(
       key: T,
       value: UpdateGameSettings[T],
@@ -167,6 +168,12 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   //#endregion
 
   //#region actions
+  const updateMaxPlayers = (maxPlayers: UpdateMaxPlayers) => {
+    if (!admin) return
+
+    socket!.emit("game:update-max-players", maxPlayers)
+  }
+
   const updateSingleSettings = <T extends keyof UpdateGameSettings>(
     key: T,
     value: UpdateGameSettings[T],
@@ -260,6 +267,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
 
   const actions = {
     sendMessage,
+    updateMaxPlayers,
     updateSingleSettings,
     toggleSettingsValidation,
     updateSettings,

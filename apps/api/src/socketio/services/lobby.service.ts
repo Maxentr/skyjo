@@ -71,7 +71,42 @@ export class LobbyService extends BaseService {
       )
     }
 
-    game.settings = new SkyjoSettings(game.settings.private)
+    game.settings = new SkyjoSettings(
+      game.settings.private,
+      game.settings.maxPlayers,
+    )
+    game.updatedAt = new Date()
+
+    this.sendGameUpdateToSocketAndRoom(socket, {
+      room: game.code,
+      stateManager,
+    })
+    await this.redis.updateGame(game)
+  }
+
+  async onUpdateMaxPlayers(socket: SkyjoSocket, maxPlayers: number) {
+    const game = await this.redis.getGame(socket.data.gameCode)
+    if (!game.isAdmin(socket.data.playerId)) {
+      throw new CError(
+        `Player try to change all game settings but is not the admin.`,
+        {
+          code: ErrorConstants.ERROR.NOT_ALLOWED,
+          level: "warn",
+          meta: {
+            game,
+            socket,
+            gameCode: game.code,
+            playerId: socket.data.playerId,
+          },
+        },
+      )
+    }
+
+    game.updatedAt = new Date()
+
+    const stateManager = new GameStateManager(game)
+
+    game.settings.maxPlayers = maxPlayers
     game.updatedAt = new Date()
 
     this.sendGameUpdateToSocketAndRoom(socket, {

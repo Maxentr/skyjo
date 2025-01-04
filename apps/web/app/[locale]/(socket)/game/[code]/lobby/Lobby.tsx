@@ -497,10 +497,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
             {admin && (
               <Select
                 value={game.settings.maxPlayers.toString()}
-                onValueChange={(value) =>
-                  actions.updateSingleSettings("maxPlayers", +value)
-                }
-                disabled={disableInput}
+                onValueChange={(value) => actions.updateMaxPlayers(+value)}
               >
                 <SelectTrigger className="mt-2">
                   <SelectValue

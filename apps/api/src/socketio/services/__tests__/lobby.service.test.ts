@@ -247,7 +247,7 @@ describe("LobbyService", () => {
       await service.onResetSettings(socket)
 
       expect(game.settings.toJson()).toStrictEqual(
-        new SkyjoSettings(true).toJson(),
+        new SkyjoSettings(true, game.settings.maxPlayers).toJson(),
       )
       expect(socket.emit).toHaveBeenCalled()
     })
@@ -273,7 +273,118 @@ describe("LobbyService", () => {
     })
   })
 
-  describe("onSettingsChange", () => {
+  describe("onUpdateMaxPlayers", () => {
+    it("should throw if user is not admin", async () => {
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+
+      const game = new Skyjo(opponent.id, new SkyjoSettings(false))
+      game.addPlayer(opponent)
+
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      game.addPlayer(player)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      await expect(service.onUpdateMaxPlayers(socket, 3)).toThrowCErrorWithCode(
+        ErrorConstants.ERROR.NOT_ALLOWED,
+      )
+
+      expect(socket.emit).not.toHaveBeenCalled()
+    })
+
+    it("should update max players settings if game is private", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(true))
+      game.addPlayer(player)
+
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+      game.addPlayer(opponent)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      const newMaxPlayers = 3
+      await service.onUpdateMaxPlayers(socket, newMaxPlayers)
+
+      expect(game.settings.toJson()).toStrictEqual({
+        ...game.settings.toJson(),
+        maxPlayers: newMaxPlayers,
+      })
+
+      expect(socket.emit).toHaveBeenCalled()
+    })
+    it("should update max players settings if game is public and not confirmed", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(false))
+      game.settings.isConfirmed = false
+      game.addPlayer(player)
+
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+      game.addPlayer(opponent)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      const newMaxPlayers = 3
+      await service.onUpdateMaxPlayers(socket, newMaxPlayers)
+
+      expect(game.settings.toJson()).toStrictEqual({
+        ...game.settings.toJson(),
+        maxPlayers: newMaxPlayers,
+      })
+
+      expect(socket.emit).toHaveBeenCalled()
+    })
+    it("should update max players settings if game is public and confirmed", async () => {
+      const player = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+        TEST_SOCKET_ID,
+      )
+      const game = new Skyjo(player.id, new SkyjoSettings(false))
+      game.settings.isConfirmed = true
+      game.addPlayer(player)
+
+      const opponent = new SkyjoPlayer(
+        { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
+        "socket456",
+      )
+      game.addPlayer(opponent)
+      socket.data = { gameCode: game.code, playerId: player.id }
+
+      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+
+      const newMaxPlayers = 3
+      await service.onUpdateMaxPlayers(socket, newMaxPlayers)
+
+      expect(game.settings.toJson()).toStrictEqual({
+        ...game.settings.toJson(),
+        maxPlayers: newMaxPlayers,
+      })
+
+      expect(socket.emit).toHaveBeenCalled()
+    })
+  })
+
+  describe("onUpdateSettings", () => {
     it("should throw if user is not admin", async () => {
       const opponent = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
@@ -428,7 +539,6 @@ describe("LobbyService", () => {
         ...game.settings,
         ...newSettings,
         private: game.settings.private,
-        maxPlayers: 8,
         isConfirmed: game.settings.isConfirmed,
       })
     })

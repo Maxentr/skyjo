@@ -49,10 +49,10 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
   firstPlayerPenaltyType: FirstPlayerPenaltyType =
     Constants.DEFAULT_GAME_SETTINGS.FIRST_PLAYER_PENALTY_TYPE
 
-  constructor(isPrivate: boolean = false) {
+  constructor(isPrivate: boolean = false, maxPlayers?: number) {
     this.private = isPrivate
-
     if (isPrivate) this.isConfirmed = true
+    if (maxPlayers) this.maxPlayers = maxPlayers
   }
 
   populate(settings: SkyjoToDb["settings"]) {
