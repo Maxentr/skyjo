@@ -123,17 +123,6 @@ export abstract class BaseService {
     await this.redis.updateGame(game)
   }
 
-  protected async changeAdmin(game: Skyjo) {
-    const players = game.getConnectedPlayers([game.adminId])
-    if (players.length === 0) return
-
-    const player = players[0]
-
-    game.adminId = player.id
-
-    await this.redis.updateGame(game)
-  }
-
   protected async finishTurn(socket: SkyjoSocket, game: Skyjo) {
     game.nextTurn()
 
@@ -177,7 +166,7 @@ export abstract class BaseService {
 
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.DISCONNECTED
 
-    if (game.isAdmin(player.id)) await this.changeAdmin(game)
+    if (game.isAdmin(player.id)) game.changeAdmin()
 
     if (game.status !== CoreConstants.GAME_STATUS.PLAYING) {
       game.removePlayer(player.id)

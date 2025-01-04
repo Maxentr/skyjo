@@ -43,7 +43,7 @@ export class PlayerService extends BaseService {
 
       await this.redis.updateGame(game)
 
-      if (game.isAdmin(player.id)) await this.changeAdmin(game)
+      if (game.isAdmin(player.id)) game.changeAdmin()
 
       if (
         game.status === CoreConstants.GAME_STATUS.LOBBY ||

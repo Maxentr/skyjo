@@ -150,6 +150,13 @@ export class Skyjo implements SkyjoInterface {
     return this.adminId === playerId
   }
 
+  changeAdmin() {
+    const players = this.getConnectedPlayers([this.adminId])
+    if (players.length === 0) return
+
+    this.adminId = players[0].id
+  }
+
   isFull() {
     return this.getConnectedPlayers().length >= this.settings.maxPlayers
   }

@@ -209,6 +209,22 @@ describe("Skyjo", () => {
     })
   })
 
+  describe("changeAdmin", () => {
+    it("should not change admin if there is no connected players", () => {
+      for (const player of skyjo.players) {
+        player.connectionStatus = Constants.CONNECTION_STATUS.DISCONNECTED
+      }
+
+      skyjo.changeAdmin()
+      expect(skyjo.adminId).toBe(player.id)
+    })
+
+    it("should change admin", () => {
+      skyjo.changeAdmin()
+      expect(skyjo.adminId).toBe(opponent.id)
+    })
+  })
+
   describe("checkTurn", () => {
     it("should check if it's player turn", () => {
       expect(skyjo.checkTurn(player.id)).toBeTruthy()
