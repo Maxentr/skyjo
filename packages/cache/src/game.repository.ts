@@ -70,7 +70,7 @@ export class GameRepository extends RedisClient {
     const client = await RedisClient.getClient()
     const key = this.getGameKey(code)
 
-    const game = await client.json.get(key)
+    const game = (await client.json.get(key)) as SkyjoDbFormat | null
     if (!game) {
       throw new CError("Game not found in cache", {
         level: "warn",
@@ -80,7 +80,7 @@ export class GameRepository extends RedisClient {
       })
     }
 
-    return this.deserializeGame(game as SkyjoDbFormat)
+    return this.deserializeGame(game)
   }
 
   async canReconnectPlayer(gameCode: string, playerId: string) {
