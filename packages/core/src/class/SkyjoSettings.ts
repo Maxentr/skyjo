@@ -101,6 +101,10 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     if (this.cardPerColumn === 1 && this.cardPerRow === 1) {
       this.cardPerColumn = 2
     }
+
+    if (this.firstPlayerFlatPenalty > this.scoreToEndGame) {
+      this.firstPlayerFlatPenalty = this.scoreToEndGame
+    }
   }
 
   isClassicSettings() {

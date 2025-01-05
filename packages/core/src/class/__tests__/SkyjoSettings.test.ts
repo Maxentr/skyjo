@@ -113,6 +113,14 @@ describe("SkyjoSettings", () => {
 
       expect(settings.cardPerColumn).toBe(2)
     })
+
+    it("should prevent invalid settings when firstPlayerFlatPenalty is greater than scoreToEndGame", () => {
+      settings.firstPlayerFlatPenalty = 101
+      settings.scoreToEndGame = 80
+      settings.preventInvalidSettings()
+
+      expect(settings.firstPlayerFlatPenalty).toBe(settings.scoreToEndGame)
+    })
   })
 
   describe("isClassicSettings", () => {
