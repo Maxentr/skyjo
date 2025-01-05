@@ -629,9 +629,7 @@ describe("LobbyService", () => {
       await service.onGameStart(socket)
 
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundPhase).toBe<RoundPhase>(
-        CoreConstants.ROUND_PHASE.TURN_CARDS,
-      )
+      expect(game.isRoundTurningCards()).toBeTruthy()
     })
   })
 })

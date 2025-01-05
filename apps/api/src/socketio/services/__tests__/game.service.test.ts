@@ -190,9 +190,7 @@ describe("GameService", () => {
 
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundPhase).toBe<RoundPhase>(
-        CoreConstants.ROUND_PHASE.TURN_CARDS,
-      )
+      expect(game.isRoundTurningCards()).toBeTruthy()
     })
 
     it("should reveal the card", async () => {
@@ -225,9 +223,7 @@ describe("GameService", () => {
 
       expect(player.hasRevealedCardCount(2)).toBeTruthy()
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundPhase).toBe<RoundPhase>(
-        CoreConstants.ROUND_PHASE.TURN_CARDS,
-      )
+      expect(game.isRoundTurningCards()).toBeTruthy()
     })
   })
 
@@ -900,12 +896,12 @@ describe("GameService", () => {
 
       await service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion)
 
-      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.OVER)
+      expect(game.isRoundOver()).toBeTruthy()
       expect(game.isPlaying()).toBeTruthy()
 
       vi.runAllTimers()
 
-      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
+      expect(game.isRoundInMain()).toBeTruthy()
       expect(game.isPlaying()).toBeTruthy()
 
       vi.useRealTimers()
@@ -957,16 +953,14 @@ describe("GameService", () => {
 
       await service.onTurnCard(socket, { column: 0, row: 2 }, game.stateVersion)
 
-      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.OVER)
+      expect(game.isRoundOver()).toBeTruthy()
       expect(game.isPlaying()).toBeTruthy()
 
       const updateGameSpy = vi.spyOn(service["redis"], "updateGame")
       vi.runAllTimers()
 
       updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
-        expect(game.roundPhase).toBe<RoundPhase>(
-          CoreConstants.ROUND_PHASE.TURN_CARDS,
-        )
+        expect(game.isRoundTurningCards()).toBeTruthy()
         expect(game.isPlaying()).toBeTruthy()
       })
 

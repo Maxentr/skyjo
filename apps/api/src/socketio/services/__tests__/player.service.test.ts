@@ -202,7 +202,7 @@ describe("PlayerService", () => {
       await service.onLeave(socket)
 
       expect(game.isFinished()).toBeTruthy()
-      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.OVER)
+      expect(game.isRoundOver()).toBeTruthy()
       expect(game.players.length).toBe(1)
     })
 
@@ -254,9 +254,7 @@ describe("PlayerService", () => {
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundPhase).toBe<RoundPhase>(
-        CoreConstants.ROUND_PHASE.TURN_CARDS,
-      )
+      expect(game.isRoundTurningCards()).toBeTruthy()
       expect(game.players.length).toBe(3)
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
@@ -270,7 +268,7 @@ describe("PlayerService", () => {
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
         expect(game.isPlaying()).toBeTruthy()
-        expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
+        expect(game.isRoundInMain()).toBeTruthy()
         expect(game.players.length).toBe(3)
       })
 
@@ -312,7 +310,7 @@ describe("PlayerService", () => {
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
+      expect(game.isRoundInMain()).toBeTruthy()
       expect(game.players.length).toBe(3)
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
@@ -326,7 +324,7 @@ describe("PlayerService", () => {
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
         expect(game.isPlaying()).toBeTruthy()
-        expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
+        expect(game.isRoundInMain()).toBeTruthy()
         expect(game.players.length).toBe(3)
       })
 
@@ -369,7 +367,7 @@ describe("PlayerService", () => {
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
+      expect(game.isRoundInMain()).toBeTruthy()
       expect(game.players.length).toBe(3)
       expect(game.turn).toBe(1)
 
@@ -384,7 +382,7 @@ describe("PlayerService", () => {
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
         expect(game.isPlaying()).toBeTruthy()
-        expect(game.roundPhase).toBe<RoundPhase>(CoreConstants.ROUND_PHASE.MAIN)
+        expect(game.isRoundInMain()).toBeTruthy()
         expect(game.players.length).toBe(3)
         expect(game.turn).toBe(2)
       })
@@ -491,9 +489,7 @@ describe("PlayerService", () => {
         CoreConstants.CONNECTION_STATUS.LEAVE,
       )
       expect(game.isPlaying()).toBeTruthy()
-      expect(game.roundPhase).toBe<RoundPhase>(
-        CoreConstants.ROUND_PHASE.LAST_LAP,
-      )
+      expect(game.isRoundInLastLap()).toBeTruthy()
       expect(game.players.length).toBe(3)
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
@@ -507,9 +503,7 @@ describe("PlayerService", () => {
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
         expect(game.isPlaying()).toBeTruthy()
-        expect(game.roundPhase).toBe<RoundPhase>(
-          CoreConstants.ROUND_PHASE.TURN_CARDS,
-        )
+        expect(game.isRoundTurningCards()).toBeTruthy()
         expect(game.roundNumber).toBe(2)
         expect(game.players.length).toBe(3)
       })

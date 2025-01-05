@@ -167,6 +167,24 @@ export class Skyjo implements SkyjoInterface {
   }
   //#endregion
 
+  //#region roundPhase
+  isRoundTurningCards() {
+    return this.roundPhase === Constants.ROUND_PHASE.TURN_CARDS
+  }
+
+  isRoundInMain() {
+    return this.roundPhase === Constants.ROUND_PHASE.MAIN
+  }
+
+  isRoundInLastLap() {
+    return this.roundPhase === Constants.ROUND_PHASE.LAST_LAP
+  }
+
+  isRoundOver() {
+    return this.roundPhase === Constants.ROUND_PHASE.OVER
+  }
+  //#endregion
+
   checkTurn(playerId: string) {
     return this.players[this.turn].id === playerId
   }

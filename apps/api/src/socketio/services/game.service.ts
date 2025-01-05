@@ -49,10 +49,7 @@ export class GameService extends BaseService {
       })
     }
 
-    if (
-      !game.isPlaying() ||
-      game.roundPhase !== CoreConstants.ROUND_PHASE.TURN_CARDS
-    ) {
+    if (!game.isPlaying() || !game.isRoundTurningCards()) {
       await this.sendGameToSocket(socket, game)
       throw new CError(
         `Player try to reveal a card but the game is not in the correct state. Sent game to the player to fix the issue.`,
@@ -279,8 +276,7 @@ export class GameService extends BaseService {
     // TODO remove this condition in 1.36.0 if game sync works and this error never happens in last versions
     if (
       !game.isPlaying() ||
-      (game.roundPhase !== CoreConstants.ROUND_PHASE.MAIN &&
-        game.roundPhase !== CoreConstants.ROUND_PHASE.LAST_LAP)
+      (!game.isRoundInMain() && !game.isRoundInLastLap())
     ) {
       await this.sendGameToSocket(socket, game)
       throw new CError(
