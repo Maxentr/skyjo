@@ -3,7 +3,7 @@ import { SkyjoCard } from "../../class/SkyjoCard.js"
 import { SkyjoPlayer } from "../../class/SkyjoPlayer.js"
 import { SkyjoSettings } from "../../class/SkyjoSettings.js"
 import { Constants } from "../../constants.js"
-import type { SkyjoToDb } from "../../types/skyjo.js"
+import type { SkyjoDbFormat } from "../../types/skyjo.js"
 
 let nbColumns: number
 let nbRows: number
@@ -34,7 +34,7 @@ describe("SkyjoPlayer", () => {
 
   //#region Player class
   it("should populate the class without cards", () => {
-    const dbPlayer: SkyjoToDb["players"][number] = {
+    const dbPlayer: SkyjoDbFormat["players"][number] = {
       id: crypto.randomUUID(),
       name: "name",
       avatar: Constants.AVATARS.BEE,
@@ -59,7 +59,7 @@ describe("SkyjoPlayer", () => {
   })
 
   it("should populate the class with cards", () => {
-    const dbPlayer: SkyjoToDb["players"][number] = {
+    const dbPlayer: SkyjoDbFormat["players"][number] = {
       id: crypto.randomUUID(),
       name: "name",
       avatar: Constants.AVATARS.BEE,

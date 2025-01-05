@@ -1,4 +1,4 @@
-import type { SkyjoToDb } from "@/types/skyjo.js"
+import type { SkyjoDbFormat } from "@/types/skyjo.js"
 import type {
   SkyjoPlayerScores,
   SkyjoPlayerToJson,
@@ -56,7 +56,7 @@ export class SkyjoPlayer implements SkyjoPlayerInterface {
     this.avatar = playerToCreate.avatar
   }
 
-  populate(player: SkyjoToDb["players"][number]) {
+  populate(player: SkyjoDbFormat["players"][number]) {
     this.id = player.id
     this.name = player.name
     this.avatar = player.avatar

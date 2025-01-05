@@ -26,7 +26,7 @@ export type SkyjoToJson = {
   updatedAt: Date
 }
 
-export type SkyjoToDb = {
+export type SkyjoDbFormat = {
   id: string
   code: string
   adminId: string

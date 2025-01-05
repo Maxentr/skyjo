@@ -1,4 +1,4 @@
-import type { SkyjoToDb } from "@/types/skyjo.js"
+import type { SkyjoDbFormat } from "@/types/skyjo.js"
 import type { SkyjoSettingsToJson } from "@/types/skyjoSettings.js"
 import { Constants, type FirstPlayerPenaltyType } from "../constants.js"
 
@@ -55,7 +55,7 @@ export class SkyjoSettings implements SkyjoSettingsInterface {
     if (maxPlayers) this.maxPlayers = maxPlayers
   }
 
-  populate(settings: SkyjoToDb["settings"]) {
+  populate(settings: SkyjoDbFormat["settings"]) {
     this.isConfirmed = settings.isConfirmed
     this.private = settings.private
     this.maxPlayers = settings.maxPlayers

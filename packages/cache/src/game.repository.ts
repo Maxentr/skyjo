@@ -1,8 +1,8 @@
 import {
   Constants as CoreConstants,
   Skyjo,
+  type SkyjoDbFormat,
   type SkyjoPlayerToJson,
-  type SkyjoToDb,
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import { RedisClient } from "./client.js"
@@ -80,7 +80,7 @@ export class GameRepository extends RedisClient {
       })
     }
 
-    return this.deserializeGame(game as SkyjoToDb)
+    return this.deserializeGame(game as SkyjoDbFormat)
   }
 
   async canReconnectPlayer(gameCode: string, playerId: string) {
@@ -147,7 +147,7 @@ export class GameRepository extends RedisClient {
     return `${GameRepository.GAME_PREFIX}${code}`
   }
 
-  private deserializeGame(game: SkyjoToDb): Skyjo {
+  private deserializeGame(game: SkyjoDbFormat): Skyjo {
     const skyjo = new Skyjo(game.adminId)
     skyjo.populate(game)
 

@@ -9,7 +9,7 @@ import {
   type LastTurnStatus,
   type TurnStatus,
 } from "../../constants.js"
-import type { SkyjoToDb } from "../../types/skyjo.js"
+import type { SkyjoDbFormat } from "../../types/skyjo.js"
 import "@skyjo/error/test/expect-extend"
 
 const TOTAL_CARDS = 150
@@ -42,7 +42,7 @@ describe("Skyjo", () => {
   //#region Game class
   describe("populate", () => {
     it("should populate the class without players", () => {
-      const gameDb: SkyjoToDb = {
+      const gameDb: SkyjoDbFormat = {
         id: crypto.randomUUID(),
         code: "code",
         adminId: player.id,
@@ -91,7 +91,7 @@ describe("Skyjo", () => {
     })
 
     it("should populate the class with players", () => {
-      const gameDb: SkyjoToDb = {
+      const gameDb: SkyjoDbFormat = {
         id: crypto.randomUUID(),
         adminId: player.id,
         isFull: false,

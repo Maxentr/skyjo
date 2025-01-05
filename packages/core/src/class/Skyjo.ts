@@ -1,4 +1,4 @@
-import type { SkyjoToDb, SkyjoToJson } from "@/types/skyjo.js"
+import type { SkyjoDbFormat, SkyjoToJson } from "@/types/skyjo.js"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
 import {
   Constants,
@@ -65,7 +65,7 @@ export class Skyjo implements SkyjoInterface {
     this.updatedAt = now
   }
 
-  populate(game: SkyjoToDb) {
+  populate(game: SkyjoDbFormat) {
     this.id = game.id
     this.code = game.code
     this.status = game.status
@@ -417,7 +417,7 @@ export class Skyjo implements SkyjoInterface {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       stateVersion: this.stateVersion,
-    } satisfies SkyjoToDb
+    } satisfies SkyjoDbFormat
   }
 
   //#region private methods

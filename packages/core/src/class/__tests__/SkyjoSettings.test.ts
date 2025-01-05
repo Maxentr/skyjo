@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest"
 import { SkyjoSettings } from "../../class/SkyjoSettings.js"
 import { Constants } from "../../constants.js"
-import type { SkyjoToDb } from "../../types/skyjo.js"
+import type { SkyjoDbFormat } from "../../types/skyjo.js"
 
 let settings: SkyjoSettings
 
@@ -42,7 +42,7 @@ describe("SkyjoSettings", () => {
   })
 
   it("should populate the class", () => {
-    const dbGameSettings: SkyjoToDb["settings"] = {
+    const dbGameSettings: SkyjoDbFormat["settings"] = {
       isConfirmed: true,
       allowSkyjoForColumn: false,
       allowSkyjoForRow: false,
