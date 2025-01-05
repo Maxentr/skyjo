@@ -282,6 +282,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                     name={"score-to-end-game"}
                     type="number"
                     min={10}
+                    step={10}
                     max={1000}
                     value={game.settings.scoreToEndGame}
                     onChange={(e) =>
@@ -404,9 +405,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   <Slider
                     key={game.settings.firstPlayerFlatPenalty}
                     name={"first-player-flat-penalty"}
-                    step={1}
-                    min={1}
-                    max={10}
+                    step={10}
+                    min={0}
+                    max={game.settings.scoreToEndGame}
                     defaultValue={[game.settings.firstPlayerFlatPenalty]}
                     onValueCommit={(value) =>
                       actions.updateSingleSettings(
@@ -422,8 +423,9 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                   <Input
                     name={"first-player-flat-penalty"}
                     type="number"
-                    min={1}
-                    max={10}
+                    min={0}
+                    step={10}
+                    max={game.settings.scoreToEndGame}
                     value={game.settings.firstPlayerFlatPenalty}
                     onChange={(e) =>
                       actions.updateSingleSettings(
