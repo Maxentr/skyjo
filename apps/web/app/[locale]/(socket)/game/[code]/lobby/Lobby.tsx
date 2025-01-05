@@ -437,7 +437,7 @@ const Lobby = ({ gameCode }: LobbyProps) => {
                       number: game.settings.firstPlayerFlatPenalty,
                     })}
                     disabled={disableInput || disableFlatPenalty}
-                    className="w-16 text-center"
+                    className="w-20 text-center"
                   />
                 </div>
               </div>
