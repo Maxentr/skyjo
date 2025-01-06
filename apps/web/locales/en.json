@@ -335,8 +335,16 @@
       "card-per-column": "Number of columns: {value}",
       "card-per-row": "Number of rows: {value}",
       "initial-turned-count": "Number of cards to turn at the beginning: {value}",
-      "first-player-multiplier-penalty": "Multiplier penalty for the first player if he does not have the smallest number of points: {value}",
-      "score-to-end-game": "Number of points to end the game: {value}"
+      "score-to-end-game": "Number of points to end the game: {value}",
+      "first-player-penalty-type": {
+        "label": "Penalty type for the first player if he does not have the smallest number of points: ",
+        "1": "Multiplier only",
+        "2": "Flat only",
+        "3": "Flat then multiplier",
+        "4": "Multiplier then flat"
+      },
+      "first-player-multiplier-penalty": "Multiplier penalty: {value}",
+      "first-player-flat-penalty": "Flat penalty: {value}"
     },
     "GameStoppedDialog": {
       "title": "Game stopped",

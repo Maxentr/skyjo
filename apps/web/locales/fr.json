@@ -330,8 +330,16 @@
       "card-per-column": "Nombre de colonnes : {value}",
       "card-per-row": "Nombre de lignes : {value}",
       "initial-turned-count": "Nombre de cartes à retourner au début : {value}",
-      "first-player-multiplier-penalty": "Multiplicateur de pénalité pour le premier joueur si il n'a pas le plus petit nombre de points : {value}",
-      "score-to-end-game": "Nombre de points pour finir la partie : {value}"
+      "score-to-end-game": "Nombre de points pour finir la partie : {value}",
+      "first-player-penalty-type": {
+        "label": "Pénalité pour le premier joueur si il n'a pas le plus petit nombre de points : ",
+        "1": "Multiplicateur seulement",
+        "2": "Pénalité plate seulement",
+        "3": "Pénalité plate puis multiplicateur",
+        "4": "Multiplicateur puis pénalité plate"
+      },
+      "first-player-multiplier-penalty": "Multiplicateur de pénalité : {value}",
+      "first-player-flat-penalty": "Pénalité plate : {value}"
     },
     "GameStoppedDialog": {
       "title": "La partie s'est arrêtée",

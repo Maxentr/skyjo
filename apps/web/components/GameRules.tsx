@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { useSkyjo } from "@/contexts/SkyjoContext"
+import { Constants as CoreConstants } from "@skyjo/core"
 import { BookOpenIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
@@ -54,13 +55,30 @@ const GameRules = () => {
             })}
           </p>
           <p>
-            {t("first-player-multiplier-penalty", {
-              value: game?.settings.firstPlayerMultiplierPenalty,
-            })}
-          </p>
-          <p>
             {t("score-to-end-game", { value: game?.settings.scoreToEndGame })}
           </p>
+          <p>
+            {t("first-player-penalty-type.label")}
+            {t(
+              `first-player-penalty-type.${game?.settings.firstPlayerPenaltyType}`,
+            )}
+          </p>
+          {game?.settings.firstPlayerPenaltyType !==
+            CoreConstants.FIRST_PLAYER_PENALTY_TYPE.FLAT_ONLY && (
+            <p>
+              {t("first-player-multiplier-penalty", {
+                value: game?.settings.firstPlayerMultiplierPenalty,
+              })}
+            </p>
+          )}
+          {game?.settings.firstPlayerPenaltyType !==
+            CoreConstants.FIRST_PLAYER_PENALTY_TYPE.MULTIPLIER_ONLY && (
+            <p>
+              {t("first-player-flat-penalty", {
+                value: game?.settings.firstPlayerFlatPenalty,
+              })}
+            </p>
+          )}
         </DialogContent>
       </Dialog>
     </>
