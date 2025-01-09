@@ -1,0 +1,28 @@
+{
+  "name": "@skyjo/state-operations",
+  "description": "A package to handle game state operations",
+  "version": "1.41.0",
+  "type": "module",
+  "exports": {
+    ".": "./dist/src/index.js",
+    "./*": "./dist/src/*.js"
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["./dist/*"]
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "biome:check": "pnpm biome check --write ."
+  },
+  "dependencies": {
+    "@skyjo/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@skyjo/ts-config": "workspace:*",
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.6"
+  }
+}

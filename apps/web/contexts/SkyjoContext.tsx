@@ -12,9 +12,11 @@ import {
   SkyjoPlayerToJson,
   SkyjoToJson,
 } from "@skyjo/core"
-import type { SkyjoOperation } from "@skyjo/shared/types"
-import { applyOperations } from "@skyjo/shared/utils"
 import { UpdateGameSettings, UpdateMaxPlayers } from "@skyjo/shared/validations"
+import {
+  type SkyjoOperation,
+  applyStateOperations,
+} from "@skyjo/state-operations"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import {
@@ -134,7 +136,7 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     setGame((prev) => {
       if (!prev) return prev
       const prevState = structuredClone(prev)
-      const newState = applyOperations(prevState, operations)
+      const newState = applyStateOperations(prevState, operations)
       return newState
     })
   }

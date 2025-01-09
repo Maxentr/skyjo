@@ -21,6 +21,7 @@
     "@skyjo/error": "workspace:*",
     "@skyjo/logger": "workspace:*",
     "@skyjo/shared": "workspace:*",
+    "@skyjo/state-operations": "workspace:*",
     "hono": "^4.6.12",
     "nodemailer": "^6.9.16",
     "rate-limiter-flexible": "^5.0.4",

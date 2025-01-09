@@ -47,6 +47,9 @@ importers:
       '@skyjo/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@skyjo/state-operations':
+        specifier: workspace:*
+        version: link:../../packages/state-operations
       hono:
         specifier: ^4.6.12
         version: 4.6.12
@@ -157,6 +160,9 @@ importers:
       '@skyjo/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@skyjo/state-operations':
+        specifier: workspace:*
+        version: link:../../packages/state-operations
       '@tanstack/react-query':
         specifier: ^5.62.7
         version: 5.62.7(react@19.0.0-rc-66855b96-20241106)
@@ -376,6 +382,9 @@ importers:
       '@skyjo/error':
         specifier: workspace:*
         version: link:../error
+      '@skyjo/state-operations':
+        specifier: workspace:*
+        version: link:../state-operations
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -386,6 +395,25 @@ importers:
       typescript:
         specifier: ^5.7.2
         version: 5.7.2
+
+  packages/state-operations:
+    dependencies:
+      '@skyjo/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@skyjo/ts-config':
+        specifier: workspace:*
+        version: link:../config/ts
+      '@types/node':
+        specifier: ^22.10.1
+        version: 22.10.1
+      typescript:
+        specifier: ^5.7.2
+        version: 5.7.2
+      vitest:
+        specifier: ^2.1.6
+        version: 2.1.6(@types/node@22.10.1)(@vitest/ui@2.1.6)(terser@5.36.0)
 
 packages:
 

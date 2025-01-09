@@ -1,4 +1,3 @@
-import type { SkyjoOperation } from "@/types/operation.js"
 import type {
   PlayPickCard,
   PlayReplaceCard,
@@ -6,6 +5,7 @@ import type {
   PlayTurnCard,
   SkyjoToJson,
 } from "@skyjo/core"
+import type { SkyjoOperation } from "@skyjo/state-operations"
 
 export interface ClientToServerGameEvents {
   get: (stateVersion: number | null, firstTime?: boolean) => void
