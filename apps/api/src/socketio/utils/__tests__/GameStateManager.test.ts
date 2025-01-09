@@ -15,13 +15,14 @@ describe("GameStateManager", () => {
     const player = new SkyjoPlayer()
     game = new Skyjo(player.id)
     game.addPlayer(player)
-
+    game.stateVersion = 1
     manager = new GameStateManager(game)
   })
 
   describe("getChanges", () => {
     it("returns null when no changes", () => {
       expect(manager.getChanges()).toBeNull()
+      expect(game.stateVersion).toBe(1)
     })
 
     describe("detects basic field changes", () => {
@@ -31,9 +32,10 @@ describe("GameStateManager", () => {
         expect(manager.getChanges()).toEqual({
           game: {
             status: CoreConstants.GAME_STATUS.PLAYING,
-            stateVersion: 1,
+            stateVersion: 2,
           },
         })
+        expect(game.stateVersion).toBe(2)
       })
 
       it("detects multiple basic field changes", () => {
@@ -46,9 +48,10 @@ describe("GameStateManager", () => {
             status: CoreConstants.GAME_STATUS.PLAYING,
             roundPhase: CoreConstants.ROUND_PHASE.MAIN,
             turn: 1,
-            stateVersion: 1,
+            stateVersion: 2,
           },
         })
+        expect(game.stateVersion).toBe(2)
       })
     })
 
@@ -58,8 +61,9 @@ describe("GameStateManager", () => {
 
         expect(manager.getChanges()).toEqual({
           settings: { maxPlayers: 6 },
-          game: { stateVersion: 1 },
+          game: { stateVersion: 2 },
         })
+        expect(game.stateVersion).toBe(2)
       })
 
       it("detects multiple settings changes", () => {
@@ -73,8 +77,9 @@ describe("GameStateManager", () => {
             allowSkyjoForRow: true,
             initialTurnedCount: 10,
           },
-          game: { stateVersion: 1 },
+          game: { stateVersion: 2 },
         })
+        expect(game.stateVersion).toBe(2)
       })
     })
 
@@ -85,8 +90,9 @@ describe("GameStateManager", () => {
 
         expect(manager.getChanges()).toEqual({
           updatePlayers: [{ id: player.id, score: 10 }],
-          game: { stateVersion: 1 },
+          game: { stateVersion: 2 },
         })
+        expect(game.stateVersion).toBe(2)
       })
 
       it("detects multiple basic player changes", () => {
@@ -109,8 +115,9 @@ describe("GameStateManager", () => {
               ),
             },
           ],
-          game: { stateVersion: 1 },
+          game: { stateVersion: 2 },
         })
+        expect(game.stateVersion).toBe(2)
       })
 
       it("detects player additions", () => {
@@ -119,8 +126,9 @@ describe("GameStateManager", () => {
 
         expect(manager.getChanges()).toEqual({
           addPlayers: [newPlayer.toJson()],
-          game: { stateVersion: 1 },
+          game: { stateVersion: 2 },
         })
+        expect(game.stateVersion).toBe(2)
       })
 
       it("detects player removals", () => {
@@ -132,8 +140,9 @@ describe("GameStateManager", () => {
 
         expect(manager.getChanges()).toEqual({
           removePlayers: [aPlayer.id],
-          game: { stateVersion: 2 },
+          game: { stateVersion: 3 },
         })
+        expect(game.stateVersion).toBe(3)
       })
     })
   })
