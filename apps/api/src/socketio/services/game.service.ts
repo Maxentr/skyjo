@@ -73,11 +73,10 @@ export class GameService extends BaseService {
 
     if (game.haveAllPlayersRevealedCards()) game.startRoundAfterInitialReveal()
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   async onPickCard(
@@ -95,11 +94,12 @@ export class GameService extends BaseService {
     if (pile === "draw") game.drawCard()
     else game.pickFromDiscard()
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    // TODO sortir les operations de dessous pour pouvoir le donner à la fonction et à redis
+
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   async onReplaceCard(
@@ -117,18 +117,17 @@ export class GameService extends BaseService {
 
     game.replaceCard(column, row)
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
 
     await this.finishTurn(socket, game)
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   async onDiscardCard(socket: SkyjoSocket, clientStateVersion: number) {
@@ -141,11 +140,10 @@ export class GameService extends BaseService {
 
     game.discardCard(game.selectedCardValue!)
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   async onTurnCard(
@@ -162,18 +160,17 @@ export class GameService extends BaseService {
 
     game.turnCard(player, column, row)
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
 
     await this.finishTurn(socket, game)
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   async onReplay(socket: SkyjoSocket, clientStateVersion: number) {
@@ -200,11 +197,10 @@ export class GameService extends BaseService {
 
     game.restartGameIfAllPlayersWantReplay()
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   //#region private methods
@@ -235,6 +231,7 @@ export class GameService extends BaseService {
 
     if (clientStateVersion > game.stateVersion) {
       await this.sendGameToSocket(socket, game)
+
       throw new CError(
         "Client state version is ahead of server. This should never happen. Sent full state update",
         {
@@ -250,7 +247,8 @@ export class GameService extends BaseService {
     }
 
     if (clientStateVersion < game.stateVersion) {
-      await this.sendGameToSocket(socket, game)
+      await this.sendMissingStatesToSocket(socket, game, clientStateVersion)
+
       throw new CError(
         "Client state is behind server, sent full state update",
         {

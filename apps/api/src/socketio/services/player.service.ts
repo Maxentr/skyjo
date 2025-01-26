@@ -52,16 +52,14 @@ export class PlayerService extends BaseService {
 
         game.restartGameIfAllPlayersWantReplay()
 
-        if (game.getConnectedPlayers().length === 0) {
-          await this.redis.removeGame(game.code)
-        } else {
-          await this.redis.updateGame(game)
-        }
-
-        this.sendGameUpdateToSocketAndRoom(socket, {
-          room: game.code,
+        this.updateAndSendGame(socket, {
+          game,
           stateManager,
         })
+
+        if (game.getConnectedPlayers().length === 0) {
+          await this.redis.removeGame(game.code)
+        }
       }
 
       this.sendLeaveMessageToRoom(socket, game, player, timeout)
@@ -239,12 +237,11 @@ export class PlayerService extends BaseService {
     player.socketId = socket.id
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
 
-    this.sendGameUpdateToRoom(socket, {
-      room: game.code,
+    await this.updateAndSendGameToRoom(socket, {
+      game,
       stateManager,
     })
 
-    await this.redis.updateGame(game)
     await this.joinGame(socket, game, player, true)
   }
   //#endregion

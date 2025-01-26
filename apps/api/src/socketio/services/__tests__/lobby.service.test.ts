@@ -447,7 +447,6 @@ describe("LobbyService", () => {
         service.onUpdateSettings(socket, newSettings),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
-      console.log(game.settings.toJson())
       expect(socket.emit).not.toHaveBeenCalled()
     })
 

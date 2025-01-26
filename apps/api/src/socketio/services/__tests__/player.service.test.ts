@@ -503,6 +503,13 @@ describe("PlayerService", () => {
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
         expect(game.isPlaying()).toBeTruthy()
+        expect(game.isRoundOver()).toBeTruthy()
+        expect(game.roundNumber).toBe(1)
+        expect(game.players.length).toBe(3)
+      })
+
+      updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
+        expect(game.isPlaying()).toBeTruthy()
         expect(game.isRoundTurningCards()).toBeTruthy()
         expect(game.roundNumber).toBe(2)
         expect(game.players.length).toBe(3)
