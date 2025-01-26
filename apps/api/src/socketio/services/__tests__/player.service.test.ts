@@ -4,8 +4,6 @@ import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import {
   type ConnectionStatus,
   Constants as CoreConstants,
-  type GameStatus,
-  type RoundPhase,
   Skyjo,
   SkyjoCard,
   SkyjoPlayer,

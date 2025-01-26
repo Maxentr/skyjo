@@ -4,7 +4,7 @@ import {
   SkyjoCard,
   SkyjoPlayer,
 } from "@skyjo/core"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 import { GameStateManager } from "../GameStateManager.js"
 
 describe("GameStateManager", () => {

@@ -3,8 +3,6 @@ import { GameService } from "@/socketio/services/game.service.js"
 import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import {
   Constants as CoreConstants,
-  type GameStatus,
-  type RoundPhase,
   Skyjo,
   SkyjoCard,
   SkyjoPlayer,

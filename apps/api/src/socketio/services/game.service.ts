@@ -94,8 +94,6 @@ export class GameService extends BaseService {
     if (pile === "draw") game.drawCard()
     else game.pickFromDiscard()
 
-    // TODO sortir les operations de dessous pour pouvoir le donner à la fonction et à redis
-
     this.updateAndSendGame(socket, {
       game,
       stateManager,
