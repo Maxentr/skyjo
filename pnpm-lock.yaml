@@ -278,6 +278,9 @@ importers:
       '@skyjo/logger':
         specifier: workspace:*
         version: link:../logger
+      '@skyjo/state-operations':
+        specifier: workspace:*
+        version: link:../state-operations
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
