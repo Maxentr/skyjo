@@ -5,11 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "pnpm dev",
+      "command": "pnpm dev --filter=@skyjo/api",
       "name": "Debug API in dev mode",
       "request": "launch",
       "type": "node-terminal",
-      "cwd": "${workspaceFolder}/apps/api"
+      "cwd": "${workspaceFolder}"
     },
   ]
 }
