@@ -76,11 +76,10 @@ export class LobbyService extends BaseService {
     )
     game.updatedAt = new Date()
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   async onUpdateMaxPlayers(socket: SkyjoSocket, maxPlayers: number) {
@@ -108,11 +107,10 @@ export class LobbyService extends BaseService {
     game.settings.maxPlayers = maxPlayers
     game.updatedAt = new Date()
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   async onUpdateSettings(socket: SkyjoSocket, settings: UpdateGameSettings) {
@@ -148,11 +146,10 @@ export class LobbyService extends BaseService {
     game.settings.updateSettings(settings)
     game.updatedAt = new Date()
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   async onToggleSettingsValidation(socket: SkyjoSocket) {
@@ -164,11 +161,10 @@ export class LobbyService extends BaseService {
     game.settings.isConfirmed = !game.settings.isConfirmed
     game.updatedAt = new Date()
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   async onGameStart(socket: SkyjoSocket) {
@@ -192,11 +188,10 @@ export class LobbyService extends BaseService {
 
     Logger.info(`Game ${game.code} started.`)
 
-    this.sendGameUpdateToSocketAndRoom(socket, {
-      room: game.code,
+    this.updateAndSendGame(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
 
   //#region private methods
@@ -240,11 +235,10 @@ export class LobbyService extends BaseService {
     game.addPlayer(player)
     game.updatedAt = new Date()
 
-    this.sendGameUpdateToRoom(socket, {
-      room: game.code,
+    await this.updateAndSendGameToRoom(socket, {
+      game,
       stateManager,
     })
-    await this.redis.updateGame(game)
   }
   //#endregion
 }

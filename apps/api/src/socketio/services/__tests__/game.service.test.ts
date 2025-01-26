@@ -3,8 +3,6 @@ import { GameService } from "@/socketio/services/game.service.js"
 import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import {
   Constants as CoreConstants,
-  type GameStatus,
-  type RoundPhase,
   Skyjo,
   SkyjoCard,
   SkyjoPlayer,
@@ -99,13 +97,15 @@ describe("GameService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(newGame))
 
-      const behindStateVersion = newGame.stateVersion - 1
+      service["redis"].getGameStates = vi.fn(() => Promise.resolve([]))
+
+      const behindStateVersion = newGame.stateVersion - 3
 
       await expect(
         service.onGet(socket, behindStateVersion),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.STATE_VERSION_BEHIND)
 
-      expect(socket.emit).toHaveBeenNthCalledWith(1, "game", newGame.toJson())
+      expect(socket.emit).toHaveBeenNthCalledWith(1, "game:fix", [])
     })
   })
 

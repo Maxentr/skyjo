@@ -4,8 +4,6 @@ import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import {
   type ConnectionStatus,
   Constants as CoreConstants,
-  type GameStatus,
-  type RoundPhase,
   Skyjo,
   SkyjoCard,
   SkyjoPlayer,
@@ -502,6 +500,13 @@ describe("PlayerService", () => {
         expect(player.connectionStatus).toBe<ConnectionStatus>(
           CoreConstants.CONNECTION_STATUS.DISCONNECTED,
         )
+        expect(game.isPlaying()).toBeTruthy()
+        expect(game.isRoundOver()).toBeTruthy()
+        expect(game.roundNumber).toBe(1)
+        expect(game.players.length).toBe(3)
+      })
+
+      updateGameSpy.mockImplementationOnce(async (game: Skyjo) => {
         expect(game.isPlaying()).toBeTruthy()
         expect(game.isRoundTurningCards()).toBeTruthy()
         expect(game.roundNumber).toBe(2)

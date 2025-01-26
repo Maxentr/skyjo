@@ -4,8 +4,6 @@ import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import {
   Constants as CoreConstants,
   type CreatePlayer,
-  type GameStatus,
-  type RoundPhase,
   Skyjo,
   SkyjoPlayer,
   SkyjoSettings,
@@ -447,7 +445,6 @@ describe("LobbyService", () => {
         service.onUpdateSettings(socket, newSettings),
       ).toThrowCErrorWithCode(ErrorConstants.ERROR.NOT_ALLOWED)
 
-      console.log(game.settings.toJson())
       expect(socket.emit).not.toHaveBeenCalled()
     })
 

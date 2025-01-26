@@ -5,10 +5,12 @@ import {
   type SkyjoPlayerToJson,
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
+import { type SkyjoOperation } from "@skyjo/state-operations"
 import { RedisClient } from "./client.js"
-
 export class GameRepository extends RedisClient {
-  private static readonly GAME_PREFIX = "game:"
+  private static readonly GAME_PREFIX = "game"
+  private static readonly GAME_STATE_PREFIX = "state"
+  private static readonly GAME_LATEST_STATE_SUFFIX = "latest"
   private static readonly GAME_TTL = 60 * 10 // 10 minutes
   private static readonly PUBLIC_GAME_IN_LOBBY_TTL = 60 * 4 // 4 minutes
   private static readonly PUBLIC_GAMES_SORTED_SET = "public_games"
@@ -28,7 +30,6 @@ export class GameRepository extends RedisClient {
   async getPublicGames(nbPerPage: number, page: number) {
     const client = await RedisClient.getClient()
 
-    // all games with at least 1 players
     const minScore = -Infinity
     const maxScore = Infinity
 
@@ -68,7 +69,7 @@ export class GameRepository extends RedisClient {
 
   async getGame(code: string = "", logError = true) {
     const client = await RedisClient.getClient()
-    const key = this.getGameKey(code)
+    const key = this.getGameLatestStateKey(code)
 
     const game = (await client.json.get(key)) as SkyjoDbFormat | null
     if (!game) {
@@ -86,7 +87,7 @@ export class GameRepository extends RedisClient {
   async canReconnectPlayer(gameCode: string, playerId: string) {
     const client = await RedisClient.getClient()
 
-    const key = this.getGameKey(gameCode)
+    const key = this.getGameLatestStateKey(gameCode)
     const player = await client.json.get(key, {
       // and connectionStatus is not DISCONNECTED
       path: `$.players[?(@.id == '${playerId}' && @.connectionStatus != '${CoreConstants.CONNECTION_STATUS.DISCONNECTED}')]`,
@@ -95,7 +96,9 @@ export class GameRepository extends RedisClient {
     return player !== null
   }
 
-  async updateGame(game: Skyjo) {
+  async updateGame(game: Skyjo, operation?: SkyjoOperation) {
+    if (operation) await this.addGameState(game, operation)
+
     await this.setGame(game)
 
     if (!game.settings.private) await this.updateInPublicGames(game)
@@ -104,7 +107,7 @@ export class GameRepository extends RedisClient {
   async updatePlayer(gameCode: string, player: SkyjoPlayerToJson) {
     const client = await RedisClient.getClient()
 
-    const key = this.getGameKey(gameCode)
+    const key = this.getGameLatestStateKey(gameCode)
     await client.json.set(key, `$.players[?(@.id == '${player.id}')]`, player)
   }
 
@@ -115,7 +118,7 @@ export class GameRepository extends RedisClient {
   ): Promise<void> {
     const client = await RedisClient.getClient()
 
-    const key = this.getGameKey(gameCode)
+    const key = this.getGameLatestStateKey(gameCode)
     await client.json.set(
       key,
       `$.players[?(@.id == '${playerId}')].socketId`,
@@ -124,27 +127,47 @@ export class GameRepository extends RedisClient {
   }
 
   async removeGame(code: string): Promise<void> {
-    const client = await RedisClient.getClient()
-
-    const removeGameJson = client.del(this.getGameKey(code))
-    const removeFromPublicGames = this.removeFromPublicGames(code)
-
-    await Promise.all([removeGameJson, removeFromPublicGames])
+    await this.removeFromPublicGames(code)
+    await this.deleteGame(code)
   }
 
   async removePlayer(gameCode: string, playerId: string): Promise<void> {
     const client = await RedisClient.getClient()
 
-    const key = this.getGameKey(gameCode)
+    const key = this.getGameLatestStateKey(gameCode)
     await client.json.del(key, `$.players[?(@.id == '${playerId}')]`)
 
     const game = await this.getGame(gameCode)
     if (!game.settings.private) await this.updateInPublicGames(game)
   }
 
+  //#region state
+  async getGameStates(
+    gameCode: string,
+    fromStateVersion: number,
+    toStateVersion: number,
+  ): Promise<SkyjoOperation[]> {
+    const client = await RedisClient.getClient()
+
+    const states: SkyjoOperation[] = []
+
+    for (let i = fromStateVersion; i <= toStateVersion; i++) {
+      const key = this.getGameStateKey(gameCode, i)
+      const state = await client.json.get(key)
+      states.push(state as SkyjoOperation)
+    }
+
+    return states
+  }
+  //#endregion
+
   //#region private methods
-  private getGameKey(code: string): string {
-    return `${GameRepository.GAME_PREFIX}${code}`
+  private getGameLatestStateKey(code: string): string {
+    return `${GameRepository.GAME_PREFIX}:${code}:${GameRepository.GAME_LATEST_STATE_SUFFIX}`
+  }
+
+  private getGameStateKey(code: string, stateVersion: number | "*"): string {
+    return `${GameRepository.GAME_PREFIX}:${code}:${GameRepository.GAME_STATE_PREFIX}:${stateVersion}`
   }
 
   private deserializeGame(game: SkyjoDbFormat): Skyjo {
@@ -157,7 +180,7 @@ export class GameRepository extends RedisClient {
   private async setGame(game: Skyjo) {
     const client = await RedisClient.getClient()
 
-    const key = this.getGameKey(game.code)
+    const key = this.getGameLatestStateKey(game.code)
     const json = game.serializeGame()
 
     await client.json.set(key, "$", json)
@@ -167,7 +190,7 @@ export class GameRepository extends RedisClient {
         ? GameRepository.PUBLIC_GAME_IN_LOBBY_TTL
         : GameRepository.GAME_TTL
 
-    await client.expire(this.getGameKey(game.code), ttl)
+    await client.expire(this.getGameLatestStateKey(game.code), ttl)
   }
 
   //#region public games
@@ -198,6 +221,22 @@ export class GameRepository extends RedisClient {
     await client.zRem(GameRepository.PUBLIC_GAMES_SORTED_SET, code)
   }
   //#endregion
+
+  private async addGameState(game: Skyjo, operation: SkyjoOperation) {
+    const client = await RedisClient.getClient()
+
+    const key = this.getGameStateKey(game.code, game.stateVersion)
+    await client.json.set(key, "$", operation)
+  }
+
+  private async deleteGame(gameCode: string) {
+    const client = await RedisClient.getClient()
+
+    const gameKeys = await client.keys(
+      `${GameRepository.GAME_PREFIX}:${gameCode}:*`,
+    )
+    await client.del(gameKeys)
+  }
 
   //#endregion
 }

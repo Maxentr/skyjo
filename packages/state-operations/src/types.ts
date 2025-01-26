@@ -6,7 +6,7 @@ import type {
 
 export type SkyjoUpdate = Omit<Partial<SkyjoToJson>, "settings" | "players">
 
-export interface PlayerUpdate extends Partial<SkyjoPlayerToJson> {
+export type PlayerUpdate = Partial<SkyjoPlayerToJson> & {
   id: string
 }
 export type SkyjoOperation = Partial<{

@@ -12,9 +12,11 @@ import {
   SkyjoPlayerToJson,
   SkyjoToJson,
 } from "@skyjo/core"
-import type { SkyjoOperation } from "@skyjo/shared/types"
-import { applyOperations } from "@skyjo/shared/utils"
 import { UpdateGameSettings, UpdateMaxPlayers } from "@skyjo/shared/validations"
+import {
+  type SkyjoOperation,
+  applyStateOperations,
+} from "@skyjo/state-operations"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 import {
@@ -134,10 +136,26 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
     setGame((prev) => {
       if (!prev) return prev
       const prevState = structuredClone(prev)
-      const newState = applyOperations(prevState, operations)
+      const newState = applyStateOperations(prevState, operations)
       return newState
     })
   }
+
+  const onGameFix = (operations: SkyjoOperation[]) => {
+    console.log("onGameFix", operations)
+    setGame((prev) => {
+      if (!prev) return prev
+
+      let newState = structuredClone(prev)
+
+      for (const operation of operations) {
+        newState = applyStateOperations(newState, operation)
+      }
+
+      return newState
+    })
+  }
+
   const onLeave = () => {
     setGame(undefined)
     setChat([])
@@ -159,11 +177,13 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
   const initGameListeners = () => {
     socket!.on("game", onGameReceive)
     socket!.on("game:update", onGameUpdate)
+    socket!.on("game:fix", onGameFix)
   }
 
   const destroyGameListeners = () => {
     socket!.off("game", onGameReceive)
     socket!.off("game:update", onGameUpdate)
+    socket!.off("game:fix", onGameFix)
   }
   //#endregion
 

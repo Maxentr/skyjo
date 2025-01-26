@@ -3,11 +3,7 @@ import type {
   SkyjoSettingsToJson,
   SkyjoToJson,
 } from "@skyjo/core"
-import type {
-  PlayerUpdate,
-  SkyjoOperation,
-  SkyjoUpdate,
-} from "../types/operation.js"
+import type { PlayerUpdate, SkyjoOperation, SkyjoUpdate } from "./types.js"
 
 const actions: Record<
   keyof SkyjoOperation,
@@ -21,7 +17,7 @@ const actions: Record<
   removePlayers: (game, data) => removePlayers(game, data as string[]),
 }
 
-export const applyOperations = (
+export const applyStateOperations = (
   game: SkyjoToJson,
   operations: SkyjoOperation,
 ): SkyjoToJson => {
