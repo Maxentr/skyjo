@@ -92,7 +92,7 @@
         "private": {
           "tooltip": {
             "on": "Cette partie est privée, seuls les personnes ayant le lien peuvent rejoindre",
-            "off": "Cette partie est publique, n'importe qui peut rejoindre après la validation des paramètres"
+            "off": "Cette partie est publique, n'importe qui peut la rejoindre après la validation des paramètres"
           }
         },
         "reset-settings": "Réinitialiser les paramètres",
