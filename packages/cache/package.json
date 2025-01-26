@@ -1,7 +1,7 @@
 {
   "name": "@skyjo/cache",
   "description": "Used to cache game in Redis",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "type": "module",
   "exports": {
     ".": "./dist/src/index.js",

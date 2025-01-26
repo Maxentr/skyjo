@@ -1,7 +1,7 @@
 {
   "name": "@skyjo/state-operations",
   "description": "A package to handle game state operations",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "type": "module",
   "exports": {
     ".": "./dist/src/index.js",
