@@ -23,7 +23,7 @@ export const createStateOperations = (
   if (settingsChanges) ops.settings = settingsChanges
 
   const playerOps = createPlayerOperations(oldState, newState)
-  if (Object.keys(playerOps).length > 0) ops = { ...ops, ...playerOps }
+  if (playerOps) ops = { ...ops, ...playerOps }
 
   if (Object.keys(ops).length > 0) {
     newState.stateVersion++
@@ -50,7 +50,13 @@ const compareBasicFields = (
     }
   })
 
-  if (Object.keys(gameChanges).length > 0) {
+  const gameChangesKeys = Object.keys(gameChanges)
+
+  const hasGameChanges = gameChangesKeys.length > 0
+  const onlyUpdatedAtChange =
+    gameChangesKeys.length === 1 && gameChangesKeys[0] === "updatedAt"
+
+  if (hasGameChanges && !onlyUpdatedAtChange) {
     return gameChanges
   }
 }
@@ -82,7 +88,7 @@ const compareSettings = (
 const createPlayerOperations = (
   oldState: SkyjoToJson,
   newState: SkyjoToJson,
-): Omit<SkyjoOperation, "game" | "settings"> => {
+): Omit<SkyjoOperation, "game" | "settings"> | undefined => {
   const ops: Omit<SkyjoOperation, "game" | "settings"> = {}
 
   oldState.players.forEach((oldPlayer) => {
@@ -105,7 +111,7 @@ const createPlayerOperations = (
     ops.addPlayers.push(newPlayer)
   })
 
-  return ops
+  if (Object.keys(ops).length > 0) return ops
 }
 
 const comparePlayer = (
