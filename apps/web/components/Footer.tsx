@@ -46,15 +46,26 @@ const Footer = () => {
           >
             {t("buy-game")}
           </Link>
-          <Link href="https://github.com/Maxentr" target="_blank">
-            <Image
-              src="/svg/github.svg"
-              width={24}
-              height={24}
-              alt="github.com/Maxentr"
-              className="dark:invert"
-            />
-          </Link>
+          <div className="flex flex-row items-center gap-4">
+            <Link href="https://discord.gg/qKsaXebPyx" target="_blank">
+              <Image
+                src="/svg/discord.svg"
+                width={24}
+                height={24}
+                alt="Discord server invite icon"
+                className="dark:invert"
+              />
+            </Link>
+            <Link href="https://github.com/Maxentr" target="_blank">
+              <Image
+                src="/svg/github.svg"
+                width={24}
+                height={24}
+                alt="github.com/Maxentr"
+                className="dark:invert"
+              />
+            </Link>
+          </div>
         </div>
       </div>
       <div className="container flex flex-col gap-2">

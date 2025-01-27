@@ -58,6 +58,19 @@ const IndexServerPage = (props: IndexServerPageProps) => {
           <div className="hidden mdh:sm:flex absolute bottom-6 left-6 right-6 z-10 items-center justify-center">
             <MovingArrow href="#explanation" />
           </div>
+          <Link
+            href="https://discord.gg/qKsaXebPyx"
+            target="_blank"
+            className="absolute bottom-6 left-6 z-10"
+          >
+            <Image
+              src="/svg/discord.svg"
+              width={24}
+              height={24}
+              alt="Discord server invite icon"
+              className="dark:invert"
+            />
+          </Link>
           {process.env.npm_package_version && (
             <Link
               href="https://github.com/maxentr/skyjo/releases/latest"
