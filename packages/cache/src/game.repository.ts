@@ -11,6 +11,8 @@ export class GameRepository extends RedisClient {
   private static readonly GAME_PREFIX = "game"
   private static readonly GAME_STATE_PREFIX = "state"
   private static readonly GAME_LATEST_STATE_SUFFIX = "latest"
+
+  private static readonly GAME_STATE_TTL = 60 * 15 // 15 minutes
   private static readonly GAME_TTL = 60 * 10 // 10 minutes
   private static readonly PUBLIC_GAME_IN_LOBBY_TTL = 60 * 4 // 4 minutes
   private static readonly PUBLIC_GAMES_SORTED_SET = "public_games"
@@ -190,7 +192,7 @@ export class GameRepository extends RedisClient {
         ? GameRepository.PUBLIC_GAME_IN_LOBBY_TTL
         : GameRepository.GAME_TTL
 
-    await client.expire(this.getGameLatestStateKey(game.code), ttl)
+    await client.expire(key, ttl)
   }
 
   //#region public games
@@ -227,15 +229,18 @@ export class GameRepository extends RedisClient {
 
     const key = this.getGameStateKey(game.code, game.stateVersion)
     await client.json.set(key, "$", operation)
+    await client.expire(key, GameRepository.GAME_STATE_TTL)
   }
 
   private async deleteGame(gameCode: string) {
     const client = await RedisClient.getClient()
 
-    const gameKeys = await client.keys(
-      `${GameRepository.GAME_PREFIX}:${gameCode}:*`,
-    )
-    await client.del(gameKeys)
+    do {
+      const gameKeys = await client.keys(
+        `${GameRepository.GAME_PREFIX}:${gameCode}:*`,
+      )
+      await client.del(gameKeys)
+    } while (await client.keys(`${GameRepository.GAME_PREFIX}:${gameCode}:*`))
   }
 
   //#endregion
