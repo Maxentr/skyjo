@@ -175,7 +175,7 @@
         "title": "Privacy Policy",
         "last-update": {
           "text": "Last updated: {date}",
-          "date-format": "DD MMMM YYYY at HH:mm"
+          "date-format": "YYYY-MM-DD - hh:mmA"
         },
         "information-we-collect": {
           "title": "Information We Collect",
@@ -189,11 +189,7 @@
             "description": "We temporarily store:",
             "items": "Usernames and avatar choices;;Game elements and progress"
           },
-          "user-provided-information": {
-            "title": "User-Provided Information",
-            "description": "We collect:",
-            "items": "Feedback form submissions (including optional email addresses)"
-          },
+
           "local-storage-data": {
             "title": "Local Storage Data",
             "description": "We store in your browser's local storage:",
@@ -202,11 +198,11 @@
         },
         "how-we-use-your-information": {
           "title": "How We Use Your Information",
-          "items": "Improve our website and user experience;;Analyze usage patterns and performance;;Respond to feedback and support requests;;Facilitate gameplay"
+          "items": "Improve our website and user experience;;Analyze usage patterns and performance;;Facilitate gameplay"
         },
         "data-storage-and-retention": {
           "title": "Data Storage and Retention",
-          "items": "Anonymous usage data is stored on servers within the European Union and retained for up to 1 year;;Game data is stored in our database located in Frankfurt, Germany. This data is kept for the duration of active games. Once all players leave a game, the associated data is deleted;;Information stored in your browser's local storage remains there until you clear your browser data;;Feedback form submissions are retained only for the purpose of responding and considering suggestions for development"
+          "items": "Anonymous usage data is stored on servers within the European Union and retained for up to 1 year;;Game data is stored in our database located in Frankfurt, Germany. This data is kept for the duration of active games. Once all players leave a game, the associated data is deleted;;Information stored in your browser's local storage remains there until you clear your browser data"
         },
         "data-sharing": {
           "title": "Data Sharing",
@@ -215,7 +211,7 @@
         "your-rights-and-choices": {
           "title": "Your Rights and Choices",
           "description": "Given that we collect primarily anonymous data, we cannot identify or access personal information specific to any individual user. However, you have the following rights and choices:",
-          "items": "Local Storage: You can clear your browser's local storage at any time to remove saved preferences;;Feedback: If you've submitted feedback with an email address, you can contact us to request its deletion;;Analytics Opt-Out: You can opt-out of analytics data collection by enabling your browser's \"Do Not Track\" setting or using privacy-focused browsers that block analytics scripts;;Game Data: Game-related data is automatically deleted when all players leave a game"
+          "items": "Local Storage: You can clear your browser's local storage at any time to remove saved preferences;;Analytics Opt-Out: You can opt-out of analytics data collection by enabling your browser's \"Do Not Track\" setting or using privacy-focused browsers that block analytics scripts;;Game Data: Game-related data is automatically deleted when all players leave a game"
         },
         "childrens-privacy": {
           "title": "Children's Privacy",
@@ -227,7 +223,7 @@
         },
         "contact-us": {
           "title": "Contact Us",
-          "description": "If you have any questions about this Privacy Policy, please contact us through our feedback form on the website."
+          "description": "If you have any questions about this Privacy Policy, please contact us through our Discord server or GitHub."
         }
       }
     },
@@ -262,28 +258,6 @@
     "ChatMessageList": {
       "unread-messages": "{count} unread message{count, plural, =1 {} other {s}}"
     },
-    "Feedback": {
-      "title": "Leave a feedback",
-      "description": "You can write a feedback to help us improve the game.",
-      "toast": {
-        "success": {
-          "title": "Thank you for your feedback!",
-          "description": "Your insights have helped us enhance our game website, and we are truly grateful."
-        },
-        "error": {
-          "title": "An error occurred, please try again."
-        }
-      },
-      "email-input": {
-        "label": "Your email (optional)",
-        "placeholder": "example@example.com"
-      },
-      "message-input": {
-        "label": "Your message",
-        "placeholder": "Tell us what you think, note or want to…"
-      },
-      "button-title": "Send"
-    },
     "CopyLink": {
       "message": "Link copied!",
       "button-title": "Copy link"
@@ -300,7 +274,6 @@
       "description": "The next round will start in few seconds…"
     },
     "Footer": {
-      "feedback": "Leave a feedback",
       "buy-game": "Buy the game",
       "explanation": "What is Skyjo?",
       "rules": "Game rules",
@@ -367,7 +340,7 @@
         "aria-label": "Menu"
       },
       "rules": "Rules",
-      "feedback": "Leave a feedback",
+      "discord": "Discord",
       "settings": "Settings"
     },
     "OpponentBoard": {

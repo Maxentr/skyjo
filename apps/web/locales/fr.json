@@ -175,7 +175,7 @@
         "title": "Politique de Confidentialité",
         "last-update": {
           "text": "Dernière mise à jour : {date}",
-          "date-format": "DD MMMM YYYY à HH:mm"
+          "date-format": "DD/MM/YYYY - HH:mm"
         },
         "information-we-collect": {
           "title": "Informations que nous collectons",
@@ -189,11 +189,6 @@
             "description": "Nous stockons temporairement :",
             "items": "Noms d'utilisateur et choix d'avatar;;Éléments et progression du jeu"
           },
-          "user-provided-information": {
-            "title": "Informations fournies par l'utilisateur",
-            "description": "Nous collectons :",
-            "items": "Soumissions du formulaire de feedback (y compris les adresses e-mail optionnelles)"
-          },
           "local-storage-data": {
             "title": "Données de stockage local",
             "description": "Nous stockons dans le stockage local de votre navigateur :",
@@ -202,11 +197,11 @@
         },
         "how-we-use-your-information": {
           "title": "Comment nous utilisons vos informations",
-          "items": "Améliorer notre site web et l'expérience utilisateur;;Analyser les modèles d'utilisation et les performances;;Répondre aux feedbacks et aux demandes de support;;Faciliter le déroulement du jeu"
+          "items": "Améliorer notre site web et l'expérience utilisateur;;Analyser les modèles d'utilisation et les performances"
         },
         "data-storage-and-retention": {
           "title": "Stockage et conservation des données",
-          "items": "Les données d'utilisation anonymes sont stockées sur des serveurs au sein de l'Union européenne et conservées pendant un maximum d'un an;;Les données de jeu sont stockées dans notre base de données situées à Francfort, Allemagne. Ces données sont conservées pendant la durée des parties actives. Une fois que tous les joueurs quittent une partie, les données associées sont supprimées;;Les informations stockées dans le stockage local de votre navigateur y restent jusqu'à ce que vous effaciez les données de votre navigateur;;Les soumissions du formulaire de feedback ne sont conservées que dans le but de répondre et d'examiner les suggestions de développement"
+          "items": "Les données d'utilisation anonymes sont stockées sur des serveurs au sein de l'Union européenne et conservées pendant un maximum d'un an;;Les données de jeu sont stockées dans notre base de données situées à Francfort, Allemagne. Ces données sont conservées pendant la durée des parties actives. Une fois que tous les joueurs quittent une partie, les données associées sont supprimées;;Les informations stockées dans le stockage local de votre navigateur y restent jusqu'à ce que vous effaciez les données de votre navigateur"
         },
         "data-sharing": {
           "title": "Partage des données",
@@ -215,7 +210,7 @@
         "your-rights-and-choices": {
           "title": "Vos droits et choix",
           "description": "Étant donné que nous collectons principalement des données anonymes, nous ne pouvons pas identifier ou accéder à des informations personnelles spécifiques à un utilisateur individuel. Cependant, vous disposez des droits et choix suivants :",
-          "items": "Local storage : Vous pouvez effacer le stockage local de votre navigateur à tout moment pour supprimer les préférences enregistrées;;Feedback : Si vous avez soumis un feedback avec une adresse e-mail, vous pouvez nous contacter pour demander sa suppression;;Désactivation des analyses : Vous pouvez désactiver la collecte de données d'analyse en activant le paramètre \"Ne pas suivre\" de votre navigateur ou en utilisant des navigateurs axés sur la confidentialité qui bloquent les scripts d'analyse;;Données de jeu : Les données relatives au jeu sont automatiquement supprimées lorsque tous les joueurs quittent une partie"
+          "items": "Local storage : Vous pouvez effacer le stockage local de votre navigateur à tout moment pour supprimer les préférences enregistrées;;Désactivation des analyses : Vous pouvez désactiver la collecte de données d'analyse en activant le paramètre \"Ne pas suivre\" de votre navigateur ou en utilisant des navigateurs axés sur la confidentialité qui bloquent les scripts d'analyse;;Données de jeu : Les données relatives au jeu sont automatiquement supprimées lorsque tous les joueurs quittent une partie"
         },
         "childrens-privacy": {
           "title": "Confidentialité des enfants",
@@ -227,7 +222,7 @@
         },
         "contact-us": {
           "title": "Nous contacter",
-          "description": "Si vous avez des questions concernant cette politique de confidentialité, veuillez nous contacter via le formulaire de feedback sur le site web."
+          "description": "Si vous avez des questions concernant cette politique de confidentialité, veuillez nous contacter via le serveur Discord du jeu ou via GitHub."
         }
       }
     },
@@ -257,28 +252,6 @@
     "ChatMessageList": {
       "unread-messages": "{count} message{count, plural, =1 {} other {s}} non lu{count, plural, =1 {} other {s}}"
     },
-    "Feedback": {
-      "title": "Laisser un commentaire",
-      "description": "Vous pouvez écrire un commentaire pour nous aider à améliorer le jeu.",
-      "toast": {
-        "success": {
-          "title": "Merci de nous avoir fait part de vos commentaires !",
-          "description": "Vos commentaires nous ont aidés à améliorer notre site web sur les jeux, et nous vous en sommes très reconnaissants."
-        },
-        "error": {
-          "title": "Une erreur est survenue, veuillez réessayer."
-        }
-      },
-      "email-input": {
-        "label": "Votre email (facultatif)",
-        "placeholder": "exemple@exemple.fr"
-      },
-      "message-input": {
-        "label": "Votre message",
-        "placeholder": "Dites-nous ce que vous pensez, remarquez ou souhaitez…"
-      },
-      "button-title": "Envoyer"
-    },
     "CopyLink": {
       "message": "Lien copié !",
       "button-title": "Copier le lien"
@@ -295,7 +268,6 @@
       "description": "La manche suivante va commencer dans quelques secondes…"
     },
     "Footer": {
-      "feedback": "Laisser un commentaire",
       "buy-game": "Acheter le jeu",
       "explanation": "Qu'est-ce que Skyjo ?",
       "rules": "Règles du jeu",
@@ -362,7 +334,7 @@
         "aria-label": "Menu"
       },
       "rules": "Règles",
-      "feedback": "Laisser un commentaire",
+      "discord": "Discord",
       "settings": "Paramètres"
     },
     "OpponentBoard": {

@@ -1,7 +1,6 @@
 "use client"
 
 import { Toaster } from "@/components/ui/toaster"
-import FeedbackProvider from "@/contexts/FeedbackContext"
 import RulesProvider from "@/contexts/RulesContext"
 import SettingsProvider from "@/contexts/SettingsContext"
 import UserProvider from "@/contexts/UserContext"
@@ -36,20 +35,16 @@ const Providers = ({ children, locale }: ProvidersProps) => {
   return (
     <PostHogProvider client={posthog}>
       <QueryClientProvider client={queryClient}>
-        <FeedbackProvider>
-          <RulesProvider>
-            <SettingsProvider locale={locale}>
-              <FeedbackProvider>
-                <UserProvider>
-                  <LazyMotion strict features={domAnimation}>
-                    {children}
-                  </LazyMotion>
-                </UserProvider>
-                <Toaster />
-              </FeedbackProvider>
-            </SettingsProvider>
-          </RulesProvider>
-        </FeedbackProvider>
+        <RulesProvider>
+          <SettingsProvider locale={locale}>
+            <UserProvider>
+              <LazyMotion strict features={domAnimation}>
+                {children}
+              </LazyMotion>
+            </UserProvider>
+            <Toaster />
+          </SettingsProvider>
+        </RulesProvider>
         <Toaster />
       </QueryClientProvider>
     </PostHogProvider>

@@ -1,4 +1,3 @@
-import { FooterFeedbackLink } from "@/components/FooterFeedbackLink"
 import { FooterRulesLink } from "@/components/FooterRulesLink"
 import { Link } from "@/i18n/routing"
 import { useTranslations } from "next-intl"
@@ -11,7 +10,6 @@ const Footer = () => {
     <footer className="w-full flex flex-col gap-8 border-t-2 border-black dark:border-dark-border bg-container dark:bg-dark-container py-8">
       <div className="container grid grid-cols-1 md:grid-cols-3 grid-flow-row gap-8">
         <div className="flex flex-col justify-center items-center md:items-start gap-3 md:gap-4">
-          <FooterFeedbackLink text={t("feedback")} />
           <Link
             href="/#explanation"
             className="text-black dark:text-dark-font underline"

@@ -23,7 +23,6 @@
     "@skyjo/shared": "workspace:*",
     "@skyjo/state-operations": "workspace:*",
     "hono": "^4.6.12",
-    "nodemailer": "^6.9.16",
     "rate-limiter-flexible": "^5.0.4",
     "socket.io": "^4.8.1",
     "socket.io-msgpack-parser": "^3.0.2",
