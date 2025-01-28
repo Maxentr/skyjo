@@ -202,7 +202,7 @@ export abstract class BaseService {
         game,
         stateManager,
       })
-      await this.redis.removeGame(game.code)
+      this.removeGame(game)
       return
     }
 
@@ -222,5 +222,9 @@ export abstract class BaseService {
       game,
       stateManager,
     })
+  }
+
+  protected async removeGame(game: Skyjo) {
+    this.redis.removeGame(game.code)
   }
 }

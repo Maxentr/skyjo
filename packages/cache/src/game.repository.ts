@@ -234,13 +234,18 @@ export class GameRepository extends RedisClient {
 
   private async deleteGame(gameCode: string) {
     const client = await RedisClient.getClient()
+    const keys = []
 
-    do {
-      const gameKeys = await client.keys(
-        `${GameRepository.GAME_PREFIX}:${gameCode}:*`,
-      )
-      await client.del(gameKeys)
-    } while (await client.keys(`${GameRepository.GAME_PREFIX}:${gameCode}:*`))
+    for await (const key of client.scanIterator({
+      MATCH: `${GameRepository.GAME_PREFIX}:${gameCode}:*`,
+      COUNT: 100,
+    })) {
+      keys.push(key)
+    }
+
+    if (keys.length > 0) {
+      await client.unlink(keys)
+    }
   }
 
   //#endregion
