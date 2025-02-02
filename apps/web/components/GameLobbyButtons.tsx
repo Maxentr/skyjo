@@ -1,13 +1,13 @@
 "use client"
 
-import { CreateGameButton } from "@/components/CreateGameButton"
-import { FindPublicGameButton } from "@/components/FindPublicGameButton"
-import { JoinGameButton } from "@/components/JoinGameButton"
-import { ReconnectGameButton } from "@/components/ReconnectGameButton"
+import { Button } from "@/components/ui/button"
 import { useSocket } from "@/contexts/SocketContext"
-import { usePathname, useRouter } from "@/i18n/routing"
-import { useSearchParams } from "next/navigation"
+import { useUser } from "@/contexts/UserContext"
+import { useRouter } from "@/i18n/routing"
+import { getLastGameIfPossible } from "@/utils/reconnection"
+import { useTranslations } from "next-intl"
 import { useState } from "react"
+
 type GameLobbyButtonsProps = {
   gameCode?: string
   hideReconnectButton?: boolean
@@ -17,52 +17,102 @@ const GameLobbyButtons = ({
   gameCode,
   hideReconnectButton = false,
 }: GameLobbyButtonsProps) => {
-  const hasGameCode = !!gameCode
-  const { getLastGameIfPossible } = useSocket()
+  const { reconnectGame, joinGame } = useSocket()
+  const { getUser, username, saveUserInLocalStorage } = useUser()
+  const t = useTranslations("components.GameLobbyButtons")
   const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
+
+  const hasGameCode = !!gameCode
 
   const [loading, setLoading] = useState<boolean>(false)
 
   const lastGame = getLastGameIfPossible()
 
-  const onJoinGameError = () => {
-    let route = `${pathname}`
-    if (searchParams.has("gameCode")) {
-      const nextSearchParams = new URLSearchParams(searchParams.toString())
-      nextSearchParams.delete("gameCode")
-      route += `?${nextSearchParams}`
+  const errorCallback = () => setLoading(false)
+
+  const handleReconnection = async () => {
+    if (!lastGame) {
+      setLoading(false)
+      return
     }
 
-    router.replace(route)
+    reconnectGame(lastGame, errorCallback)
+  }
+
+  const handleJoiningGame = async () => {
+    const player = getUser()
+
+    joinGame(player, gameCode!, errorCallback)
+  }
+
+  const handleFindingGame = async () => {
+    saveUserInLocalStorage()
+    router.replace("/search")
+  }
+
+  const handleGameCreation = async () => {
+    saveUserInLocalStorage()
+    router.replace("/create?private=true")
+  }
+
+  const actions = {
+    "reconnect-game": handleReconnection,
+    "join-game": handleJoiningGame,
+    "find-game": handleFindingGame,
+    "create-game": handleGameCreation,
+  }
+
+  const handleAction = (action: keyof typeof actions) => {
+    setLoading(true)
+    Howler.ctx.resume()
+
+    actions[action]()
   }
 
   return (
     <div className="flex flex-col gap-2 mt-6">
-      {!hideReconnectButton && (
-        <ReconnectGameButton loading={loading} setLoading={setLoading} />
+      {!hideReconnectButton && lastGame && (
+        <Button
+          onClick={() => handleAction("reconnect-game")}
+          color="secondary"
+          className="w-full mb-4"
+          disabled={!username}
+          loading={loading}
+          title={t("reconnect-game-button")}
+        >
+          {t("reconnect-game-button")}
+        </Button>
       )}
       {hasGameCode && !lastGame && (
-        <JoinGameButton
-          gameCode={gameCode}
-          loading={loading}
-          setLoading={setLoading}
+        <Button
+          onClick={() => handleAction("join-game")}
+          color="secondary"
+          disabled={!username}
           className="w-full mb-4"
-          onError={onJoinGameError}
-        />
+          loading={loading}
+          title={t("join-game-button")}
+        >
+          {t("join-game-button")}
+        </Button>
       )}
-      <FindPublicGameButton
-        loading={loading}
-        setLoading={setLoading}
+      <Button
+        onClick={() => handleAction("find-game")}
         className="w-full"
-      />
-      <CreateGameButton
-        type="private"
         loading={loading}
-        setLoading={setLoading}
+        disabled={!username}
+        title={t("find-game-button")}
+      >
+        {t("find-game-button")}
+      </Button>
+      <Button
+        onClick={handleGameCreation}
         className="w-full"
-      />
+        disabled={!username}
+        loading={loading}
+        title={t("create-game-button", { type: "private" })}
+      >
+        {t("create-game-button", { type: "private" })}
+      </Button>
     </div>
   )
 }

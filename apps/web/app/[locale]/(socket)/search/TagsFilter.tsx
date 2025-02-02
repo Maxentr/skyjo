@@ -1,4 +1,3 @@
-import { GameTag } from "@/app/[locale]/(socket)/search/GameTag"
 import {
   Popover,
   PopoverContent,
@@ -8,6 +7,7 @@ import { PublicGameTag } from "@skyjo/shared/types"
 import { AnimatePresence } from "framer-motion"
 import { PlusCircleIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { GameTag } from "./GameTag"
 
 const allTags: PublicGameTag[] = [
   "classic",

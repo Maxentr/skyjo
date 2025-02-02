@@ -288,17 +288,11 @@
         "avatars": "Avatars created by Freepik - Flaticon"
       }
     },
-    "ReconnectGameButton": {
-      "button": "Reconnect to the game"
-    },
-    "JoinGameButton": {
-      "button": "Join the game"
-    },
-    "FindPublicGameButton": {
-      "button": "Find a game"
-    },
-    "CreateGameButton": {
-      "button": "Create a {type, select, private {private} public {public} other {unknown}} game"
+    "GameLobbyButtons": {
+      "reconnect-game-button": "Reconnect to the game",
+      "join-game-button": "Join the game",
+      "find-game-button": "Find a game",
+      "create-game-button": "Create a {type, select, private {private} public {public} other {unknown}} game"
     },
     "GameRules": {
       "button-title": "Show game rules",

@@ -73,6 +73,9 @@
       },
       "loading-text": "Création de votre partie…"
     },
+    "Join": {
+      "loading-text": "Connexion à la partie en cours…"
+    },
     "Maintenance": {
       "title": "Site en maintenance",
       "description": "Nous sommes en ce moment en train de faire des mises à jour sur le site, veuillez réessayer plus tard.",
@@ -282,17 +285,11 @@
         "avatars": "Avatars créés par Freepik - Flaticon"
       }
     },
-    "ReconnectGameButton": {
-      "button": "Se reconnecter à la partie"
-    },
-    "JoinGameButton": {
-      "button": "Rejoindre la partie"
-    },
-    "FindPublicGameButton": {
-      "button": "Trouver une partie"
-    },
-    "CreateGameButton": {
-      "button": "Créer une partie {type, select, private {privée} public {publique} other {inconnue}}"
+    "GameLobbyButtons": {
+      "reconnect-game-button": "Se reconnecter à la partie",
+      "join-game-button": "Rejoindre la partie",
+      "find-game-button": "Trouver une partie",
+      "create-game-button": "Créer une partie {type, select, private {privée} public {publique} other {inconnue}}"
     },
     "GameRules": {
       "button-title": "Afficher les règles de la partie",

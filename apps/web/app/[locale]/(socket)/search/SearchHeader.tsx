@@ -45,7 +45,7 @@ export const SearchHeader = ({
         </button>
         <button
           className="size-6 text-black dark:text-dark-font disabled:opacity-50 cursor-pointer"
-          onClick={() => router.push("/create?private=false")}
+          onClick={() => router.replace("/create?private=false")}
           title={t("create-button.title")}
           disabled={buttonLoading}
         >

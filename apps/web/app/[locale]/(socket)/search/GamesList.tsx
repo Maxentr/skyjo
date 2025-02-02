@@ -1,4 +1,3 @@
-import { GameTag } from "@/app/[locale]/(socket)/search/GameTag"
 import { JoinGameButton } from "@/components/JoinGameButton"
 import { PublicGame, type PublicGameTag } from "@skyjo/shared/types"
 import { AnimatePresence, m } from "framer-motion"
@@ -6,6 +5,7 @@ import { Gamepad2Icon } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 import { Dispatch, Fragment, SetStateAction } from "react"
+import { GameTag } from "./GameTag"
 
 type GamesListProps = {
   games: PublicGame[] | undefined

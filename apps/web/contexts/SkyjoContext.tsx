@@ -7,6 +7,10 @@ import { useRouter } from "@/i18n/routing"
 import { getCurrentUser, getOpponents, isAdmin } from "@/lib/skyjo"
 import { Opponents } from "@/types/opponents"
 import {
+  addReconnectionDateToLastGame,
+  clearLastGame,
+} from "@/utils/reconnection"
+import {
   Constants as CoreConstants,
   PlayPickCard,
   SkyjoPlayerToJson,
@@ -62,7 +66,7 @@ interface SkyjoProviderProps extends PropsWithChildren {
 }
 
 const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
-  const { socket, addReconnectionDateToLastGame } = useSocket()
+  const { socket } = useSocket()
   const { sendMessage, setChat } = useChat()
   const router = useRouter()
   const { dismiss: dismissToast } = useToast()
@@ -104,13 +108,12 @@ const SkyjoProvider = ({ children, gameCode }: SkyjoProviderProps) => {
       if (!game?.status) return
 
       const inGame = game?.status === CoreConstants.GAME_STATUS.PLAYING
-      if (inGame) addReconnectionDateToLastGame()
-
-      const isGameInProgress =
-        game?.status !== CoreConstants.GAME_STATUS.FINISHED &&
-        game?.status !== CoreConstants.GAME_STATUS.STOPPED
-
-      if (isGameInProgress) event.preventDefault()
+      if (inGame) {
+        addReconnectionDateToLastGame()
+        event.preventDefault()
+      } else {
+        clearLastGame()
+      }
     }
 
     window.addEventListener("beforeunload", onUnload)

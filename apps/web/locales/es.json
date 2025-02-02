@@ -312,17 +312,11 @@
       },
       "title": "Ajustes"
     },
-    "ReconnectGameButton": {
-      "button": "Reconectar a la partida"
-    },
-    "JoinGameButton": {
-      "button": "Únirse a una partida"
-    },
-    "FindPublicGameButton": {
-      "button": "Encontrar una partida"
-    },
-    "CreateGameButton": {
-      "button": "Crear una partida {type, select, private {privada} public {pública} other {desconocida}}"
+    "GameLobbyButtons": {
+      "reconnect-game-button": "Reconectar a la partida",
+      "join-game-button": "Únirse a la partida",
+      "find-game-button": "Encontrar una partida",
+      "create-game-button": "Crear una partida {type, select, private {privada} public {pública} other {desconocida}}"
     },
     "Rules": {
       "round-start": {
