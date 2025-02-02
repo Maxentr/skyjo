@@ -73,9 +73,6 @@
       },
       "loading-text": "Création de votre partie…"
     },
-    "Join": {
-      "loading-text": "Connexion à la partie en cours…"
-    },
     "Maintenance": {
       "title": "Site en maintenance",
       "description": "Nous sommes en ce moment en train de faire des mises à jour sur le site, veuillez réessayer plus tard.",
