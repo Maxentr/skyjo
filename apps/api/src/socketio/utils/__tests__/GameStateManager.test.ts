@@ -99,8 +99,7 @@ describe("GameStateManager", () => {
         const player = game.players[0]
         player.score = 10
         player.name = "John"
-        player.connectionStatus =
-          CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
+        player.connectionStatus = CoreConstants.CONNECTION_STATUS.LOST
         player.cards = [[new SkyjoCard(1)], [new SkyjoCard(2)]]
 
         expect(manager.getChanges()).toEqual({
@@ -109,7 +108,7 @@ describe("GameStateManager", () => {
               id: player.id,
               score: 10,
               name: "John",
-              connectionStatus: CoreConstants.CONNECTION_STATUS.CONNECTION_LOST,
+              connectionStatus: CoreConstants.CONNECTION_STATUS.LOST,
               cards: player.cards.map((row) =>
                 row.map((card) => card.toJson()),
               ),

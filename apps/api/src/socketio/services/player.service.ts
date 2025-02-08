@@ -38,7 +38,7 @@ export class PlayerService extends BaseService {
       }
 
       player.connectionStatus = timeout
-        ? CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
+        ? CoreConstants.CONNECTION_STATUS.LOST
         : CoreConstants.CONNECTION_STATUS.LEAVE
 
       if (game.isAdmin(player.id)) game.changeAdmin()
@@ -165,7 +165,7 @@ export class PlayerService extends BaseService {
     callback: (...args: unknown[]) => Promise<void>,
   ) {
     player.connectionStatus = connectionLost
-      ? CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
+      ? CoreConstants.CONNECTION_STATUS.LOST
       : CoreConstants.CONNECTION_STATUS.LEAVE
 
     this.disconnectTimeouts[player.id] = setTimeout(

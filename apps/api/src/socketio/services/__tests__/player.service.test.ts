@@ -87,7 +87,7 @@ describe("PlayerService", () => {
       await service.onLeave(socket, true)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.CONNECTION_LOST,
+        CoreConstants.CONNECTION_STATUS.LOST,
       )
     })
 
@@ -578,7 +578,7 @@ describe("PlayerService", () => {
       await service.onLeave(socket, true)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.CONNECTION_LOST,
+        CoreConstants.CONNECTION_STATUS.LOST,
       )
 
       const lastGame: LastGame = {
@@ -679,7 +679,7 @@ describe("PlayerService", () => {
       opponent.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
       opponent2.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
 
-      player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
+      player.connectionStatus = CoreConstants.CONNECTION_STATUS.LOST
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
@@ -688,7 +688,7 @@ describe("PlayerService", () => {
       )
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.CONNECTION_LOST,
+        CoreConstants.CONNECTION_STATUS.LOST,
       )
     })
 
@@ -721,7 +721,7 @@ describe("PlayerService", () => {
       opponent.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
       opponent2.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
 
-      player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTION_LOST
+      player.connectionStatus = CoreConstants.CONNECTION_STATUS.LOST
       setTimeout(() => {
         service["updateGameAfterTimeoutExpired"](socket)
       }, 100000)

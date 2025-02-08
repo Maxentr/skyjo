@@ -57,7 +57,7 @@ const OpponentBoard = ({
           >
             {opponent.name}
             {opponent.connectionStatus ===
-              CoreConstants.CONNECTION_STATUS.CONNECTION_LOST && (
+              CoreConstants.CONNECTION_STATUS.LOST && (
               <TooltipProvider delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger className="relative">

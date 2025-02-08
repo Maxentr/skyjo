@@ -72,7 +72,7 @@ export class Constants {
 
   static readonly CONNECTION_STATUS = {
     CONNECTED: 1,
-    CONNECTION_LOST: 2,
+    LOST: 2,
     LEAVE: 3,
     DISCONNECTED: 4,
   } as const
