@@ -1,19 +1,11 @@
 import type { SkyjoSocket } from "@/socketio/types/skyjoSocket.js"
 import { GameStateManager } from "@/socketio/utils/GameStateManager.js"
-import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
-import {
-  Constants as CoreConstants,
-  type ServerMessageType,
-  type SkyjoPlayer,
-} from "@skyjo/core"
+import { Constants as CoreConstants } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
-import { Constants as SharedConstants } from "@skyjo/shared/constants"
 import type { LastGame } from "@skyjo/shared/validations"
 import { BaseService } from "./base.service.js"
 
 export class PlayerService extends BaseService {
-  private disconnectTimeouts: Record<string, NodeJS.Timeout> = {}
-
   async onConnectionLost(socket: SkyjoSocket) {
     const game = await this.redis.getGame(socket.data.gameCode)
     const player = game.getPlayerById(socket.data.playerId)
@@ -66,11 +58,7 @@ export class PlayerService extends BaseService {
 
       if (game.isAdmin(player.id)) game.changeAdmin()
 
-      if (game.isPlaying()) {
-        this.startDisconnectionTimeout(player, () =>
-          this.updateGameAfterTimeoutExpired(socket),
-        )
-      } else {
+      if (!game.isPlaying()) {
         game.removePlayer(player.id)
 
         game.restartGameIfAllPlayersWantReplay()
@@ -85,14 +73,7 @@ export class PlayerService extends BaseService {
         }
       }
 
-      let message: ServerMessageType
-
-      if (game.isPlaying()) {
-        message = CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT_CAN_RECONNECT
-      } else {
-        message = CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT
-      }
-
+      const message = CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT
       this.sendToRoom(socket, {
         room: game.code,
         event: "message:server",
@@ -150,9 +131,6 @@ export class PlayerService extends BaseService {
 
     const player = game.getPlayerById(reconnectData.playerId)!
 
-    clearTimeout(this.disconnectTimeouts[player.id])
-    delete this.disconnectTimeouts[player.id]
-
     const stateManager = new GameStateManager(game)
 
     player.socketId = socket.id
@@ -191,42 +169,4 @@ export class PlayerService extends BaseService {
       stateManager,
     })
   }
-
-  //#region private methods
-  private startDisconnectionTimeout(
-    player: SkyjoPlayer,
-    callback: (...args: unknown[]) => Promise<void>,
-  ) {
-    player.connectionStatus = CoreConstants.CONNECTION_STATUS.LEAVE
-
-    this.disconnectTimeouts[player.id] = setTimeout(
-      socketErrorWrapper(async () => {
-        await callback()
-      }),
-      SharedConstants.LEAVE_TIMEOUT_IN_MS,
-    )
-  }
-
-  private async updateGameAfterTimeoutExpired(socket: SkyjoSocket) {
-    const game = await this.redis.getGame(socket.data.gameCode)
-    const player = game.getPlayerById(socket.data.playerId)!
-
-    await this.handlePlayerDisconnection(socket, game, player)
-
-    const message =
-      CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_RECONNECTION_EXPIRED
-    this.sendToRoom(socket, {
-      room: game.code,
-      event: "message:server",
-      data: [
-        {
-          id: crypto.randomUUID(),
-          username: player.name,
-          message,
-          type: message,
-        },
-      ],
-    })
-  }
-  //#endregion
 }

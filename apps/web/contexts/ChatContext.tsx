@@ -4,7 +4,6 @@ import { useSettings } from "@/contexts/SettingsContext"
 import { useSocket } from "@/contexts/SocketContext"
 import { useUser } from "@/contexts/UserContext"
 import { Constants as CoreConstants, SystemMessageType } from "@skyjo/core"
-import { Constants as SharedConstants } from "@skyjo/shared/constants"
 import {
   ChatMessage,
   ServerChatMessage,
@@ -113,25 +112,11 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
       playerLeftSound.play()
     }
 
-    let messageContent: string
-
-    if (
-      message.type ===
-      CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT_CAN_RECONNECT
-    ) {
-      messageContent = t(message.message, {
-        username: message.username,
-        time: SharedConstants.LEAVE_TIMEOUT_IN_MS / 1000,
-      })
-    } else {
-      messageContent = t(message.message, {
-        username: message.username,
-      })
-    }
-
     const chatMessage = {
       id: message.id,
-      message: messageContent,
+      message: t(message.message, {
+        username: message.username,
+      }),
       type: message.type,
     } as ChatMessage
 

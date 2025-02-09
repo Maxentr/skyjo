@@ -89,8 +89,6 @@ export class Constants {
     PLAYER_JOINED: "player-joined",
     PLAYER_RECONNECT: "player-reconnect",
     PLAYER_LEFT: "player-left",
-    PLAYER_LEFT_CAN_RECONNECT: "player-left-can-reconnect",
-    PLAYER_RECONNECTION_EXPIRED: "player-reconnection-expired",
     WIZZ: "wizz",
   } as const
 
