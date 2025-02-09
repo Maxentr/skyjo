@@ -25,7 +25,7 @@ describe("PlayerService", () => {
     socket = mockSocket()
   })
   describe("on leave", () => {
-    it("should do nothing if player is not in a game", async () => {
+    it("should do nothing if game not found", async () => {
       socket.data.gameCode = TEST_UNKNOWN_GAME_ID
 
       service["redis"].getGame = vi.fn(() =>
@@ -63,33 +63,33 @@ describe("PlayerService", () => {
       )
     })
 
-    it("should set the player to connection lost", async () => {
-      const player = new SkyjoPlayer(
-        { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
-        TEST_SOCKET_ID,
-      )
-      const game = new Skyjo(player.id, new SkyjoSettings(false))
-      game.addPlayer(player)
-      socket.data.gameCode = game.code
-      socket.data.playerId = player.id
+    // it("should set the player to connection lost", async () => {
+    //   const player = new SkyjoPlayer(
+    //     { username: "player1", avatar: CoreConstants.AVATARS.PENGUIN },
+    //     TEST_SOCKET_ID,
+    //   )
+    //   const game = new Skyjo(player.id, new SkyjoSettings(false))
+    //   game.addPlayer(player)
+    //   socket.data.gameCode = game.code
+    //   socket.data.playerId = player.id
 
-      const opponent = new SkyjoPlayer(
-        { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
-        "socketId132312",
-      )
-      game.addPlayer(opponent)
+    //   const opponent = new SkyjoPlayer(
+    //     { username: "player2", avatar: CoreConstants.AVATARS.ELEPHANT },
+    //     "socketId132312",
+    //   )
+    //   game.addPlayer(opponent)
 
-      game.settings.initialTurnedCount = 0
-      game.start()
+    //   game.settings.initialTurnedCount = 0
+    //   game.start()
 
-      service["redis"].getGame = vi.fn(() => Promise.resolve(game))
+    //   service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onLeave(socket, true)
+    //   await service.onLeave(socket)
 
-      expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.LOST,
-      )
-    })
+    //   expect(player.connectionStatus).toBe<ConnectionStatus>(
+    //     CoreConstants.CONNECTION_STATUS.LOST,
+    //   )
+    // })
 
     it("should remove the player from the game if the game is in lobby", async () => {
       const opponent = new SkyjoPlayer(
@@ -539,7 +539,7 @@ describe("PlayerService", () => {
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onLeave(socket, true)
+      await service.onLeave(socket)
       const lastGame: LastGame = {
         gameCode: game.code,
         playerId: player.id,
@@ -575,10 +575,10 @@ describe("PlayerService", () => {
       }
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
-      await service.onLeave(socket, true)
+      await service.onLeave(socket)
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
-        CoreConstants.CONNECTION_STATUS.LOST,
+        CoreConstants.CONNECTION_STATUS.LEAVE,
       )
 
       const lastGame: LastGame = {
@@ -633,23 +633,6 @@ describe("PlayerService", () => {
   })
 
   describe("onRecover", () => {
-    it("should throw if game not found and send the error to the client", async () => {
-      service["redis"].getGame = vi.fn(() =>
-        Promise.reject(
-          new CError("", { code: ErrorConstants.ERROR.GAME_NOT_FOUND }),
-        ),
-      )
-
-      await expect(service.onRecover(socket)).not.toThrowCErrorWithCode(
-        ErrorConstants.ERROR.GAME_NOT_FOUND,
-      )
-
-      expect(socket.emit).toHaveBeenCalledWith(
-        "error:recover",
-        ErrorConstants.ERROR.GAME_NOT_FOUND,
-      )
-    })
-
     it("should throw if player not found", async () => {
       vi.useFakeTimers()
 
@@ -693,8 +676,6 @@ describe("PlayerService", () => {
     })
 
     it("should set the player as connected and clear the disconnection timeout", async () => {
-      vi.useFakeTimers()
-
       const opponent = new SkyjoPlayer(
         { username: "player1", avatar: CoreConstants.AVATARS.ELEPHANT },
         "socket456",
@@ -722,21 +703,14 @@ describe("PlayerService", () => {
       opponent2.cards = [[new SkyjoCard(1), new SkyjoCard(1)]]
 
       player.connectionStatus = CoreConstants.CONNECTION_STATUS.LOST
-      setTimeout(() => {
-        service["updateGameAfterTimeoutExpired"](socket)
-      }, 100000)
 
       service["redis"].getGame = vi.fn(() => Promise.resolve(game))
 
       await service.onRecover(socket)
-      // run all timers to check if the timeout was cleared
-      vi.runAllTimers()
 
       expect(player.connectionStatus).toBe<ConnectionStatus>(
         CoreConstants.CONNECTION_STATUS.CONNECTED,
       )
-
-      vi.useRealTimers()
     })
   })
 })

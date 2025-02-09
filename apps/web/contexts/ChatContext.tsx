@@ -123,14 +123,6 @@ const ChatProvider = ({ children }: PropsWithChildren) => {
         username: message.username,
         time: SharedConstants.LEAVE_TIMEOUT_IN_MS / 1000,
       })
-    } else if (
-      message.type ===
-      CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_TIMEOUT_CAN_RECONNECT
-    ) {
-      messageContent = t(message.message, {
-        username: message.username,
-        time: SharedConstants.CONNECTION_LOST_TIMEOUT_IN_MS / 1000,
-      })
     } else {
       messageContent = t(message.message, {
         username: message.username,

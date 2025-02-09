@@ -4,7 +4,6 @@ import { socketErrorWrapper } from "@/socketio/utils/socketErrorWrapper.js"
 import {
   Constants as CoreConstants,
   type ServerMessageType,
-  Skyjo,
   type SkyjoPlayer,
 } from "@skyjo/core"
 import { CError, Constants as ErrorConstants } from "@skyjo/error"
@@ -15,7 +14,33 @@ import { BaseService } from "./base.service.js"
 export class PlayerService extends BaseService {
   private disconnectTimeouts: Record<string, NodeJS.Timeout> = {}
 
-  async onLeave(socket: SkyjoSocket, timeout: boolean = false) {
+  async onConnectionLost(socket: SkyjoSocket) {
+    const game = await this.redis.getGame(socket.data.gameCode)
+    const player = game.getPlayerById(socket.data.playerId)
+    if (!player) {
+      throw new CError(`A player lost connection but is not in the game.`, {
+        code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
+        level: "error",
+        meta: {
+          game,
+          socket,
+          gameCode: game.code,
+          playerId: socket.data.playerId,
+        },
+      })
+    }
+
+    const stateManager = new GameStateManager(game)
+
+    player.connectionStatus = CoreConstants.CONNECTION_STATUS.LOST
+
+    await this.updateAndSendGameToRoom(socket, {
+      game,
+      stateManager,
+    })
+  }
+
+  async onLeave(socket: SkyjoSocket) {
     try {
       const game = await this.redis.getGame(socket.data.gameCode)
       const stateManager = new GameStateManager(game)
@@ -23,7 +48,7 @@ export class PlayerService extends BaseService {
       const player = game.getPlayerById(socket.data.playerId)
       if (!player) {
         throw new CError(
-          `Player try to leave a game but he has not been found.`,
+          `Player try to leave a game but he has not been found in it.`,
           {
             code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
             level: "warn",
@@ -37,14 +62,12 @@ export class PlayerService extends BaseService {
         )
       }
 
-      player.connectionStatus = timeout
-        ? CoreConstants.CONNECTION_STATUS.LOST
-        : CoreConstants.CONNECTION_STATUS.LEAVE
+      player.connectionStatus = CoreConstants.CONNECTION_STATUS.LEAVE
 
       if (game.isAdmin(player.id)) game.changeAdmin()
 
       if (game.isPlaying()) {
-        this.startDisconnectionTimeout(player, timeout, () =>
+        this.startDisconnectionTimeout(player, () =>
           this.updateGameAfterTimeoutExpired(socket),
         )
       } else {
@@ -62,7 +85,26 @@ export class PlayerService extends BaseService {
         }
       }
 
-      this.sendLeaveMessageToRoom(socket, game, player, timeout)
+      let message: ServerMessageType
+
+      if (game.isPlaying()) {
+        message = CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT_CAN_RECONNECT
+      } else {
+        message = CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT
+      }
+
+      this.sendToRoom(socket, {
+        room: game.code,
+        event: "message:server",
+        data: [
+          {
+            id: crypto.randomUUID(),
+            username: player.name,
+            message,
+            type: message,
+          },
+        ],
+      })
 
       await socket.leave(game.code)
     } catch (error) {
@@ -84,15 +126,18 @@ export class PlayerService extends BaseService {
       reconnectData.playerId,
     )
     if (!canReconnect) {
-      throw new CError(`Player try to reconnect but he cannot reconnect.`, {
-        code: ErrorConstants.ERROR.CANNOT_RECONNECT,
-        level: "warn",
-        meta: {
-          socket,
-          gameCode: reconnectData.gameCode,
-          playerId: reconnectData.playerId,
+      throw new CError(
+        `Player try to reconnect but he does not valid the reconnection conditions.`,
+        {
+          code: ErrorConstants.ERROR.CANNOT_RECONNECT,
+          level: "warn",
+          meta: {
+            socket,
+            gameCode: reconnectData.gameCode,
+            playerId: reconnectData.playerId,
+          },
         },
-      })
+      )
     }
 
     await this.redis.updatePlayerSocketId(
@@ -101,80 +146,64 @@ export class PlayerService extends BaseService {
       socket.id,
     )
 
-    await this.reconnectPlayer(
-      socket,
-      reconnectData.gameCode,
-      reconnectData.playerId,
-    )
+    const game = await this.redis.getGame(reconnectData.gameCode)
+
+    const player = game.getPlayerById(reconnectData.playerId)!
+
+    clearTimeout(this.disconnectTimeouts[player.id])
+    delete this.disconnectTimeouts[player.id]
+
+    const stateManager = new GameStateManager(game)
+
+    player.socketId = socket.id
+    player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
+
+    await this.updateAndSendGameToRoom(socket, {
+      game,
+      stateManager,
+    })
+
+    await this.joinGame(socket, game, player, true)
   }
 
   async onRecover(socket: SkyjoSocket) {
-    try {
-      await this.reconnectPlayer(
-        socket,
-        socket.data.gameCode,
-        socket.data.playerId,
-      )
-    } catch (error) {
-      if (
-        error instanceof CError &&
-        error.code === ErrorConstants.ERROR.GAME_NOT_FOUND
-      )
-        socket.emit("error:recover", error.code)
-      else {
-        throw error
-      }
+    const game = await this.redis.getGame(socket.data.gameCode)
+    const player = game.getPlayerById(socket.data.playerId)
+    if (!player) {
+      throw new CError(`Player recover connection but is not in the game.`, {
+        code: ErrorConstants.ERROR.PLAYER_NOT_FOUND,
+        level: "error",
+        meta: {
+          game,
+          socket,
+          gameCode: game.code,
+          playerId: socket.data.playerId,
+        },
+      })
     }
+
+    const stateManager = new GameStateManager(game)
+
+    player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
+
+    await this.updateAndSendGameToRoom(socket, {
+      game,
+      stateManager,
+    })
   }
 
   //#region private methods
-  private sendLeaveMessageToRoom(
-    socket: SkyjoSocket,
-    game: Skyjo,
-    player: SkyjoPlayer,
-    timeout: boolean,
-  ) {
-    let message: ServerMessageType
-
-    if (game.isPlaying()) {
-      message = timeout
-        ? CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_TIMEOUT_CAN_RECONNECT
-        : CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT_CAN_RECONNECT
-    } else {
-      message = timeout
-        ? CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_TIMEOUT
-        : CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT
-    }
-
-    this.sendToRoom(socket, {
-      room: game.code,
-      event: "message:server",
-      data: [
-        {
-          id: crypto.randomUUID(),
-          username: player.name,
-          message,
-          type: message,
-        },
-      ],
-    })
-  }
   private startDisconnectionTimeout(
     player: SkyjoPlayer,
-    connectionLost: boolean,
     callback: (...args: unknown[]) => Promise<void>,
   ) {
-    player.connectionStatus = connectionLost
-      ? CoreConstants.CONNECTION_STATUS.LOST
-      : CoreConstants.CONNECTION_STATUS.LEAVE
+    player.connectionStatus = CoreConstants.CONNECTION_STATUS.LEAVE
 
     this.disconnectTimeouts[player.id] = setTimeout(
       socketErrorWrapper(async () => {
         await callback()
       }),
-      connectionLost
-        ? SharedConstants.CONNECTION_LOST_TIMEOUT_IN_MS
-        : SharedConstants.LEAVE_TIMEOUT_IN_MS,
+      SharedConstants.LEAVE_TIMEOUT_IN_MS,
     )
   }
 
@@ -198,51 +227,6 @@ export class PlayerService extends BaseService {
         },
       ],
     })
-  }
-
-  private async reconnectPlayer(
-    socket: SkyjoSocket,
-    gameCode: string,
-    playerId: string,
-  ) {
-    const game = await this.redis.getGame(gameCode)
-
-    const player = game.getPlayerById(playerId)
-
-    if (!game || !player) {
-      const errorCode = !player
-        ? ErrorConstants.ERROR.PLAYER_NOT_FOUND
-        : ErrorConstants.ERROR.GAME_NOT_FOUND
-
-      throw new CError(
-        `Game or player not found in game when trying to reconnect. This error can happen if the user reconnect but the game has been deleted or the player has been removed from the game.`,
-        {
-          code: errorCode,
-          level: "warn",
-          meta: {
-            game,
-            socket,
-            gameCode,
-            playerId,
-          },
-        },
-      )
-    }
-
-    clearTimeout(this.disconnectTimeouts[player.id])
-    delete this.disconnectTimeouts[player.id]
-
-    const stateManager = new GameStateManager(game)
-
-    player.socketId = socket.id
-    player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
-
-    await this.updateAndSendGameToRoom(socket, {
-      game,
-      stateManager,
-    })
-
-    await this.joinGame(socket, game, player, true)
   }
   //#endregion
 }

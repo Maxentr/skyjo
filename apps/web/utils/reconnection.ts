@@ -13,7 +13,7 @@ export const addReconnectionDateToLastGame = () => {
   const lastGame = JSON.parse(lastGameString) as LastGame
 
   const maxDateToReconnect = dayjs()
-    .add(SharedConstants.CONNECTION_LOST_TIMEOUT_IN_MS, "milliseconds")
+    .add(SharedConstants.LEAVE_TIMEOUT_IN_MS, "milliseconds")
     .format()
 
   localStorage.setItem(

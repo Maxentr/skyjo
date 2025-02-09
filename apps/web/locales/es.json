@@ -519,8 +519,6 @@
       "player-not-muted": "{username} no está silenciado",
       "player-unmuted": "{username} ya no está silenciado",
       "player-left-can-reconnect": "{username} abandonó el juego y tiene {time} segundos para reconectarse",
-      "player-timeout": "{username} perdió la conexión",
-      "player-timeout-can-reconnect": "{username} perdió la conexión y tiene {time} segundos para reconectarse",
       "player-reconnection-expired": "{username} ha sido eliminado del juego porque el tiempo de reconexión ha expirado"
     },
     "avatar": {

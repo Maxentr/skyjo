@@ -28,7 +28,8 @@ const playerRouter = (socket: SkyjoSocket) => {
     "disconnect",
     socketErrorWrapper(async (reason: DisconnectReason) => {
       Logger.info(`Socket ${socket.id} disconnected for reason ${reason}`)
-      if (reason === "ping timeout") await instance.onLeave(socket, true)
+
+      if (reason === "ping timeout") await instance.onConnectionLost(socket)
       else await instance.onLeave(socket)
     }),
   )
