@@ -22,6 +22,7 @@
     "@skyjo/logger": "workspace:*",
     "@skyjo/shared": "workspace:*",
     "@skyjo/state-operations": "workspace:*",
+    "bullmq": "^5.40.2",
     "hono": "^4.6.12",
     "rate-limiter-flexible": "^5.0.4",
     "socket.io": "^4.8.1",
