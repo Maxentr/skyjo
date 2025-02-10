@@ -73,7 +73,7 @@ export class GameService extends BaseService {
 
     if (game.haveAllPlayersRevealedCards()) game.startRoundAfterInitialReveal()
 
-    this.updateAndSendGame(socket, {
+    this.updateAndSendGame({
       game,
       stateManager,
     })
@@ -94,7 +94,7 @@ export class GameService extends BaseService {
     if (pile === "draw") game.drawCard()
     else game.pickFromDiscard()
 
-    this.updateAndSendGame(socket, {
+    this.updateAndSendGame({
       game,
       stateManager,
     })
@@ -115,14 +115,14 @@ export class GameService extends BaseService {
 
     game.replaceCard(column, row)
 
-    this.updateAndSendGame(socket, {
+    this.updateAndSendGame({
       game,
       stateManager,
     })
 
-    await this.finishTurn(socket, game)
+    await this.finishTurn(game)
 
-    this.updateAndSendGame(socket, {
+    this.updateAndSendGame({
       game,
       stateManager,
     })
@@ -138,7 +138,7 @@ export class GameService extends BaseService {
 
     game.discardCard(game.selectedCardValue!)
 
-    this.updateAndSendGame(socket, {
+    this.updateAndSendGame({
       game,
       stateManager,
     })
@@ -158,14 +158,14 @@ export class GameService extends BaseService {
 
     game.turnCard(player, column, row)
 
-    this.updateAndSendGame(socket, {
+    this.updateAndSendGame({
       game,
       stateManager,
     })
 
-    await this.finishTurn(socket, game)
+    await this.finishTurn(game)
 
-    this.updateAndSendGame(socket, {
+    this.updateAndSendGame({
       game,
       stateManager,
     })
@@ -195,7 +195,7 @@ export class GameService extends BaseService {
 
     game.restartGameIfAllPlayersWantReplay()
 
-    this.updateAndSendGame(socket, {
+    this.updateAndSendGame({
       game,
       stateManager,
     })

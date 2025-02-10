@@ -26,7 +26,7 @@ export class PlayerService extends BaseService {
 
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.LOST
 
-    await this.updateAndSendGameToRoom(socket, {
+    await this.updateAndSendGameToRoom({
       game,
       stateManager,
     })
@@ -63,7 +63,7 @@ export class PlayerService extends BaseService {
 
         game.restartGameIfAllPlayersWantReplay()
 
-        this.updateAndSendGame(socket, {
+        this.updateAndSendGame({
           game,
           stateManager,
         })
@@ -74,7 +74,7 @@ export class PlayerService extends BaseService {
       }
 
       const message = CoreConstants.SERVER_MESSAGE_TYPE.PLAYER_LEFT
-      this.sendToRoom(socket, {
+      this.sendToRoom({
         room: game.code,
         event: "message:server",
         data: [
@@ -136,7 +136,7 @@ export class PlayerService extends BaseService {
     player.socketId = socket.id
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
 
-    await this.updateAndSendGameToRoom(socket, {
+    await this.updateAndSendGameToRoom({
       game,
       stateManager,
     })
@@ -164,7 +164,7 @@ export class PlayerService extends BaseService {
 
     player.connectionStatus = CoreConstants.CONNECTION_STATUS.CONNECTED
 
-    await this.updateAndSendGameToRoom(socket, {
+    await this.updateAndSendGameToRoom({
       game,
       stateManager,
     })
