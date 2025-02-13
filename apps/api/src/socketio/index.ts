@@ -1,5 +1,4 @@
 import { Server as HttpServer } from "http"
-import { SocketManager } from "@/socketio/services/SocketManager.js"
 import { ENV } from "@env"
 import type { ServerType } from "@hono/node-server"
 import { Logger } from "@skyjo/logger"
@@ -38,8 +37,6 @@ export const initializeSocketServer = (server: ServerType) => {
   io.engine.on("connection_error", (err) => {
     Logger.error("Socket connection error", err)
   })
-
-  SocketManager.getInstance().setIO(io)
 
   io.on("connection", (socket: SkyjoSocket) => {
     lobbyRouter(socket)

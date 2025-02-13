@@ -76,7 +76,7 @@ export class LobbyService extends BaseService {
     )
     game.updatedAt = new Date()
 
-    this.updateAndSendGame({
+    this.updateAndSendGame(socket, {
       game,
       stateManager,
     })
@@ -107,7 +107,7 @@ export class LobbyService extends BaseService {
     game.settings.maxPlayers = maxPlayers
     game.updatedAt = new Date()
 
-    this.updateAndSendGame({
+    this.updateAndSendGame(socket, {
       game,
       stateManager,
     })
@@ -146,7 +146,7 @@ export class LobbyService extends BaseService {
     game.settings.updateSettings(settings)
     game.updatedAt = new Date()
 
-    this.updateAndSendGame({
+    this.updateAndSendGame(socket, {
       game,
       stateManager,
     })
@@ -161,7 +161,7 @@ export class LobbyService extends BaseService {
     game.settings.isConfirmed = !game.settings.isConfirmed
     game.updatedAt = new Date()
 
-    this.updateAndSendGame({
+    this.updateAndSendGame(socket, {
       game,
       stateManager,
     })
@@ -188,7 +188,7 @@ export class LobbyService extends BaseService {
 
     Logger.info(`Game ${game.code} started.`)
 
-    this.updateAndSendGame({
+    this.updateAndSendGame(socket, {
       game,
       stateManager,
     })
@@ -235,7 +235,7 @@ export class LobbyService extends BaseService {
     game.addPlayer(player)
     game.updatedAt = new Date()
 
-    await this.updateAndSendGameToRoom({
+    await this.updateAndSendGameToRoom(socket, {
       game,
       stateManager,
     })
