@@ -233,6 +233,12 @@ export class Skyjo implements SkyjoInterface {
     this.setFirstPlayerToStart()
   }
 
+  revealCard(player: SkyjoPlayer, column: number, row: number) {
+    player.turnCard(column, row)
+
+    if (this.haveAllPlayersRevealedCards()) this.startRoundAfterInitialReveal()
+  }
+
   drawCard() {
     if (this.drawPile.length === 0) this.reloadDrawPile()
 

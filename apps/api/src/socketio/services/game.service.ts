@@ -69,9 +69,7 @@ export class GameService extends BaseService {
 
     if (player.hasRevealedCardCount(game.settings.initialTurnedCount)) return
 
-    player.turnCard(column, row)
-
-    if (game.haveAllPlayersRevealedCards()) game.startRoundAfterInitialReveal()
+    game.revealCard(player, column, row)
 
     await this.updateAndSendGame(socket, {
       game,
