@@ -65,25 +65,6 @@ export abstract class BaseService {
     this.sendToSocket(socket, { event: "game:fix", data: [states] })
   }
 
-  protected async updateAndSendGameToRoom(
-    socket: SkyjoSocket,
-    params: {
-      game: Skyjo
-      stateManager: GameStateManager
-    },
-  ) {
-    const operations = params.stateManager.getChanges()
-    if (!operations) return
-
-    await this.redis.updateGame(params.game, operations)
-
-    this.sendToRoom(socket, {
-      room: params.game.code,
-      event: "game:update",
-      data: [operations],
-    })
-  }
-
   protected async updateAndSendGame(
     socket: SkyjoSocket,
     params: {
@@ -155,7 +136,7 @@ export abstract class BaseService {
       const stateManager = new GameStateManager(game)
       game.startNewRound()
 
-      this.updateAndSendGame(socket, {
+      await this.updateAndSendGame(socket, {
         game,
         stateManager,
       })
@@ -188,7 +169,7 @@ export abstract class BaseService {
       game.removePlayer(player.id)
       await this.redis.removePlayer(game.code, player.id)
 
-      this.updateAndSendGame(socket, {
+      await this.updateAndSendGame(socket, {
         game,
         stateManager,
       })
@@ -198,7 +179,7 @@ export abstract class BaseService {
     if (!game.hasMinPlayersConnected()) {
       game.status = CoreConstants.GAME_STATUS.STOPPED
 
-      this.updateAndSendGame(socket, {
+      await this.updateAndSendGame(socket, {
         game,
         stateManager,
       })
