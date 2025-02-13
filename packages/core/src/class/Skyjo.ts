@@ -17,6 +17,7 @@ interface SkyjoInterface {
   status: GameStatus
   players: SkyjoPlayer[]
   turn: number
+  turnStartTime: Date
   adminId: string
   settings: SkyjoSettings
 
@@ -39,6 +40,7 @@ export class Skyjo implements SkyjoInterface {
   status: GameStatus = Constants.GAME_STATUS.LOBBY
   players: SkyjoPlayer[] = []
   turn: number = 0
+  turnStartTime: Date = new Date()
   discardPile: number[] = []
   drawPile: number[] = []
 
@@ -70,6 +72,7 @@ export class Skyjo implements SkyjoInterface {
     this.code = game.code
     this.status = game.status
     this.turn = game.turn
+    this.turnStartTime = game.turnStartTime
     this.discardPile = game.discardPile
     this.drawPile = game.drawPile
 
@@ -220,6 +223,7 @@ export class Skyjo implements SkyjoInterface {
 
     this.status = Constants.GAME_STATUS.PLAYING
     this.turn = Math.floor(Math.random() * this.players.length)
+    this.turnStartTime = new Date()
   }
 
   haveAllPlayersRevealedCards() {
@@ -301,6 +305,7 @@ export class Skyjo implements SkyjoInterface {
 
     this.turnStatus = Constants.TURN_STATUS.CHOOSE_A_PILE
     this.turn = this.getNextTurn()
+    this.turnStartTime = new Date()
   }
 
   checkEndOfRound() {
@@ -341,6 +346,7 @@ export class Skyjo implements SkyjoInterface {
       this.stateVersion = 0
       this.updatedAt = new Date()
       this.turn = 0
+      this.turnStartTime = new Date()
 
       // allow admin to change settings again
       this.settings.isConfirmed = false
@@ -360,6 +366,7 @@ export class Skyjo implements SkyjoInterface {
       status: this.status,
       players: this.players.map((player) => player.toJson()),
       turn: this.turn,
+      turnStartTime: this.turnStartTime,
       lastDiscardCardValue: this.discardPile[this.discardPile.length - 1],
       selectedCardValue: this.selectedCardValue,
       roundPhase: this.roundPhase,
@@ -388,6 +395,8 @@ export class Skyjo implements SkyjoInterface {
         connectionStatus: player.connectionStatus,
         scores: player.scores,
         hasPlayedLastTurn: player.hasPlayedLastTurn,
+        afkCount: player.afkCount,
+        consecutiveAfkCount: player.consecutiveAfkCount,
         cards: player.cards.map((column) =>
           column.map((card) => ({
             id: card.id,
@@ -397,6 +406,7 @@ export class Skyjo implements SkyjoInterface {
         ),
       })),
       turn: this.turn,
+      turnStartTime: this.turnStartTime,
       discardPile: this.discardPile,
       drawPile: this.drawPile,
       settings: {
@@ -528,6 +538,7 @@ export class Skyjo implements SkyjoInterface {
     }, playersScore[0])
 
     this.turn = playerToStart!.index
+    this.turnStartTime = new Date()
   }
 
   private checkCardsToDiscard(player: SkyjoPlayer) {

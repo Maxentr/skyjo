@@ -15,6 +15,8 @@ interface SkyjoPlayerInterface {
   readonly socketId: string
   readonly avatar: Avatar
   connectionStatus: ConnectionStatus
+  afkCount: number
+  consecutiveAfkCount: number
   score: number
   wantsReplay: boolean
   hasPlayedLastTurn: boolean
@@ -38,6 +40,8 @@ export class SkyjoPlayer implements SkyjoPlayerInterface {
   socketId: string
   avatar: Avatar = Constants.AVATARS.BEE
   connectionStatus: ConnectionStatus = Constants.CONNECTION_STATUS.CONNECTED
+  afkCount: number = 0
+  consecutiveAfkCount: number = 0 // Consecutive timeouts
   cards: SkyjoCard[][] = []
   score: number = 0
   scores: SkyjoPlayerScores = []
@@ -66,6 +70,8 @@ export class SkyjoPlayer implements SkyjoPlayerInterface {
     this.scores = player.scores
     this.wantsReplay = player.wantsReplay
     this.hasPlayedLastTurn = player.hasPlayedLastTurn
+    this.afkCount = player.afkCount
+    this.consecutiveAfkCount = player.consecutiveAfkCount
 
     if (player.cards.length > 0) {
       this.cards = player.cards.map((column) =>
