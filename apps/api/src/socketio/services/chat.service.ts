@@ -32,8 +32,8 @@ export class ChatService extends BaseService {
       type: CoreConstants.USER_MESSAGE_TYPE,
     }
 
-    socket.to(game.code).emit("message", newMessage)
-    socket.emit("message", newMessage)
+    socket.to(game.code).volatile.emit("message", newMessage)
+    socket.volatile.emit("message", newMessage)
   }
 
   async onWizz(socket: SkyjoSocket, targetUsername: string) {
@@ -52,6 +52,8 @@ export class ChatService extends BaseService {
       })
     }
 
-    socket.to(socket.data.gameCode).emit("wizz", targetUsername, player.name)
+    socket
+      .to(socket.data.gameCode)
+      .volatile.emit("wizz", targetUsername, player.name)
   }
 }
