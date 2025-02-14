@@ -1,1 +1,31 @@
-{}
+{
+  "head": {
+    "title": "C'hoariit Skyjo gant ho mignoned | Skyjo Online",
+    "keywords": "Skyjo,Skyjo enlinenn,liesc'hoarier,c'hoari kartoù,c'hoari gant mignoned,c'hoari enlinenn digoust,c'hoarioù kartoù digoust",
+    "description": "C'hoariit Skyjo enlinenn gant ho mignoned! Gant ar mod liesc'hoarier e c'hallit mont gant ho mignoned pe kavout tud all."
+  },
+  "pages": {
+    "Index": {
+      "name-input-placeholder": "Anv",
+      "explanation": {
+        "title": "Petra eo Skyjo?",
+        "button": "Lenn ar reolennoù",
+        "content": "Skyjo a zo ur c'hoari kartoù hag ur c'hoari taol dispar, gant c'hoarierien e pep lec'h r bed. Graet eo bet evit un niver a c'hoarierien etre 2 hag 8, ha pep hini a resev 12 kartenn kuzhet. Pal pennañ ar c'hoari eo merkañ an nebeutañ a boentoù posupl. Echuet eo ar bartienn ur wech m'eo tizhet 100 poent. Simpl hag aes da gompren eo reolennoù ar c'hoari, ar pezh a lak anezhañ da vezañ ur c'hoari a zere evit an nozvezhioù etre mignoned pe gant ho familh. AN dud sot gant ar c'hoari a vo laouen o c'houzout eo posupl c'hoari enlinenn bremañ!"
+      },
+      "faq": {
+        "title": "Foar ar goulennoù (FAG)",
+        "meaning": {
+          "title": "Petra dalv Skyjo?",
+          "content": "Ur Skyjo a zo ur bann 3 c'hartenn heñvel er c'hoari."
+        },
+        "pronounce": {
+          "title": "Penaos e tistagit Skyjo?",
+          "content": "[Skyjoe] a vez distaget Skyjo."
+        },
+        "how-to-play": {
+          "title": "Penaos c'hoari Skyjo?"
+        }
+      }
+    }
+  }
+}
